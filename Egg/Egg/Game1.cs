@@ -18,7 +18,7 @@ namespace Egg
             Content.RootDirectory = "Content";
         }
 
-        //biscuit
+        //biscui
 
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
