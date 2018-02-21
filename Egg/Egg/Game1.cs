@@ -18,6 +18,7 @@ namespace Egg
             Content.RootDirectory = "Content";
         }
 
+        //egg
         //I wrote over someone's comment
 
         /// <summary>
