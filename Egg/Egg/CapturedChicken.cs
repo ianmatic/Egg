@@ -10,5 +10,9 @@ namespace Egg
 {
     class CapturedChicken : GameObject
     {
+        public override void Draw(SpriteBatch sb)
+        {
+            
+        }
     }
 }

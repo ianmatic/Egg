@@ -9,8 +9,18 @@ namespace Egg
     /// </summary>
     public class Game1 : Game
     {
+        enum GameState
+        {
+            Menu,
+            Game,
+            GameOver
+        }
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        SpriteFont menuText;
+        GameState currentState;
+        GameState previousState;
 
         public Game1()
         {
@@ -31,7 +41,7 @@ namespace Egg
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
+            IsMouseVisible = true;
             base.Initialize();
         }
 
@@ -43,7 +53,7 @@ namespace Egg
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
+           menuText= Content.Load<SpriteFont>("menutext");
             // TODO: use this.Content to load your game content here
         }
 
@@ -65,8 +75,8 @@ namespace Egg
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            // TODO: Add your update logic here
+            
+            
 
             base.Update(gameTime);
         }
@@ -79,9 +89,21 @@ namespace Egg
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            spriteBatch.Begin();
+            spriteBatch.DrawString(menuText, "Egg", new Vector2(350, 200), Color.White);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
+
+
+        public bool SingleKeyPress(Keys n)
+        {
+
+
+            return false;
+        }
+
+
     }
 }

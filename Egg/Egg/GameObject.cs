@@ -34,7 +34,7 @@ namespace Egg
 
         public bool IsActive
         {
-            get { return this.isActive}
+            get { return this.isActive; }
             set { this.isActive = value; }
         } 
 

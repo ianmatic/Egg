@@ -10,5 +10,9 @@ namespace Egg
 {
     class Player : GameObject
     {
+        public override void Draw(SpriteBatch sb)
+        {
+           
+        }
     }
 }
