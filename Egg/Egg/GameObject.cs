@@ -10,10 +10,11 @@ namespace Egg
 {
     abstract class GameObject
     {
-        private Rectangle hitbox;
-        private Texture2D defaultSprite;
-        private int drawLevel;
-        private bool isActive;
+        //fields
+        protected Rectangle hitbox;
+        protected Texture2D defaultSprite;
+        protected int drawLevel;
+        protected bool isActive;
 
         //The order/layer the sprite should be drawn on screen. 
         public int DrawLevel
