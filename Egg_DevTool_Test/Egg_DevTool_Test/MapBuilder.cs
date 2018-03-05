@@ -13,6 +13,9 @@ namespace Egg_DevTool_Test
 {
     public partial class MapBuilder : Form
     {
+        List<Button> tabletBtns = new List<Button>();
+
+
         #region Text Output
 
         // for each item in along the text file, have some variable saved off invisibly
@@ -35,8 +38,37 @@ namespace Egg_DevTool_Test
         public MapBuilder()
         {
             InitializeComponent();
+            #region Adding all the buttons to tabletBtns
+            /*
+            for (int i = 1; i <= 135; i++)
+            {
+                string tempBtn = "button";
+                tempBtn += i.ToString();
+                tabletBtns.Add((Button)tempBtn);
+            }
+            
+
+            // Attempt 2
+            for (int i = 0; i >= 150; i++)
+            {
+                var buttonName = string.Format("btnCalc{0}", i);
+                var button = Controls.Find(buttonName, true);
+
+                if (button != null)
+                {
+                    tabletBtns.Add(button);
+                }
+            }
+            */
+            #endregion
+
+
             //set up a default function to change it so every button in the placement container has no text
+            //hook up the default constructor in each of the tablet's buttons to this so they default to nothing
         }
+
+        // set up a single click event so that click is recognized by 
+
 
 
         #region Etcetera Clicked Functions
