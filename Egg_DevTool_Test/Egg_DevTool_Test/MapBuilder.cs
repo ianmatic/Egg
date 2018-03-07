@@ -153,7 +153,7 @@ namespace Egg_DevTool_Test
                     yInc++;
                     xInc = 1;
                 }
-                btn.Text = "X: " + xInc.ToString() + "\nY: " + yInc;
+                btn.Text = "(" + xInc.ToString() + ", " + yInc + ")";
             }
 
             #endregion
