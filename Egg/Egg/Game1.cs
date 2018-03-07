@@ -21,6 +21,7 @@ namespace Egg
         SpriteFont menuText;
         GameState currentState;
         GameState previousState;
+        KeyboardState kb;
         Player player;
 
         public Game1()
@@ -80,6 +81,14 @@ namespace Egg
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            kb = Keyboard.GetState();
+
+            //Must hold down P, O, and G at the same time to activate level editor
+            if (kb.IsKeyDown(Keys.P) && kb.IsKeyDown(Keys.O) && kb.IsKeyDown(Keys.G))
+            {
+                //Show dialog goes here.
+            }
+
             player.FiniteState();
 
             base.Update(gameTime);
@@ -103,8 +112,6 @@ namespace Egg
 
         public bool SingleKeyPress(Keys n)
         {
-
-
             return false;
         }
 
