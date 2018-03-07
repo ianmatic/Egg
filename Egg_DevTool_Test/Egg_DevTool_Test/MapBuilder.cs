@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -14,7 +15,6 @@ namespace Egg_DevTool_Test
     public partial class MapBuilder : Form
     {
         List<Button> tabletBtns = new List<Button>();
-
 
         #region Text Output
 
@@ -166,6 +166,30 @@ namespace Egg_DevTool_Test
         // set up a single click event so that click is recognized by 
 
 
+        #region Tablet Functionality Setup
+        //The current tile
+        string currentTile = "";
+
+        /// <summary>
+        /// Change the designer based on which box index selection was made
+        /// </summary>
+        private void BoxIndexChanged(object sender, EventArgs e)
+        {
+            currentTile = boxSelect.Text;
+            tileView.Image = ImageSelect(currentTile);
+        }
+
+        private Image ImageSelect(string s)
+        {
+            return Egg_DevTool_Test.Properties.Resources.tile4_scaled;
+        }
+
+
+        private void tabletClick(object sender, EventArgs e)
+        {
+
+        }
+        #endregion
 
         #region Etcetera Clicked Functions
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -194,5 +218,12 @@ namespace Egg_DevTool_Test
 
         }
         #endregion
+
+        private void MapBuilder_Load(object sender, EventArgs e)
+        {
+
+        }
+
+
     }
 }

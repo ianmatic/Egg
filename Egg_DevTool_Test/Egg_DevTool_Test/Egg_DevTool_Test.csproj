@@ -72,6 +72,8 @@
     <Content Include="Content\tile3.png" />
     <Content Include="Content\tile4.png" />
     <Content Include="Icon.ico" />
+    <None Include="Resources\tile4_scaled.png" />
+    <None Include="Resources\tile3_scaled.png" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
