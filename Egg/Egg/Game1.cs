@@ -21,6 +21,7 @@ namespace Egg
         SpriteFont menuText;
         GameState currentState;
         GameState previousState;
+        Player player;
 
         public Game1()
         {
@@ -42,6 +43,9 @@ namespace Egg
         {
             // TODO: Add your initialization logic here
             IsMouseVisible = true;
+
+            player = new Player(100,100);
+
             base.Initialize();
         }
 
@@ -75,8 +79,8 @@ namespace Egg
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            
-            
+
+            player.FiniteState();
 
             base.Update(gameTime);
         }
