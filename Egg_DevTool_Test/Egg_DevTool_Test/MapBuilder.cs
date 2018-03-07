@@ -60,6 +60,102 @@ namespace Egg_DevTool_Test
                 }
             }
             */
+            List<Button> tabletBtns = new List<Button>();
+            #region grossly hand-inputting all the buttons
+            tabletBtns.Add(button1);
+            tabletBtns.Add(button2);
+            tabletBtns.Add(button3);
+            tabletBtns.Add(button4);
+            tabletBtns.Add(button5);
+            tabletBtns.Add(button6);
+            tabletBtns.Add(button7);
+            tabletBtns.Add(button8);
+            tabletBtns.Add(button9);
+            tabletBtns.Add(button10);
+            tabletBtns.Add(button11);
+            tabletBtns.Add(button12);
+            tabletBtns.Add(button13);
+            tabletBtns.Add(button14);
+            tabletBtns.Add(button15);
+            tabletBtns.Add(button16);
+            tabletBtns.Add(button17);
+            tabletBtns.Add(button18);
+            tabletBtns.Add(button19);
+            tabletBtns.Add(button20);
+            tabletBtns.Add(button21);
+            tabletBtns.Add(button22);
+            tabletBtns.Add(button23);
+            tabletBtns.Add(button24);
+            tabletBtns.Add(button25);
+            tabletBtns.Add(button26);
+            tabletBtns.Add(button27);
+            tabletBtns.Add(button28);
+            tabletBtns.Add(button29);
+            tabletBtns.Add(button30);
+            tabletBtns.Add(button31);
+            tabletBtns.Add(button32);
+            tabletBtns.Add(button33);
+            tabletBtns.Add(button34);
+            tabletBtns.Add(button35);
+            tabletBtns.Add(button36);
+            tabletBtns.Add(button37);
+            tabletBtns.Add(button38);
+            tabletBtns.Add(button39);
+            tabletBtns.Add(button40);
+            tabletBtns.Add(button41);
+            tabletBtns.Add(button42);
+            tabletBtns.Add(button43);
+            tabletBtns.Add(button44);
+            tabletBtns.Add(button45);
+            tabletBtns.Add(button46);
+            tabletBtns.Add(button47);
+            tabletBtns.Add(button48);
+            tabletBtns.Add(button49);
+            tabletBtns.Add(button50);
+            tabletBtns.Add(button51);
+            tabletBtns.Add(button52);
+            tabletBtns.Add(button53);
+            tabletBtns.Add(button54);
+            tabletBtns.Add(button55);
+            tabletBtns.Add(button56);
+            tabletBtns.Add(button57);
+            tabletBtns.Add(button58);
+            tabletBtns.Add(button59);
+            tabletBtns.Add(button60);
+            tabletBtns.Add(button61);
+            tabletBtns.Add(button62);
+            tabletBtns.Add(button63);
+            tabletBtns.Add(button64);
+            tabletBtns.Add(button65);
+            tabletBtns.Add(button66);
+            tabletBtns.Add(button67);
+            tabletBtns.Add(button68);
+            tabletBtns.Add(button69);
+            tabletBtns.Add(button70);
+            tabletBtns.Add(button71);
+            tabletBtns.Add(button72);
+            tabletBtns.Add(button73);
+            tabletBtns.Add(button74);
+            tabletBtns.Add(button75);
+            tabletBtns.Add(button76);
+            tabletBtns.Add(button77);
+            tabletBtns.Add(button78);
+            tabletBtns.Add(button79);
+            #endregion
+
+            int xInc = 0;   //x incrementer
+            int yInc = 1;   //y incrementer
+            foreach (var btn in tabletBtns)
+            {
+                xInc++;
+                if (xInc > 15)
+                {
+                    yInc++;
+                    xInc = 1;
+                }
+                btn.Text = "X: " + xInc.ToString() + "\nY: " + yInc;
+            }
+
             #endregion
 
 
