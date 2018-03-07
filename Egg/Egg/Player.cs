@@ -43,18 +43,31 @@ namespace Egg
         private int health;
         private KeyboardState kb;
         private int timer;
+        private Rectangle hitBox;
         PlayerState playerState;
         Enemy enemy;
         Platform platform;
+        GameTime gameTime;
 
         //Constructor
-        public Player()
+        public Player(int x, int y)
+            
         {
+            hitBox = new Rectangle(x, y, 100, 100);
             kb = Keyboard.GetState();
             enemy = new Enemy();
             platform = new Platform();
             timer = 2;
+            hasGravity = true;
+            gameTime = new GameTime();
+        }
 
+
+        /// <summary>
+        /// determines player state based on input and collision with enemies/platforms
+        /// </summary>
+        public void FiniteState()
+        {
             //FSM
             switch (playerState)
             {
@@ -266,6 +279,37 @@ namespace Egg
         public override void Draw(SpriteBatch sb)
         {
            
+        }
+
+        /// <summary>
+        /// Determines movement based on current enum state
+        /// </summary>
+        public override void Movement()
+        {
+            //gravity
+            double gravity = (9.8 * (1 / gameTime.ElapsedGameTime.TotalSeconds));
+
+            Rectangle spaceBetween = new Rectangle(hitbox.X + 6, hitbox.Y - 6, hitbox.Width + 6, hitbox.Height + -6);
+            //can't move through walls
+            if (!spaceBetween.Intersects(platform.Hitbox))
+            {
+                if (playerState.Equals(PlayerState.WalkLeft))
+                {
+                    hitBox.X -= 2;
+                }
+                else if (playerState.Equals(PlayerState.WalkRight))
+                {
+                    hitBox.X += 2;
+                }
+                else if (playerState.Equals(PlayerState.RollLeft))
+                {
+                    hitBox.X -= 5;
+                }
+                else if (playerState.Equals(PlayerState.RollRight))
+                {
+                    hitBox.X += 5;
+                }
+            }
         }
     }
 }

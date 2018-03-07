@@ -22,6 +22,7 @@ namespace Egg
         GameState currentState;
         GameState previousState;
         KeyboardState kb;
+        Player player;
 
         public Game1()
         {
@@ -43,6 +44,9 @@ namespace Egg
         {
             // TODO: Add your initialization logic here
             IsMouseVisible = true;
+
+            player = new Player(100,100);
+
             base.Initialize();
         }
 
@@ -84,6 +88,8 @@ namespace Egg
             {
                 //Show dialog goes here.
             }
+
+            player.FiniteState();
 
             base.Update(gameTime);
         }

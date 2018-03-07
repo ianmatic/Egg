@@ -15,6 +15,7 @@ namespace Egg
         protected Texture2D defaultSprite;
         protected int drawLevel;
         protected bool isActive;
+        protected bool hasGravity;
 
         //The order/layer the sprite should be drawn on screen. 
         public int DrawLevel
@@ -38,10 +39,17 @@ namespace Egg
             get { return this.isActive; }
             set { this.isActive = value; }
         } 
-
+        public bool HasGravity
+        {
+            get { return hasGravity; }
+            set { hasGravity = value; }
+        }
 
 
         public abstract void Draw(SpriteBatch sb);
-
+        /// <summary>
+        /// implement movement mechanics for appropriate gameObjects
+        /// </summary>
+        public abstract void Movement();
     }
 }
