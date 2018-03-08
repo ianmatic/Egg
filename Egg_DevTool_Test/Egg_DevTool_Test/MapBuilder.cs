@@ -38,6 +38,7 @@ namespace Egg_DevTool_Test
         public MapBuilder()
         {
             InitializeComponent();
+            string desperation = boxSelect.Text.ToString();
             #region Adding all the buttons to tabletBtns
             /*
             for (int i = 1; i <= 135; i++)
@@ -166,22 +167,34 @@ namespace Egg_DevTool_Test
         // set up a single click event so that click is recognized by 
 
 
-        #region Tablet Functionality Setup
+        #region Tablet Functionality
         //The current tile
         string currentTile = "";
+        string testTile = "";
 
         /// <summary>
         /// Change the designer based on which box index selection was made
         /// </summary>
         private void BoxIndexChanged(object sender, EventArgs e)
         {
-            currentTile = boxSelect.Text;
+            currentTile = boxSelect.Text.ToString();
             tileView.Image = ImageSelect(currentTile);
         }
 
         private Image ImageSelect(string s)
         {
-            return Egg_DevTool_Test.Properties.Resources.tile4_scaled;
+            switch (s)
+            {
+                case "tile1":
+                    return Egg_DevTool_Test.Properties.Resources.tile4_scaled;
+                case "tile2":
+                    return Egg_DevTool_Test.Properties.Resources.tile3_scaled;
+                case "tile3":
+                    break;
+                default:
+                    break;
+            }
+            return Egg_DevTool_Test.Properties.Resources.tile3_scaled;
         }
 
 
