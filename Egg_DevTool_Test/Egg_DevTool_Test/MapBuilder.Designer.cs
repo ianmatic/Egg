@@ -357,15 +357,29 @@
             // 
             this.boxSelect.FormattingEnabled = true;
             this.boxSelect.Items.AddRange(new object[] {
-            "tile1",
-            "tile2",
-            "tile3"});
+            "L TopLeft,",
+            "L Top Mid,",
+            "L Top Right,",
+            "L Mid Left,",
+            "L Mid Right,",
+            "L Bot Left,",
+            "L Bot Mid,",
+            "L Bot Right,",
+            "D Top Left,",
+            "D Top Mid,",
+            "D Top Right,",
+            "D Mid Left,",
+            "D Mid Mid,",
+            "D Mid Right,",
+            "D Bot Left,",
+            "D Bot Mid,",
+            "D Bot Right"});
             this.boxSelect.Location = new System.Drawing.Point(47, 124);
             this.boxSelect.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.boxSelect.Name = "boxSelect";
             this.boxSelect.Size = new System.Drawing.Size(216, 24);
             this.boxSelect.TabIndex = 1;
-            this.boxSelect.Text = "Test";
+            this.boxSelect.Text = "D Top Left";
             this.boxSelect.SelectedIndexChanged += new System.EventHandler(this.BoxIndexChanged);
             this.boxSelect.SelectedValueChanged += new System.EventHandler(this.BoxIndexChanged);
             // 

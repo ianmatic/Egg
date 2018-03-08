@@ -170,7 +170,8 @@ namespace Egg_DevTool_Test
         #region Tablet Functionality
         //The current tile
         string currentTile = "";
-        string testTile = "";
+
+        //Enumerator to keep track of which tiles is in which place
 
         /// <summary>
         /// Change the designer based on which box index selection was made
@@ -181,15 +182,26 @@ namespace Egg_DevTool_Test
             tileView.Image = ImageSelect(currentTile);
         }
 
+
         private Image ImageSelect(string s)
         {
             switch (s)
             {
-                case "tile1":
-                    return Egg_DevTool_Test.Properties.Resources.tile4_scaled;
-                case "tile2":
+                case "D Top Left":
+                    return Egg_DevTool_Test.Properties.Resources.
+                case "D Top Mid":
                     return Egg_DevTool_Test.Properties.Resources.tile3_scaled;
-                case "tile3":
+                case "D Top Right":
+                    break;
+                case "D Mid Left":
+                    return Egg_DevTool_Test.Properties.Resources.tile4_scaled;
+                case "D Mid Right":
+                    break;
+                case "D Bot Left":
+                    return Egg_DevTool_Test.Properties.Resources.tile4_scaled;
+                case "D Bot Mid":
+                    return Egg_DevTool_Test.Properties.Resources.tile3_scaled;
+                case "D Bot Right":
                     break;
                 default:
                     break;
