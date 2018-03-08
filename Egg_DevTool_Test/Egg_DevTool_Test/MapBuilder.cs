@@ -3,6 +3,7 @@ using System.Web;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Reflection;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -183,32 +184,44 @@ namespace Egg_DevTool_Test
         }
 
 
+        private Image ImageSelect (string s)
+        {
+            switch (s)
+            {
+                case "D Top Left":
+                    return System.Resources.dBotLeft;
+                    break;
+                default:
+                    break;
+
+            }
+        }
+        /*
         private Image ImageSelect(string s)
         {
             switch (s)
             {
                 case "D Top Left":
-                    return Egg_DevTool_Test.Properties.Resources.
+                    break;
                 case "D Top Mid":
-                    return Egg_DevTool_Test.Properties.Resources.tile3_scaled;
+                    break;
                 case "D Top Right":
                     break;
                 case "D Mid Left":
-                    return Egg_DevTool_Test.Properties.Resources.tile4_scaled;
+                    break;
                 case "D Mid Right":
                     break;
                 case "D Bot Left":
-                    return Egg_DevTool_Test.Properties.Resources.tile4_scaled;
+                    break;
                 case "D Bot Mid":
-                    return Egg_DevTool_Test.Properties.Resources.tile3_scaled;
+                    break;
                 case "D Bot Right":
                     break;
                 default:
                     break;
             }
-            return Egg_DevTool_Test.Properties.Resources.tile3_scaled;
         }
-
+        */
 
         private void tabletClick(object sender, EventArgs e)
         {

@@ -124,4 +124,55 @@
   <data name="tile4_scaled" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tile4_scaled.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="dBotLeft" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\dBotLeft.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dBotMid" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\dBotMid.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dBotRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\dBotRight.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dMidLeft" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\dMidLeft.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dMidRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\dMidRight.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dSolid" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\dSolid.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dTopLeft" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\dTopLeft.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dTopMid" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\dTopMid.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dTopRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\dTopRight.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LBotLeft" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\LBotLeft.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LBotMid" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\LBotMid.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LBotRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\LBotRight.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LMidLeft" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\LMidLeft.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LMidRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\LMidRight.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LTopLeft" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\LTopLeft.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LTopMid" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\LTopMid.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LTopRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\LTopRight.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

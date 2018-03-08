@@ -262,7 +262,7 @@
             // 
             // tileView
             // 
-            this.tileView.Image = global::Egg_DevTool_Test.Properties.Resources.tile4_scaled;
+            this.tileView.Image = null;
             this.tileView.Location = new System.Drawing.Point(117, 188);
             this.tileView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.tileView.Name = "tileView";
