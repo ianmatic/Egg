@@ -14,5 +14,9 @@ namespace Egg
         {
 
         }
+        public override void Movement()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
