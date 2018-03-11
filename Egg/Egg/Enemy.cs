@@ -124,13 +124,18 @@ namespace Egg
         //Placeholder
         public void TriggerHitstun()
         {
-
+            throw new NotImplementedException();
         }
 
         //Default for now, should change what sprite is drawn depending on FSM
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(defaultSprite, hitbox, Color.White);
+        }
+
+        public override void Movement()
+        {
+            throw new NotImplementedException();
         }
     }
 }
