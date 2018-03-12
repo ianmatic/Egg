@@ -23,9 +23,7 @@ namespace Egg_DevTool_Test
         // so that we can make a big loop and send all of those into a series of strings
         // which we can then combine into the output and print to a text file.
 
-        string output =
-    "This is me testing writing a line of text into a text file." + Environment.NewLine +
-    "This is hopefully a second line.";
+        string output = "" + Environment.NewLine;
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -228,17 +226,10 @@ namespace Egg_DevTool_Test
                     xInc = 1;
                 }
                 btn.Text = "(" + xInc.ToString() + ", " + yInc + ")";
+                btn.ForeColor = Color.White;
             }
-
             #endregion
-
-
-            //set up a default function to change it so every button in the placement container has no text
-            //hook up the default constructor in each of the tablet's buttons to this so they default to nothing
         }
-
-        // set up a single click event so that click is recognized by 
-
 
         #region Tablet Functionality
         //The current tile
@@ -255,43 +246,138 @@ namespace Egg_DevTool_Test
             tileView.Image = ImageSelect(currentTile);
         }
 
-
+        /// <summary>
+        /// Takes a string S from the current dropdown list then returns
+        /// any image that has that as the name from the resources folder.
+        /// 
+        /// Also catches empty inputs and displays an error screen
+        /// </summary>
         private Image ImageSelect (string s)
         {
             // modify the image to fit properly inside the button's image. 
-            Image test = Image.FromFile(@"..\..\..\..\Resources\" + s  + ".png");
+            // also put in a catch to check if that image actually exists
+            Image test;
+            try
+            {
+                test = Image.FromFile(@"..\..\..\..\Resources\" + s + ".png");
+            }
+            catch (System.IO.FileNotFoundException e)
+            {
+                Form broken = new Form() { Width = 300 , Height = 20};
+                string msg = "You tried put a tile that you haven't yet selected into your map. Nice one.";
+                TextBox textLabel = new TextBox() { Left = 10, Top = 20, Width = 200, Height = 90, Text = msg, Multiline = true };
+                broken.Controls.Add(textLabel);
+                broken.ShowDialog();
+                test = Image.FromFile(@"..\..\..\..\Resources\dSolid.png");
+            }
             return test;
         }
-        /*
-        private Image ImageSelect(string s)
+
+        /// <summary>
+        /// The base function called every time a tablet button
+        /// is clicked by the user
+        /// </summary>
+        private void TabletClick(object sender, EventArgs e)
+        {
+            // = ImageSelect(currentTile);
+            Button tempCopy = (Button)sender;
+            tempCopy.Image = ImageSelect(currentTile);
+            tempCopy.Tag = currentTile;
+            sender = tempCopy;
+        }
+
+
+        int incrementer = 0;
+        string outputTest = "";
+        /// <summary>
+        /// The function called to export the current tile positions
+        /// that exist on the tablet to a text file.
+        /// </summary>
+        private void Export(object sender, EventArgs e)
+        {
+            foreach (var btn in tabletBtns)
+            {
+                if (incrementer <= 15)  //Check if a new line is needed and add if it is
+                {
+                    if (btn.Tag != null)  //Make sure the button has a tag
+                        outputTest += Translator(btn.Tag.ToString()) + "," + Environment.NewLine;
+                    else  //If there's no tag, add 00
+                        outputTest += "00" + "," + Environment.NewLine;
+                    incrementer = 0;
+                }
+                else if (0 <= incrementer && incrementer < 15) //If a new line isn't needed, run regularly
+                {
+                    if (btn.Tag != null)  //Still make sure the button has a tag
+                        outputTest += Translator(btn.Tag.ToString()) + ",";
+                    else  //If there's no tag, add 00
+                        outputTest += "00" + ",";
+                    incrementer++;
+                }
+                else
+                    incrementer = 0;
+
+                //Reset incrementer when the export is complete
+                incrementer = 0;
+            }
+
+            // Actually export to a text file
+            StreamWriter writer = new StreamWriter("outputTest.txt");
+            writer.Write(outputTest);
+            writer.Close();
+        }
+
+        /// <summary>
+        /// Takes in a string parameter "s" which is then run through a switch
+        /// statement to convert and return it in it's encoded form for the exporter
+        /// </summary>
+        private string Translator(string s)
         {
             switch (s)
             {
-                case "D Top Left":
-                    break;
-                case "D Top Mid":
-                    break;
-                case "D Top Right":
-                    break;
-                case "D Mid Left":
-                    break;
-                case "D Mid Right":
-                    break;
-                case "D Bot Left":
-                    break;
-                case "D Bot Mid":
-                    break;
-                case "D Bot Right":
-                    break;
-                default:
-                    break;
-            }
-        }
-        */
+                    // Light grass tiles
+                case "LTopLeft":
+                    return "b1";
+                case "LTopMid":
+                    return "b2";
+                case "LTopRight":
+                    return "b3";
+                case "LMidRight":
+                    return "b4";
+                    // b5 doesn't exist as there's no middle tile for the 
+                    // exterior/light wrapping tiles
+                case "LMidLeft":
+                    return "b6";
+                case "LBotLeft":
+                    return "b7";
+                case "LBotMid":
+                    return "b8";
+                case "LBotRight":
+                    return "b9";
 
-        private void tabletClick(object sender, EventArgs e)
-        {
-            button1.Image = ImageSelect(currentTile);
+
+                    // Dark grass tiles
+                case "dTopLeft":
+                    return "i1";
+                case "dTopMid":
+                    return "i2";
+                case "dTopRight":
+                    return "i3";
+                case "dMidLeft":
+                    return "i4";
+                case "dSolid":
+                    return "i5";
+                case "dMidRight":
+                    return "i6";
+                case "dBotLeft":
+                    return "i7";
+                case "dBotMid":
+                    return "i8";
+                case "dBotRight":
+                    return "i9";
+
+                default:
+                    return "#### TRANSLATOR BROKEN #####";
+            }
         }
         #endregion
 
