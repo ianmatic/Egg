@@ -63,6 +63,7 @@ namespace Egg_DevTool_Test
             }
             */
             List<Button> tabletBtns = new List<Button>();
+
             #region grossly hand-inputting all the buttons
             tabletBtns.Add(button1);
             tabletBtns.Add(button2);
@@ -143,6 +144,77 @@ namespace Egg_DevTool_Test
             tabletBtns.Add(button77);
             tabletBtns.Add(button78);
             tabletBtns.Add(button79);
+            tabletBtns.Add(button80);
+            tabletBtns.Add(button81);
+            tabletBtns.Add(button82);
+            tabletBtns.Add(button83);
+            tabletBtns.Add(button84);
+            tabletBtns.Add(button85);
+            tabletBtns.Add(button86);
+            tabletBtns.Add(button87);
+            tabletBtns.Add(button88);
+            tabletBtns.Add(button89);
+            tabletBtns.Add(button90);
+            tabletBtns.Add(button91);
+            tabletBtns.Add(button92);
+            tabletBtns.Add(button93);
+            tabletBtns.Add(button94);
+            tabletBtns.Add(button95);
+            tabletBtns.Add(button96);
+            tabletBtns.Add(button97);
+            tabletBtns.Add(button98);
+            tabletBtns.Add(button99);
+            tabletBtns.Add(button100);
+            tabletBtns.Add(button101);
+            tabletBtns.Add(button102);
+            tabletBtns.Add(button103);
+            tabletBtns.Add(button104);
+            tabletBtns.Add(button105);
+            tabletBtns.Add(button106);
+            tabletBtns.Add(button107);
+            tabletBtns.Add(button108);
+            tabletBtns.Add(button109);
+            tabletBtns.Add(button110);
+            tabletBtns.Add(button111);
+            tabletBtns.Add(button112);
+            tabletBtns.Add(button113);
+            tabletBtns.Add(button114);
+            tabletBtns.Add(button115);
+            tabletBtns.Add(button116);
+            tabletBtns.Add(button117);
+            tabletBtns.Add(button118);
+            tabletBtns.Add(button119);
+            tabletBtns.Add(button120);
+            tabletBtns.Add(button121);
+            tabletBtns.Add(button122);
+            tabletBtns.Add(button123);
+            tabletBtns.Add(button124);
+            tabletBtns.Add(button125);
+            tabletBtns.Add(button126);
+            tabletBtns.Add(button127);
+            tabletBtns.Add(button128);
+            tabletBtns.Add(button129);
+            tabletBtns.Add(button130);
+            tabletBtns.Add(button131);
+            tabletBtns.Add(button132);
+            tabletBtns.Add(button133);
+            tabletBtns.Add(button134);
+            tabletBtns.Add(button135);
+            tabletBtns.Add(button136);
+            tabletBtns.Add(button137);
+            tabletBtns.Add(button138);
+            tabletBtns.Add(button139);
+            tabletBtns.Add(button140);
+            tabletBtns.Add(button141);
+            tabletBtns.Add(button142);
+            tabletBtns.Add(button143);
+            tabletBtns.Add(button144);
+            tabletBtns.Add(button145);
+            tabletBtns.Add(button146);
+            tabletBtns.Add(button147);
+            tabletBtns.Add(button148);
+            tabletBtns.Add(button149);
+            tabletBtns.Add(button150);
             #endregion
 
             int xInc = 0;   //x incrementer
@@ -186,15 +258,9 @@ namespace Egg_DevTool_Test
 
         private Image ImageSelect (string s)
         {
-            switch (s)
-            {
-                case "D Top Left":
-                    return System.Resources.dBotLeft;
-                    break;
-                default:
-                    break;
-
-            }
+            // modify the image to fit properly inside the button's image. 
+            Image test = Image.FromFile(@"..\..\..\..\Resources\" + s  + ".png");
+            return test;
         }
         /*
         private Image ImageSelect(string s)
@@ -225,7 +291,7 @@ namespace Egg_DevTool_Test
 
         private void tabletClick(object sender, EventArgs e)
         {
-
+            button1.Image = ImageSelect(currentTile);
         }
         #endregion
 

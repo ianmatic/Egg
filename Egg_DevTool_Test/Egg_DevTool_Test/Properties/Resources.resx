@@ -151,9 +151,6 @@
   <data name="dTopRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\dTopRight.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="LBotLeft" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\LBotLeft.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="LBotMid" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\LBotMid.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
