@@ -24,6 +24,13 @@ namespace Egg
         KeyboardState kb;
         Player player;
 
+        //animation fields
+        int currentFrame;
+        double frameRate;
+        double secondsPerFrame;
+        double timeCounter;
+        
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -59,7 +66,14 @@ namespace Egg
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
            menuText= Content.Load<SpriteFont>("menutext");
-            // TODO: use this.Content to load your game content here
+
+
+
+            //animation Stuff
+            currentFrame = 1;
+            frameRate = 60.0; //assuming we are doing 60fps here, change if not
+            secondsPerFrame = 1.0f / frameRate;
+            timeCounter = 0;
         }
 
         /// <summary>
@@ -116,5 +130,57 @@ namespace Egg
         }
 
 
+        private void UpdateAnimation(GameTime time)
+        {
+            timeCounter += time.ElapsedGameTime.TotalSeconds;
+
+            if(timeCounter >= secondsPerFrame)
+            {
+                currentFrame++;
+                if(currentFrame >= 4)// 4 is a placeholder for how many frames of walk there are
+                {
+                    currentFrame = 1;
+                }
+            }
+
+            timeCounter -= secondsPerFrame;
+        }
+        private void DrawWalking(SpriteEffects flip)
+        {
+            //this is what Chris had, feel free to use or remove as needed.
+            //spriteBatch.Draw(
+				//marioTexture,
+				//marioPosition,
+				//new Rectangle(widthOfSingleSprite * currentFrame, 0, 
+                //widthOfSingleSprite, marioTexture.Height),
+				//Color.White,
+				//0.0f,
+				//Vector2.Zero,
+				//1.0f,
+				//flip,
+				//0.0f);
+        }
+
+        private void DrawIdle(SpriteEffects flip)
+        {
+            //spriteBatch.Draw(
+                //marioTexture,
+                //marioPosition,
+                //new Rectangle(0, 0, widthOfSingleSprite, marioTexture.Height),
+                //Color.White,
+                //0.0f,
+                //Vector2.Zero,
+                //1.0f,
+                //flip,
+                //0.0f);
+        }
+
+
+
     }
+
+   
+
+
+
 }
