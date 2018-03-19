@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace Egg
 {
@@ -19,6 +20,7 @@ namespace Egg
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SpriteFont menuText;
+        Texture2D testSprite;
         GameState currentState;
         GameState previousState;
         KeyboardState kb;
@@ -29,7 +31,9 @@ namespace Egg
         double frameRate;
         double secondsPerFrame;
         double timeCounter;
-        
+
+        List<GameObject> objectList;
+        Stack<GameObject> sortHolder;
 
         public Game1()
         {
@@ -54,6 +58,9 @@ namespace Egg
 
             player = new Player(100,100);
 
+            objectList = new List<GameObject>();
+            sortHolder = new Stack<GameObject>();
+            
             base.Initialize();
         }
 
@@ -65,9 +72,9 @@ namespace Egg
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-           menuText= Content.Load<SpriteFont>("menutext");
+            menuText= Content.Load<SpriteFont>("menutext");
 
-
+            PotatoDebugging();
 
             //animation Stuff
             currentFrame = 1;
@@ -117,7 +124,15 @@ namespace Egg
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin();
+
             spriteBatch.DrawString(menuText, "Egg", new Vector2(350, 200), Color.White);
+
+            //Draws potatos to test DrawLevel
+            foreach (GameObject g in objectList)
+            {
+                g.Draw(spriteBatch);
+            }
+
             spriteBatch.End();
 
             base.Draw(gameTime);
@@ -175,6 +190,58 @@ namespace Egg
                 //0.0f);
         }
 
+        #region Sorting Logic
+        //Adds object g to the list of game objects, sorted by draw level
+        private void AddObjectToList(GameObject g)
+        {
+            if (objectList.Count == 0)
+            {
+                objectList.Add(g);
+            }
+            else
+            {
+                if (g.DrawLevel == objectList[(objectList.Count - 1)].DrawLevel)
+                {
+                    objectList.Add(g);
+                }
+                else
+                {
+                    for (int i = (objectList.Count - 1); i >= 0; i--)
+                    {
+                        if (objectList[i].DrawLevel == g.DrawLevel)
+                        {
+                            break;
+                        }
+                        sortHolder.Push(objectList[i]);
+                        objectList.Remove(objectList[i]);
+                    }
+
+                    objectList.Add(g);
+
+                    while (sortHolder.Count > 0)
+                    {
+                        objectList.Add(sortHolder.Pop());
+                    }
+
+                } //End of sorting logic
+
+
+            }
+
+        }
+        #endregion
+
+        //Run this in LoadContent if you need to test drawing objects to the screen
+        private void PotatoDebugging()
+        {
+            testSprite = Content.Load<Texture2D>("potato");
+
+            AddObjectToList(new CapturedChicken(1, testSprite, new Rectangle(0, 0, 30, 30), Color.Red));
+            AddObjectToList(new CapturedChicken(5, testSprite, new Rectangle(0, 15, 30, 30), Color.Blue));
+            AddObjectToList(new CapturedChicken(4, testSprite, new Rectangle(0, 30, 30, 30), Color.Green));
+            AddObjectToList(new CapturedChicken(3, testSprite, new Rectangle(0, 45, 30, 30), Color.Yellow));
+            AddObjectToList(new CapturedChicken(2, testSprite, new Rectangle(0, 60, 30, 30), Color.White));
+        }
 
 
     }
