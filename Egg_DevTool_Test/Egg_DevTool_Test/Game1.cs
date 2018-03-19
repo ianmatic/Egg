@@ -11,7 +11,7 @@ namespace Egg_DevTool_Test
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        MapBuilder builder = new MapBuilder();
+        Mappy builder = new Mappy();
 
         public Game1()
         {

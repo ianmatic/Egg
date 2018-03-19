@@ -10,10 +10,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Xna.Framework.Input;
 
 namespace Egg_DevTool_Test
 {
-    public partial class MapBuilder : Form
+    public partial class Mappy : Form
     {
         List<Button> tabletButts = new List<Button>();
 
@@ -33,7 +34,7 @@ namespace Egg_DevTool_Test
         }
         #endregion
 
-        public MapBuilder()
+        public Mappy()
         {
             InitializeComponent();
             string desperation = boxSelect.Text.ToString();
@@ -275,16 +276,26 @@ namespace Egg_DevTool_Test
             return test;
         }
 
+        MouseState mouseCheck;
         /// <summary>
         /// The base function called every time a tablet button
         /// is clicked by the user
         /// </summary>
         private void TabletClick(object sender, EventArgs e)
         {
-            // = ImageSelect(currentTile);
             Button tempCopy = (Button)sender;
-            tempCopy.Image = ImageSelect(currentTile);
-            tempCopy.Tag = currentTile;
+            // Drop the an image equal to the current drop 
+            if (chkDeleter.Checked == false)    
+            {
+                tempCopy.Image = ImageSelect(currentTile);
+                tempCopy.Tag = currentTile;
+            }
+            // Clear the button if the delete is checked
+            else if (chkDeleter.Checked == true) 
+            {
+                tempCopy.Image = null;
+                tempCopy.Tag = null;
+            }
             sender = tempCopy;
         }
 
