@@ -44,18 +44,28 @@ namespace Egg
         private KeyboardState kb;
         private int timer;
         private Rectangle hitBox;
+        private Rectangle bottomChecker;
+        private Rectangle topChecker;
+        private Rectangle sideChecker;
         PlayerState playerState;
+        private int verticalVelocity = 0;
+        private int horizontalVelocity = 0;
+
         Enemy enemy;
         Platform platform;
         GameTime gameTime;
+        private int hitstunTimer;
 
         //Constructor
         public Player(int x, int y)
             
         {
             hitBox = new Rectangle(x, y, 100, 100);
+            bottomChecker = new Rectangle(x, y + hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
+            topChecker = new Rectangle(x, y - hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
+            sideChecker = new Rectangle(x, y, Math.Abs(horizontalVelocity), hitbox.Height);
             kb = Keyboard.GetState();
-            enemy = new Enemy();
+            enemy = new Enemy(hitBox, defaultSprite, drawLevel, hitstunTimer);
             platform = new Platform();
             timer = 2;
             hasGravity = true;
@@ -68,10 +78,13 @@ namespace Egg
         /// </summary>
         public void FiniteState()
         {
+            hitBox.X += horizontalVelocity;
+            hitBox.Y -= verticalVelocity;
             //FSM
             switch (playerState)
             {
                 case PlayerState.IdleLeft:
+                    Decelerate(horizontalVelocity, 2, 0);
                     if (kb.IsKeyDown(Keys.D))
                     {
                         playerState = PlayerState.WalkRight;
@@ -92,6 +105,7 @@ namespace Egg
                     break;
 
                 case PlayerState.IdleRight:
+                    Decelerate(horizontalVelocity, 2, 0);
                     if (kb.IsKeyDown(Keys.D))
                     {
                         playerState = PlayerState.WalkRight;
@@ -112,6 +126,7 @@ namespace Egg
                     break;
 
                 case PlayerState.WalkLeft:
+                    Accelerate(horizontalVelocity, 5, 10);
                     if (kb.IsKeyUp(Keys.A))
                     {
                         playerState = PlayerState.IdleLeft;
@@ -128,6 +143,7 @@ namespace Egg
                     break;
 
                 case PlayerState.WalkRight:
+                    Accelerate(horizontalVelocity, 5, 10);
                     if (kb.IsKeyUp(Keys.D))
                     {
                         playerState = PlayerState.IdleRight;
@@ -143,6 +159,7 @@ namespace Egg
                     //HitStun
                     break;
                 case PlayerState.RollLeft:
+                    Accelerate(horizontalVelocity, 7, 15);
                     if (hitbox.Intersects(enemy.Hitbox))
                     {
                         //bounce in opposite direction
@@ -166,6 +183,7 @@ namespace Egg
                     }
                     break;
                 case PlayerState.RollRight:
+                    Accelerate(horizontalVelocity, 7, 15);
                     if (hitbox.Intersects(enemy.Hitbox))
                     {
                         //bounce in opposite direction
@@ -190,6 +208,7 @@ namespace Egg
                     break;
 
                 case PlayerState.JumpLeft:
+                    Accelerate(verticalVelocity, 3, 5);
                     while (timer > 1)
                     {
                         timer--;
@@ -204,6 +223,7 @@ namespace Egg
                     break;
 
                 case PlayerState.JumpRight:
+                    Accelerate(verticalVelocity, 3, 5);
                     while (timer > 1)
                     {
                         timer--;
@@ -219,6 +239,7 @@ namespace Egg
                     break;
 
                 case PlayerState.Fall:
+                    Decelerate(verticalVelocity, 3, 0);
                     if (hitbox.Intersects(platform.Hitbox) && kb.IsKeyDown(Keys.D))
                     {
                         playerState = PlayerState.IdleRight;
@@ -282,34 +303,48 @@ namespace Egg
         }
 
         /// <summary>
-        /// Determines movement based on current enum state
+        /// slowdown the object by the rate until the limit velocity is reached 
         /// </summary>
+        /// <param name="velocityType"></param>
+        /// <param name="rate"></param>
+        public void Decelerate(int velocityType, int rate, int limit)
+        {
+            if (velocityType > limit)
+            {
+                velocityType -= rate;
+            }
+        }
+        /// <summary>
+        /// speed up the object by the rate until the limit velocity is reached
+        /// </summary>
+        /// <param name="velocityType"></param>
+        /// <param name="rate"></param>
+        /// <param name="limit"></param>
+        public void Accelerate(int velocityType, int rate, int limit)
+        {
+            if (velocityType < limit)
+            {
+                velocityType += rate;
+            }
+        }
+        public void CollisionCheck()
+        {
+            if (topChecker.Intersects(platform.Hitbox))
+            {
+                verticalVelocity = 0;
+            }
+            else if (bottomChecker.Intersects(platform.Hitbox))
+            {
+                verticalVelocity = 0;
+            }
+            if (sideChecker.Intersects(platform.Hitbox))
+            {
+                horizontalVelocity = 0;
+            }
+        }
         public override void Movement()
         {
-            //gravity
-            double gravity = (9.8 * (1 / gameTime.ElapsedGameTime.TotalSeconds));
-
-            Rectangle spaceBetween = new Rectangle(hitbox.X + 6, hitbox.Y - 6, hitbox.Width + 6, hitbox.Height + -6);
-            //can't move through walls
-            if (!spaceBetween.Intersects(platform.Hitbox))
-            {
-                if (playerState.Equals(PlayerState.WalkLeft))
-                {
-                    hitBox.X -= 2;
-                }
-                else if (playerState.Equals(PlayerState.WalkRight))
-                {
-                    hitBox.X += 2;
-                }
-                else if (playerState.Equals(PlayerState.RollLeft))
-                {
-                    hitBox.X -= 5;
-                }
-                else if (playerState.Equals(PlayerState.RollRight))
-                {
-                    hitBox.X += 5;
-                }
-            }
+            //nothing for now
         }
     }
 }
