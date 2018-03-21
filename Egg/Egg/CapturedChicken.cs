@@ -19,12 +19,18 @@ namespace Egg
             this.defaultSprite = defaultSprite;
             this.hitbox = hitbox;
             this.color = color;
+            this.isActive = true;
         }
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(defaultSprite, hitbox, this.color);
         }
         public override void Movement()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void FiniteState()
         {
             throw new NotImplementedException();
         }

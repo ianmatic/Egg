@@ -137,5 +137,10 @@ namespace Egg
         {
             throw new NotImplementedException();
         }
+
+        public override void FiniteState()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

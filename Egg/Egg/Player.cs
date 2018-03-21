@@ -40,16 +40,17 @@ namespace Egg
         }
 
         //fields
-        private int health;
         private KeyboardState kb;
         private int timer;
         private Rectangle hitBox;
         private Rectangle bottomChecker;
         private Rectangle topChecker;
         private Rectangle sideChecker;
+        private bool isFacingRight;
         PlayerState playerState;
         private int verticalVelocity = 0;
         private int horizontalVelocity = 0;
+        private Color color;
 
         Enemy enemy;
         Platform platform;
@@ -57,18 +58,30 @@ namespace Egg
         private int hitstunTimer;
 
         //Constructor
-        public Player(int x, int y)
+        public Player(int drawLevel, Texture2D defaultSprite, Rectangle hitbox, Color color, int x, int y)
             
         {
-            hitBox = new Rectangle(x, y, 100, 100);
+            this.drawLevel = drawLevel;
+            this.defaultSprite = defaultSprite;
+            this.hitbox = hitbox;
+            this.color = color;
+
             bottomChecker = new Rectangle(x, y + hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
             topChecker = new Rectangle(x, y - hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
-            sideChecker = new Rectangle(x, y, Math.Abs(horizontalVelocity), hitbox.Height);
+            if (isFacingRight)
+            {
+                sideChecker = new Rectangle(x + hitBox.Width, y, Math.Abs(horizontalVelocity), hitbox.Height);
+            }
+            else
+            {
+                sideChecker = new Rectangle(x - hitBox.Width, y, Math.Abs(horizontalVelocity), hitbox.Height);
+            }
             kb = Keyboard.GetState();
             enemy = new Enemy(hitBox, defaultSprite, drawLevel, hitstunTimer);
             platform = new Platform();
             timer = 2;
             hasGravity = true;
+
             gameTime = new GameTime();
         }
 
@@ -76,7 +89,7 @@ namespace Egg
         /// <summary>
         /// determines player state based on input and collision with enemies/platforms
         /// </summary>
-        public void FiniteState()
+        public override void FiniteState()
         {
             hitBox.X += horizontalVelocity;
             hitBox.Y -= verticalVelocity;
@@ -84,6 +97,7 @@ namespace Egg
             switch (playerState)
             {
                 case PlayerState.IdleLeft:
+                    isFacingRight = false;
                     Decelerate(horizontalVelocity, 2, 0);
                     if (kb.IsKeyDown(Keys.D))
                     {
@@ -105,6 +119,7 @@ namespace Egg
                     break;
 
                 case PlayerState.IdleRight:
+                    isFacingRight = true;
                     Decelerate(horizontalVelocity, 2, 0);
                     if (kb.IsKeyDown(Keys.D))
                     {
@@ -126,6 +141,7 @@ namespace Egg
                     break;
 
                 case PlayerState.WalkLeft:
+                    isFacingRight = false;
                     Accelerate(horizontalVelocity, 5, 10);
                     if (kb.IsKeyUp(Keys.A))
                     {
@@ -143,6 +159,7 @@ namespace Egg
                     break;
 
                 case PlayerState.WalkRight:
+                    isFacingRight = true;
                     Accelerate(horizontalVelocity, 5, 10);
                     if (kb.IsKeyUp(Keys.D))
                     {
@@ -159,6 +176,7 @@ namespace Egg
                     //HitStun
                     break;
                 case PlayerState.RollLeft:
+                    isFacingRight = false;
                     Accelerate(horizontalVelocity, 7, 15);
                     if (hitbox.Intersects(enemy.Hitbox))
                     {
@@ -183,6 +201,7 @@ namespace Egg
                     }
                     break;
                 case PlayerState.RollRight:
+                    isFacingRight = true;
                     Accelerate(horizontalVelocity, 7, 15);
                     if (hitbox.Intersects(enemy.Hitbox))
                     {
@@ -208,6 +227,7 @@ namespace Egg
                     break;
 
                 case PlayerState.JumpLeft:
+                    isFacingRight = false;
                     Accelerate(verticalVelocity, 3, 5);
                     while (timer > 1)
                     {
@@ -223,6 +243,7 @@ namespace Egg
                     break;
 
                 case PlayerState.JumpRight:
+                    isFacingRight = true;
                     Accelerate(verticalVelocity, 3, 5);
                     while (timer > 1)
                     {
@@ -276,6 +297,7 @@ namespace Egg
                     break;
 
                 case PlayerState.BounceLeft:
+                    isFacingRight = false;
                     while (timer > 0)
                     {
                         timer--;
@@ -285,6 +307,7 @@ namespace Egg
                     break;
 
                 case PlayerState.BounceRight:
+                    isFacingRight = true;
                     while (timer > 0)
                     {
                         timer--;
@@ -299,7 +322,7 @@ namespace Egg
         }
         public override void Draw(SpriteBatch sb)
         {
-           
+            sb.Draw(defaultSprite, hitbox, this.color);
         }
 
         /// <summary>
@@ -309,9 +332,19 @@ namespace Egg
         /// <param name="rate"></param>
         public void Decelerate(int velocityType, int rate, int limit)
         {
-            if (velocityType > limit)
+            if (isFacingRight)
             {
-                velocityType -= rate;
+                if (velocityType > limit)
+                {
+                    velocityType -= rate;
+                }
+            }
+            else
+            {
+                if (velocityType < limit)
+                {
+                    velocityType += rate;
+                }
             }
         }
         /// <summary>
@@ -322,25 +355,44 @@ namespace Egg
         /// <param name="limit"></param>
         public void Accelerate(int velocityType, int rate, int limit)
         {
-            if (velocityType < limit)
+            if (isFacingRight)
             {
-                velocityType += rate;
+                if (velocityType < limit)
+                {
+                    velocityType += rate;
+                }
+            }
+            else
+            {
+                if (velocityType > limit)
+                {
+                    velocityType -= rate;
+                }
             }
         }
-        public void CollisionCheck()
+        /// <summary>
+        /// Checks if hitboxes around player touch platforms
+        /// </summary>
+        public bool CollisionCheck()
         {
+            bool output = false;
             if (topChecker.Intersects(platform.Hitbox))
             {
                 verticalVelocity = 0;
+                output = true;
             }
             else if (bottomChecker.Intersects(platform.Hitbox))
             {
                 verticalVelocity = 0;
+                output = true;
             }
             if (sideChecker.Intersects(platform.Hitbox))
             {
                 horizontalVelocity = 0;
+                output = true;
             }
+
+            return output;
         }
         public override void Movement()
         {

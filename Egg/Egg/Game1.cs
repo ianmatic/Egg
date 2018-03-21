@@ -56,8 +56,6 @@ namespace Egg
             // TODO: Add your initialization logic here
             IsMouseVisible = true;
 
-            player = new Player(100,100);
-
             objectList = new List<GameObject>();
             sortHolder = new Stack<GameObject>();
             
@@ -102,15 +100,22 @@ namespace Egg
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+
             kb = Keyboard.GetState();
+
+            foreach (GameObject n in objectList)
+            {
+                if (n is Player)
+                {
+                    n.FiniteState();
+                }
+            }
 
             //Must hold down P, O, and G at the same time to activate level editor
             if (kb.IsKeyDown(Keys.P) && kb.IsKeyDown(Keys.O) && kb.IsKeyDown(Keys.G))
             {
                 //Show dialog goes here.
             }
-
-            player.FiniteState();
 
             base.Update(gameTime);
         }
@@ -241,6 +246,8 @@ namespace Egg
             AddObjectToList(new CapturedChicken(4, testSprite, new Rectangle(0, 30, 30, 30), Color.Green));
             AddObjectToList(new CapturedChicken(3, testSprite, new Rectangle(0, 45, 30, 30), Color.Yellow));
             AddObjectToList(new CapturedChicken(2, testSprite, new Rectangle(0, 60, 30, 30), Color.White));
+            AddObjectToList(new Player(6, testSprite, new Rectangle(50, 50, 100, 100), Color.Wheat, 50, 50));
+
         }
 
 
