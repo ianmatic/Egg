@@ -11,9 +11,26 @@ namespace Egg
 {
     class Tile : GameObject
     {
+        private TileType type;
+
+        public TileType Type
+        {
+            get { return type; }
+        }
+        public enum TileType
+        {
+            Damaging,
+            Normal,
+            NoCollision,
+            Moving
+        }
+
         public override void Draw(SpriteBatch sb)
         {
-            throw new NotImplementedException();
+            if (isActive)
+            {
+                sb.Draw(this.defaultSprite, this.hitbox, Color.White);          
+            }
         }
 
         public override void Movement()
@@ -26,13 +43,14 @@ namespace Egg
             throw new NotImplementedException();
         }
 
-        public Tile(int drawLevel, Texture2D defaultSprite, Rectangle hitbox)
+        public Tile(int drawLevel, Texture2D defaultSprite, Rectangle hitbox, TileType type)
         {
             this.drawLevel = drawLevel;
             this.defaultSprite = defaultSprite;
             this.hitbox = hitbox;
             this.isActive = true;
             this.hasGravity = false;
+            this.type = type;
         }
 
         //In progress
@@ -40,18 +58,13 @@ namespace Egg
         {
             if (g is Player)
             {
-                return false;
+                Player p = (Player)g;
+                return p.CollisionCheck();
             }
             else if (g is Enemy)
             {
-                if (g.HasGravity == false)
-                {
-                    return false;
-                }
-                else
-                {
-
-                }
+                Enemy e = (Enemy)g;
+                return e.CollisionCheck(this);     
             }
             else
             {

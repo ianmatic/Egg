@@ -25,6 +25,12 @@ namespace Egg
         private int walkDistance;
         private bool faceRight;
         private EnemyState status;
+        private Rectangle bottomChecker;
+        private Rectangle topChecker;
+        private Rectangle rightChecker;
+        private Rectangle leftChecker;
+        private int verticalVelocity = 0;
+        private int horizontalVelocity = 0;
 
         public int HitstunTimer
         {
@@ -68,6 +74,13 @@ namespace Egg
             this.isActive = false;
             this.walkSpeed = walkSpeed;
             this.walkDistance = walkDistance;
+
+            bottomChecker = new Rectangle(hitbox.X, hitbox.Y + hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
+            topChecker = new Rectangle(hitbox.X, hitbox.Y - hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
+            rightChecker = new Rectangle(hitbox.X + hitbox.Width, hitbox.Y, Math.Abs(horizontalVelocity), hitbox.Height);
+            leftChecker = new Rectangle(hitbox.X - hitbox.Width, hitbox.Y, Math.Abs(horizontalVelocity), hitbox.Height);
+
+            
         }
 
         //Constructor for stationary enemy
@@ -141,6 +154,38 @@ namespace Egg
         public override void FiniteState()
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Checks collision between the enemy and a tile, returns true if colliding
+        /// </summary>
+        /// <param name="t">The tile to check collision against.</param>
+        /// <returns></returns>
+        public bool CollisionCheck(Tile t)
+        {
+            bool output = false;
+            if (topChecker.Intersects(t.Hitbox))
+            {
+                verticalVelocity = 0;
+                output = true;
+            }
+            else if (bottomChecker.Intersects(t.Hitbox))
+            {
+                verticalVelocity = 0;
+                output = true;
+            }
+            if (rightChecker.Intersects(t.Hitbox))
+            {
+                horizontalVelocity = 0;
+                output = true;
+            }
+            else if (leftChecker.Intersects(t.Hitbox))
+            {
+                horizontalVelocity = 0;
+                output = true;
+            }
+
+            return output;
         }
     }
 }
