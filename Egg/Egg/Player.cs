@@ -40,13 +40,13 @@ namespace Egg
         }
 
         //fields
-        private int health;
         private KeyboardState kb;
         private int timer;
         private Rectangle hitBox;
         private Rectangle bottomChecker;
         private Rectangle topChecker;
         private Rectangle sideChecker;
+        private bool isFacingRight;
         PlayerState playerState;
         private int verticalVelocity = 0;
         private int horizontalVelocity = 0;
@@ -63,7 +63,14 @@ namespace Egg
             hitBox = new Rectangle(x, y, 100, 100);
             bottomChecker = new Rectangle(x, y + hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
             topChecker = new Rectangle(x, y - hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
-            sideChecker = new Rectangle(x, y, Math.Abs(horizontalVelocity), hitbox.Height);
+            if (isFacingRight)
+            {
+                sideChecker = new Rectangle(x + hitBox.Width, y, Math.Abs(horizontalVelocity), hitbox.Height);
+            }
+            else
+            {
+                sideChecker = new Rectangle(x - hitBox.Width, y, Math.Abs(horizontalVelocity), hitbox.Height);
+            }
             kb = Keyboard.GetState();
             enemy = new Enemy(hitBox, defaultSprite, drawLevel, hitstunTimer);
             platform = new Platform();
@@ -84,6 +91,7 @@ namespace Egg
             switch (playerState)
             {
                 case PlayerState.IdleLeft:
+                    isFacingRight = false;
                     Decelerate(horizontalVelocity, 2, 0);
                     if (kb.IsKeyDown(Keys.D))
                     {
@@ -105,6 +113,7 @@ namespace Egg
                     break;
 
                 case PlayerState.IdleRight:
+                    isFacingRight = true;
                     Decelerate(horizontalVelocity, 2, 0);
                     if (kb.IsKeyDown(Keys.D))
                     {
@@ -126,6 +135,7 @@ namespace Egg
                     break;
 
                 case PlayerState.WalkLeft:
+                    isFacingRight = false;
                     Accelerate(horizontalVelocity, 5, 10);
                     if (kb.IsKeyUp(Keys.A))
                     {
@@ -143,6 +153,7 @@ namespace Egg
                     break;
 
                 case PlayerState.WalkRight:
+                    isFacingRight = true;
                     Accelerate(horizontalVelocity, 5, 10);
                     if (kb.IsKeyUp(Keys.D))
                     {
@@ -159,6 +170,7 @@ namespace Egg
                     //HitStun
                     break;
                 case PlayerState.RollLeft:
+                    isFacingRight = false;
                     Accelerate(horizontalVelocity, 7, 15);
                     if (hitbox.Intersects(enemy.Hitbox))
                     {
@@ -183,6 +195,7 @@ namespace Egg
                     }
                     break;
                 case PlayerState.RollRight:
+                    isFacingRight = true;
                     Accelerate(horizontalVelocity, 7, 15);
                     if (hitbox.Intersects(enemy.Hitbox))
                     {
@@ -208,6 +221,7 @@ namespace Egg
                     break;
 
                 case PlayerState.JumpLeft:
+                    isFacingRight = false;
                     Accelerate(verticalVelocity, 3, 5);
                     while (timer > 1)
                     {
@@ -223,6 +237,7 @@ namespace Egg
                     break;
 
                 case PlayerState.JumpRight:
+                    isFacingRight = true;
                     Accelerate(verticalVelocity, 3, 5);
                     while (timer > 1)
                     {
@@ -276,6 +291,7 @@ namespace Egg
                     break;
 
                 case PlayerState.BounceLeft:
+                    isFacingRight = false;
                     while (timer > 0)
                     {
                         timer--;
@@ -285,6 +301,7 @@ namespace Egg
                     break;
 
                 case PlayerState.BounceRight:
+                    isFacingRight = true;
                     while (timer > 0)
                     {
                         timer--;
@@ -309,9 +326,19 @@ namespace Egg
         /// <param name="rate"></param>
         public void Decelerate(int velocityType, int rate, int limit)
         {
-            if (velocityType > limit)
+            if (isFacingRight)
             {
-                velocityType -= rate;
+                if (velocityType > limit)
+                {
+                    velocityType -= rate;
+                }
+            }
+            else
+            {
+                if (velocityType < limit)
+                {
+                    velocityType += rate;
+                }
             }
         }
         /// <summary>
@@ -322,11 +349,24 @@ namespace Egg
         /// <param name="limit"></param>
         public void Accelerate(int velocityType, int rate, int limit)
         {
-            if (velocityType < limit)
+            if (isFacingRight)
             {
-                velocityType += rate;
+                if (velocityType < limit)
+                {
+                    velocityType += rate;
+                }
+            }
+            else
+            {
+                if (velocityType > limit)
+                {
+                    velocityType -= rate;
+                }
             }
         }
+        /// <summary>
+        /// Checks if hitboxes around player touch platforms
+        /// </summary>
         public void CollisionCheck()
         {
             if (topChecker.Intersects(platform.Hitbox))
