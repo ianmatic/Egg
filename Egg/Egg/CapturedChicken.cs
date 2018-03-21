@@ -19,6 +19,7 @@ namespace Egg
             this.defaultSprite = defaultSprite;
             this.hitbox = hitbox;
             this.color = color;
+            this.isActive = true;
         }
         public override void Draw(SpriteBatch sb)
         {
