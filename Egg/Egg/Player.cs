@@ -52,6 +52,12 @@ namespace Egg
         private int horizontalVelocity = 0;
         private Color color;
 
+        public Rectangle HitBox
+        {
+            get { return hitbox; }
+            set { hitbox = value; }
+        }
+
         Enemy enemy;
         Platform platform;
         GameTime gameTime;
@@ -76,7 +82,6 @@ namespace Egg
             {
                 sideChecker = new Rectangle(x - hitBox.Width, y, Math.Abs(horizontalVelocity), hitbox.Height);
             }
-            kb = Keyboard.GetState();
             enemy = new Enemy(hitBox, defaultSprite, drawLevel, hitstunTimer);
             platform = new Platform();
             timer = 2;
@@ -91,14 +96,13 @@ namespace Egg
         /// </summary>
         public override void FiniteState()
         {
-            hitBox.X += horizontalVelocity;
-            hitBox.Y -= verticalVelocity;
+            kb = Keyboard.GetState();
             //FSM
             switch (playerState)
             {
                 case PlayerState.IdleLeft:
                     isFacingRight = false;
-                    Decelerate(horizontalVelocity, 2, 0);
+                    Movement();
                     if (kb.IsKeyDown(Keys.D))
                     {
                         playerState = PlayerState.WalkRight;
@@ -120,7 +124,7 @@ namespace Egg
 
                 case PlayerState.IdleRight:
                     isFacingRight = true;
-                    Decelerate(horizontalVelocity, 2, 0);
+                    Movement();
                     if (kb.IsKeyDown(Keys.D))
                     {
                         playerState = PlayerState.WalkRight;
@@ -142,7 +146,7 @@ namespace Egg
 
                 case PlayerState.WalkLeft:
                     isFacingRight = false;
-                    Accelerate(horizontalVelocity, 5, 10);
+                    Movement();
                     if (kb.IsKeyUp(Keys.A))
                     {
                         playerState = PlayerState.IdleLeft;
@@ -160,7 +164,7 @@ namespace Egg
 
                 case PlayerState.WalkRight:
                     isFacingRight = true;
-                    Accelerate(horizontalVelocity, 5, 10);
+                    Movement();
                     if (kb.IsKeyUp(Keys.D))
                     {
                         playerState = PlayerState.IdleRight;
@@ -177,7 +181,7 @@ namespace Egg
                     break;
                 case PlayerState.RollLeft:
                     isFacingRight = false;
-                    Accelerate(horizontalVelocity, 7, 15);
+                    Movement();
                     if (hitbox.Intersects(enemy.Hitbox))
                     {
                         //bounce in opposite direction
@@ -202,7 +206,7 @@ namespace Egg
                     break;
                 case PlayerState.RollRight:
                     isFacingRight = true;
-                    Accelerate(horizontalVelocity, 7, 15);
+                    Movement();
                     if (hitbox.Intersects(enemy.Hitbox))
                     {
                         //bounce in opposite direction
@@ -341,11 +345,13 @@ namespace Egg
             }
             else
             {
+                //
                 if (velocityType < limit)
                 {
                     velocityType += rate;
                 }
             }
+            horizontalVelocity = velocityType;
         }
         /// <summary>
         /// speed up the object by the rate until the limit velocity is reached
@@ -364,11 +370,13 @@ namespace Egg
             }
             else
             {
+                //move negatively (decrease value past 0 until negative limit is hit)
                 if (velocityType > limit)
                 {
                     velocityType -= rate;
                 }
             }
+            horizontalVelocity = velocityType;
         }
         /// <summary>
         /// Checks if hitboxes around player touch platforms
@@ -394,9 +402,30 @@ namespace Egg
 
             return output;
         }
+        /// <summary>
+        /// Calls accelerate/decelerate methods based on FSM state, the direction is accounted for in the methods
+        /// </summary>
         public override void Movement()
         {
-            //nothing for now
+            
+            //Idle
+            if (playerState == PlayerState.IdleLeft || playerState == PlayerState.IdleRight)
+            {
+                Decelerate(horizontalVelocity, 2, 0);
+            }
+            //Walk
+            else if (playerState == PlayerState.WalkLeft || playerState == PlayerState.WalkRight)
+            {
+                Accelerate(horizontalVelocity, 5, 10);
+            }
+            //Roll
+            else if (playerState == PlayerState.RollLeft || playerState == PlayerState.RollRight)
+            {
+                Accelerate(horizontalVelocity, 7, 15);
+            }
+
+            hitBox.X += horizontalVelocity;
+            hitBox.Y += verticalVelocity;
         }
     }
 }
