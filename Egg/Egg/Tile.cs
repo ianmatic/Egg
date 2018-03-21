@@ -54,7 +54,7 @@ namespace Egg
         }
 
         //In progress
-        public bool CollidingWithCharacter(GameObject g)
+        /*public bool CollidingWithCharacter(GameObject g)
         {
             if (g is Player)
             {
@@ -70,7 +70,7 @@ namespace Egg
             {
                 return false;
             }
-        }
+        }*/
 
     }
 }
