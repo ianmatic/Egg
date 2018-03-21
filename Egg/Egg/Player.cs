@@ -334,7 +334,7 @@ namespace Egg
         /// </summary>
         /// <param name="velocityType"></param>
         /// <param name="rate"></param>
-        public void Decelerate(int velocityType, int rate, int limit)
+        public void Decelerate(int velocityType, int rate, int limit, bool vertical)
         {
             if (isFacingRight)
             {
@@ -351,7 +351,15 @@ namespace Egg
                     velocityType += rate;
                 }
             }
-            horizontalVelocity = velocityType;
+
+            if (vertical)
+            {
+                verticalVelocity = velocityType;
+            }
+            else
+            {
+                horizontalVelocity = velocityType;
+            }
         }
         /// <summary>
         /// speed up the object by the rate until the limit velocity is reached
@@ -359,7 +367,7 @@ namespace Egg
         /// <param name="velocityType"></param>
         /// <param name="rate"></param>
         /// <param name="limit"></param>
-        public void Accelerate(int velocityType, int rate, int limit)
+        public void Accelerate(int velocityType, int rate, int limit, bool vertical)
         {
             if (isFacingRight)
             {
@@ -376,7 +384,16 @@ namespace Egg
                     velocityType -= rate;
                 }
             }
-            horizontalVelocity = velocityType;
+            if (vertical)
+            {
+                verticalVelocity = velocityType;
+            }
+            else
+            {
+                horizontalVelocity = velocityType;
+            }
+            
+
         }
         /// <summary>
         /// Checks if hitboxes around player touch platforms
