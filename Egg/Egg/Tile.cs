@@ -21,6 +21,11 @@ namespace Egg
             throw new NotImplementedException();
         }
 
+        public override void FiniteState()
+        {
+            throw new NotImplementedException();
+        }
+
         public Tile(int drawLevel, Texture2D defaultSprite, Rectangle hitbox)
         {
             this.drawLevel = drawLevel;
@@ -39,7 +44,14 @@ namespace Egg
             }
             else if (g is Enemy)
             {
-                return false;
+                if (g.HasGravity == false)
+                {
+                    return false;
+                }
+                else
+                {
+
+                }
             }
             else
             {

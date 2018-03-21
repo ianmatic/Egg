@@ -373,20 +373,26 @@ namespace Egg
         /// <summary>
         /// Checks if hitboxes around player touch platforms
         /// </summary>
-        public void CollisionCheck()
+        public bool CollisionCheck()
         {
+            bool output = false;
             if (topChecker.Intersects(platform.Hitbox))
             {
                 verticalVelocity = 0;
+                output = true;
             }
             else if (bottomChecker.Intersects(platform.Hitbox))
             {
                 verticalVelocity = 0;
+                output = true;
             }
             if (sideChecker.Intersects(platform.Hitbox))
             {
                 horizontalVelocity = 0;
+                output = true;
             }
+
+            return output;
         }
         public override void Movement()
         {
