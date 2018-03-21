@@ -51,5 +51,7 @@ namespace Egg
         /// implement movement mechanics for appropriate gameObjects
         /// </summary>
         public abstract void Movement();
+
+        public abstract void FiniteState();
     }
 }

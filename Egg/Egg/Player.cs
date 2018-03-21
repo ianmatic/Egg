@@ -50,6 +50,7 @@ namespace Egg
         PlayerState playerState;
         private int verticalVelocity = 0;
         private int horizontalVelocity = 0;
+        private Color color;
 
         Enemy enemy;
         Platform platform;
@@ -57,10 +58,14 @@ namespace Egg
         private int hitstunTimer;
 
         //Constructor
-        public Player(int x, int y)
+        public Player(int drawLevel, Texture2D defaultSprite, Rectangle hitbox, Color color, int x, int y)
             
         {
-            hitBox = new Rectangle(x, y, 100, 100);
+            this.drawLevel = drawLevel;
+            this.defaultSprite = defaultSprite;
+            this.hitbox = hitbox;
+            this.color = color;
+
             bottomChecker = new Rectangle(x, y + hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
             topChecker = new Rectangle(x, y - hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
             if (isFacingRight)
@@ -76,6 +81,7 @@ namespace Egg
             platform = new Platform();
             timer = 2;
             hasGravity = true;
+
             gameTime = new GameTime();
         }
 
@@ -83,7 +89,7 @@ namespace Egg
         /// <summary>
         /// determines player state based on input and collision with enemies/platforms
         /// </summary>
-        public void FiniteState()
+        public override void FiniteState()
         {
             hitBox.X += horizontalVelocity;
             hitBox.Y -= verticalVelocity;
@@ -316,7 +322,7 @@ namespace Egg
         }
         public override void Draw(SpriteBatch sb)
         {
-           
+            sb.Draw(defaultSprite, hitbox, this.color);
         }
 
         /// <summary>
