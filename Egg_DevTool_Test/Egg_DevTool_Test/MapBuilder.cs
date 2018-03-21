@@ -64,6 +64,7 @@ namespace Egg_DevTool_Test
             List<Button> tabletBtns = new List<Button>();
 
             #region grossly hand-inputting all the buttons
+            /*
             tabletBtns.Add(button1);
             tabletBtns.Add(button2);
             tabletBtns.Add(button3);
@@ -214,6 +215,7 @@ namespace Egg_DevTool_Test
             tabletBtns.Add(button148);
             tabletBtns.Add(button149);
             tabletBtns.Add(button150);
+            */
             #endregion
 
             int xInc = 0;   //x incrementer
@@ -233,6 +235,76 @@ namespace Egg_DevTool_Test
             tabletButts = tabletBtns;
             #endregion
         }
+
+        private void ButtonTest(object sender, EventArgs e)
+        {
+            int top = 200;
+            int left = 400;
+
+            Button button = new Button();
+            button.Left = left;
+            button.Top = top;
+            tabPage1.Controls.Add(button);
+        }
+        #region
+         /// <summary>
+         /// Updates Tablet Buttons as it's changed
+         /// </summary>
+         /// <param name="sender"></param>
+         /// <param name="e"></param>
+        private void HeightWidthChange(object sender, EventArgs e)
+        {
+            const int BASEX = 320;  // Top left corner of the container
+            const int BASEY = 40;   // Top right corner of the container
+            const int BASEW = 1080; // The width of the container
+            const int BASEH = 660;  // The height of the container
+            
+
+            int btnX;       // X Position field
+            int btnY;       // Y Position field
+            int btnWidth;   // How wide the buttons are
+            int btnHeight;  // How tall the buttons are
+
+            int btnStacks; // How many buttons tall (pulled from form)
+            int.TryParse(tabletHeight.Text, out btnStacks);
+            int btnRows;  // How many buttons wide (pulled from form)
+            int.TryParse(tabletWidth.Text, out btnRows);
+
+            if (btnRows == 0 || btnStacks == 0)  //Check if the tablet's height and width will yeild a result
+            {
+                return; // Break the function if nothing it's not going to work
+            }
+            else // If there will be a result, change the tablet's setup
+            {
+                // First, clear all currently existing buttons in tabletButts
+                foreach (var button in tabletButts)
+                {
+                    tabPage1.Controls.Remove(button);
+                }
+                for (int buttonNumber = tabletButts.Count-1; buttonNumber > 0; buttonNumber--)
+                {
+                    tabletButts.Remove(tabletButts[buttonNumber]);
+                } 
+
+                 // Next, recreate all of the buttons according to the new height and widths
+                for (int h = 1; h <= btnStacks; h++)
+                {
+                    for (int w = 1; w <= btnRows; w++)
+                    {
+                        btnWidth = BASEW / btnRows;
+                        btnHeight = BASEH / btnStacks;
+                        btnX = BASEX + ((w - 1) * btnWidth);
+                        btnY = BASEY + ((h - 1) * btnHeight);
+
+                        Button temp = new Button() { Height = btnHeight, Width = btnWidth, Left = btnX, Top = btnY, Visible = true };
+
+                        tabletButts.Add(temp);
+                        tabPage1.Controls.Add(temp);
+                    }
+                }
+            }
+        }
+        #endregion
 
         #region Tablet Functionality
         //The current tile
@@ -433,11 +505,9 @@ namespace Egg_DevTool_Test
         }
         #endregion
 
+
         private void MapBuilder_Load(object sender, EventArgs e)
         {
-
         }
-
-
     }
 }
