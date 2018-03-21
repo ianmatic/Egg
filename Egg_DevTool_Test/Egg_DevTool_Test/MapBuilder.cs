@@ -236,6 +236,9 @@ namespace Egg_DevTool_Test
             #endregion
         }
 
+        /// <summary>
+        /// Function to test button creation, no longer in use
+        /// </summary>
         private void ButtonTest(object sender, EventArgs e)
         {
             int top = 200;
@@ -250,15 +253,12 @@ namespace Egg_DevTool_Test
          /// <summary>
          /// Updates Tablet Buttons as it's changed
          /// </summary>
-         /// <param name="sender"></param>
-         /// <param name="e"></param>
         private void HeightWidthChange(object sender, EventArgs e)
         {
             const int BASEX = 320;  // Top left corner of the container
             const int BASEY = 40;   // Top right corner of the container
             const int BASEW = 1080; // The width of the container
             const int BASEH = 660;  // The height of the container
-            
 
             int btnX;       // X Position field
             int btnY;       // Y Position field
@@ -340,10 +340,7 @@ namespace Egg_DevTool_Test
             catch (System.IO.FileNotFoundException e)
             {
                 Form broken = new Form() { Width = 300 , Height = 20};
-                string msg = "You tried put a tile that you haven't yet selected into your map. Nice one.";
-                TextBox textLabel = new TextBox() { Left = 10, Top = 20, Width = 200, Height = 90, Text = msg, Multiline = true };
-                broken.Controls.Add(textLabel);
-                broken.ShowDialog();
+                MessageBox.Show("Please select an image from the drop-list to the left.");
                 test = Image.FromFile(@"..\..\..\..\Resources\dSolid.png");
             }
             return test;
@@ -356,12 +353,24 @@ namespace Egg_DevTool_Test
         /// </summary>
         private void TabletClick(object sender, EventArgs e)
         {
+            string radioTag;
+            if (rad1.Checked == true)
+                radioTag = "dm";            //damaging
+            else if (rad2.Checked == true)
+                radioTag = "nd";            //non-damaging
+            else if (rad3.Checked == true)
+                radioTag = "nc";            //non-collision
+            else if (rad4.Checked == true)
+                radioTag = "mv";            //moving
+            else
+                radioTag = "nt";            //neutral/normal
+
             Button tempCopy = (Button)sender;
             // Drop the an image equal to the current drop 
             if (chkDeleter.Checked == false)    
             {
                 tempCopy.Image = ImageSelect(currentTile);
-                tempCopy.Tag = currentTile;
+                tempCopy.Tag = currentTile + radioTag;
             }
             // Clear the button if the delete is checked
             else if (chkDeleter.Checked == true) 
