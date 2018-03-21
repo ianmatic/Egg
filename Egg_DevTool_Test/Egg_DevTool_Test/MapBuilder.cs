@@ -281,7 +281,7 @@ namespace Egg_DevTool_Test
                 {
                     tabPage1.Controls.Remove(button);
                 }
-                for (int buttonNumber = tabletButts.Count-1; buttonNumber > 0; buttonNumber--)
+                for (int buttonNumber = tabletButts.Count-1; buttonNumber >= 0; buttonNumber--)
                 {
                     tabletButts.Remove(tabletButts[buttonNumber]);
                 } 
@@ -297,6 +297,7 @@ namespace Egg_DevTool_Test
                         btnY = BASEY + ((h - 1) * btnHeight);
 
                         Button temp = new Button() { Height = btnHeight, Width = btnWidth, Left = btnX, Top = btnY, Visible = true };
+                        temp.Click += TabletClick;
 
                         tabletButts.Add(temp);
                         tabPage1.Controls.Add(temp);
@@ -348,7 +349,7 @@ namespace Egg_DevTool_Test
             return test;
         }
 
-        MouseState mouseCheck;
+
         /// <summary>
         /// The base function called every time a tablet button
         /// is clicked by the user
@@ -380,9 +381,16 @@ namespace Egg_DevTool_Test
         /// </summary>
         private void Export(object sender, EventArgs e)
         {
+            int width;
+            int.TryParse(tabletWidth.Text, out width);
+            width -= 1;
+
+            int height;
+            int.TryParse(tabletHeight.Text, out height);
+
             foreach (var btn in tabletButts)
             {
-                if (incrementer >= 14)  //Check if a new line is needed and add if it is
+                if (incrementer >= width)  //Check if a new line is needed and add if it is
                 {
                     if (btn.Tag != null)  //Make sure the button has a tag
                         outputTest += Translator(btn.Tag.ToString()) + "," + Environment.NewLine;
@@ -390,7 +398,7 @@ namespace Egg_DevTool_Test
                         outputTest += "00" + "," + Environment.NewLine;
                     incrementer = 0;
                 }
-                else if (0 <= incrementer && incrementer < 14) //If a new line isn't needed, run regularly
+                else if (0 <= incrementer && incrementer <= width) //If a new line isn't needed, run regularly
                 {
                     if (btn.Tag != null)  //Still make sure the button has a tag
                         outputTest += Translator(btn.Tag.ToString()) + ",";
@@ -398,20 +406,22 @@ namespace Egg_DevTool_Test
                         outputTest += "00" + ",";
                     incrementer++;
                 }
-                else
-                    incrementer = 0;
-
-
             }
+
             //Reset incrementer when the export is complete
             incrementer = 0;
+            width += 1;
 
             // Actually export to a text file
             ClearTextFile("outputTest.txt");  // Clears any text currently in the file
             StreamWriter writer = new StreamWriter("outputTest.txt");
+            writer.Write(height + ", " + width + Environment.NewLine);
             writer.Write(outputTest);         // Overwrites with new text
             writer.Close();
             outputTest = "";
+
+            MessageBox.Show("Successfully Exported");
+            
         }
 
         /// <summary>
