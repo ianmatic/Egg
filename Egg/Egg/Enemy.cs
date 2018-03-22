@@ -161,7 +161,7 @@ namespace Egg
         /// </summary>
         /// <param name="t">The tile to check collision against.</param>
         /// <returns></returns>
-        public bool CollisionCheck(Tile t)
+        /*public bool CollisionCheck(Tile t)
         {
             bool output = false;
             if (topChecker.Intersects(t.Hitbox))
@@ -186,6 +186,6 @@ namespace Egg
             }
 
             return output;
-        }
+        }*/
     }
 }

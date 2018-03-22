@@ -17,6 +17,17 @@ namespace Egg
         protected bool isActive;
         protected bool hasGravity;
 
+        public int X
+        {
+            get { return hitbox.X; }
+            set { hitbox.X = value; }
+        }
+        public int Y
+        {
+            get { return hitbox.Y; }
+            set { hitbox.Y = value; }
+        }
+
         //The order/layer the sprite should be drawn on screen. 
         public int DrawLevel
         {

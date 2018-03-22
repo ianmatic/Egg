@@ -42,27 +42,31 @@ namespace Egg
         //fields
         private KeyboardState kb;
         private int timer;
+
         private Rectangle hitBox;
         private Rectangle bottomChecker;
         private Rectangle topChecker;
         private Rectangle sideChecker;
+
         private bool isFacingRight;
         PlayerState playerState;
+
         private int verticalVelocity = 0;
         private int horizontalVelocity = 0;
-        private Color color;
 
-        public Rectangle HitBox
-        {
-            get { return hitbox; }
-            set { hitbox = value; }
-        }
+        private Color color;
 
         Enemy enemy;
         Platform platform;
         GameTime gameTime;
         private int hitstunTimer;
 
+        //Property
+        public Rectangle HitBox
+        {
+            get { return hitbox; }
+            set { hitbox = value; }
+        }
         //Constructor
         public Player(int drawLevel, Texture2D defaultSprite, Rectangle hitbox, Color color, int x, int y)
             
@@ -72,6 +76,7 @@ namespace Egg
             this.hitbox = hitbox;
             this.color = color;
 
+            //checkers used for collision detection, one on top of Player, one below, and one to the side
             bottomChecker = new Rectangle(x, y + hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
             topChecker = new Rectangle(x, y - hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
             if (isFacingRight)
@@ -82,6 +87,7 @@ namespace Egg
             {
                 sideChecker = new Rectangle(x - hitBox.Width, y, Math.Abs(horizontalVelocity), hitbox.Height);
             }
+
             enemy = new Enemy(hitBox, defaultSprite, drawLevel, hitstunTimer);
             platform = new Platform();
             timer = 2;
@@ -199,10 +205,10 @@ namespace Egg
                     {
                         playerState = PlayerState.IdleLeft;
                     }
-                    else if (!hitbox.Intersects(platform.Hitbox) && !hitbox.Intersects(enemy.Hitbox))
+                    /*else if (!hitbox.Intersects(platform.Hitbox) && !hitbox.Intersects(enemy.Hitbox))
                     {
                         playerState = PlayerState.Fall;
-                    }
+                    }*/
                     break;
                 case PlayerState.RollRight:
                     isFacingRight = true;
@@ -224,16 +230,16 @@ namespace Egg
                     {
                         playerState = PlayerState.IdleRight;
                     }
-                    else if (!hitbox.Intersects(platform.Hitbox) && !hitbox.Intersects(enemy.Hitbox))
+                    /*else if (!hitbox.Intersects(platform.Hitbox) && !hitbox.Intersects(enemy.Hitbox))
                     {
                         playerState = PlayerState.Fall;
-                    }
+                    }*/
                     break;
 
                 case PlayerState.JumpLeft:
                     isFacingRight = false;
-                    Accelerate(verticalVelocity, 3, 5);
-                    while (timer > 1)
+                    Movement();
+                    /*while (timer > 1)
                     {
                         timer--;
                     }
@@ -241,15 +247,20 @@ namespace Egg
                     {
                         playerState = PlayerState.FloatLeft;
                     }
+                    else if (kb.IsKeyDown(Keys.LeftAlt))
+                    {
+                        playerState = PlayerState.DownDash;
+                    }
+                    
                     playerState = PlayerState.Fall;
-                    timer = 2;
+                    timer = 2;*/
                     //HitStun
                     break;
 
                 case PlayerState.JumpRight:
                     isFacingRight = true;
-                    Accelerate(verticalVelocity, 3, 5);
-                    while (timer > 1)
+                    Movement();
+                    /*while (timer > 1)
                     {
                         timer--;
                     }
@@ -257,14 +268,23 @@ namespace Egg
                     {
                         playerState = PlayerState.FloatLeft;
                     }
+                    else if (kb.IsKeyDown(Keys.LeftAlt))
+                    {
+                        playerState = PlayerState.DownDash;
+                    }
                     playerState = PlayerState.Fall;
 
                     timer = 2;
-                    //HitStun
+                    //HitStun*/
                     break;
-
+                /*case PlayerState.FloatLeft:
+                    Movement();
+                    break;
+                case PlayerState.FloatRight:
+                    Movement();
+                    break;*/
                 case PlayerState.Fall:
-                    Decelerate(verticalVelocity, 3, 0);
+                    Movement();
                     if (hitbox.Intersects(platform.Hitbox) && kb.IsKeyDown(Keys.D))
                     {
                         playerState = PlayerState.IdleRight;
@@ -277,6 +297,7 @@ namespace Egg
                     break;
 
                 case PlayerState.DownDash:
+                    Movement();
                     if (hitbox.Intersects(enemy.Hitbox) && kb.IsKeyDown(Keys.A))
                     {
                         playerState = PlayerState.BounceLeft;
@@ -345,7 +366,6 @@ namespace Egg
             }
             else
             {
-                //
                 if (velocityType < limit)
                 {
                     velocityType += rate;
@@ -379,6 +399,7 @@ namespace Egg
             else
             {
                 //move negatively (decrease value past 0 until negative limit is hit)
+                limit -= limit * 2;
                 if (velocityType > limit)
                 {
                     velocityType -= rate;
@@ -428,21 +449,43 @@ namespace Egg
             //Idle
             if (playerState == PlayerState.IdleLeft || playerState == PlayerState.IdleRight)
             {
-                Decelerate(horizontalVelocity, 2, 0);
+                if (horizontalVelocity <= 10 && horizontalVelocity >= -10)
+                {
+                    Decelerate(horizontalVelocity, 1, 0, false);
+                }
+                else if (horizontalVelocity > 10 || horizontalVelocity < -10)
+                {
+                    Decelerate(horizontalVelocity, 2, 0, false);
+                }
             }
             //Walk
             else if (playerState == PlayerState.WalkLeft || playerState == PlayerState.WalkRight)
             {
-                Accelerate(horizontalVelocity, 5, 10);
+                Accelerate(horizontalVelocity, 5, 10, false);
             }
             //Roll
             else if (playerState == PlayerState.RollLeft || playerState == PlayerState.RollRight)
             {
-                Accelerate(horizontalVelocity, 7, 15);
+                Accelerate(horizontalVelocity, 7, 15, false);
+            }
+            //Jump
+            else if (playerState == PlayerState.JumpLeft || playerState == PlayerState.JumpRight)
+            {
+                Accelerate(verticalVelocity, 3, 10, true);
+            }
+            //Fall
+            else if (playerState == PlayerState.Fall)
+            {
+                Accelerate(verticalVelocity, 2, 10, true);
+            }
+            //Down-dash
+            else if (playerState == PlayerState.DownDash)
+            {
+                Accelerate(verticalVelocity, 3, 15, true);
             }
 
-            hitBox.X += horizontalVelocity;
-            hitBox.Y += verticalVelocity;
+            X += horizontalVelocity;
+            Y += verticalVelocity;
         }
     }
 }
