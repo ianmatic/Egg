@@ -155,6 +155,10 @@ namespace Egg
         {
             throw new NotImplementedException();
         }
+        public override void CheckColliderAgainstPlayer(Player p)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Checks collision between the enemy and a tile, returns true if colliding
