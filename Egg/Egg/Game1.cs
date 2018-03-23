@@ -22,8 +22,9 @@ namespace Egg
         SpriteFont menuText;
         Texture2D testSprite;
         GameState currentState;
-        GameState previousState;
+        //GameState previousState;
         KeyboardState kb;
+        KeyboardState oldKB;
         Player player;
 
         //animation fields
@@ -58,7 +59,8 @@ namespace Egg
 
             objectList = new List<GameObject>();
             sortHolder = new Stack<GameObject>();
-            
+            currentState = GameState.Menu;
+
             base.Initialize();
         }
 
@@ -100,16 +102,26 @@ namespace Egg
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-
+            oldKB = kb;
             kb = Keyboard.GetState();
 
-            foreach (GameObject n in objectList)
+            switch (currentState)
             {
-                if (n is Player)
-                {
-                    n.FiniteState();
-                }
-            }
+                case GameState.Menu:
+                    if (kb.IsKeyDown(Keys.Enter))
+                    {
+                        currentState = GameState.Game;
+                    }                   
+                    break;
+
+                case GameState.Game:
+                    GameUpdateLoop();
+                    //Transition to level end not yet implemented
+                    break;
+
+                case GameState.GameOver:
+                    break;
+            }            
 
             //Must hold down P, O, and G at the same time to activate level editor
             if (kb.IsKeyDown(Keys.P) && kb.IsKeyDown(Keys.O) && kb.IsKeyDown(Keys.G))
@@ -130,14 +142,26 @@ namespace Egg
 
             spriteBatch.Begin();
 
-            spriteBatch.DrawString(menuText, "Egg", new Vector2(350, 200), Color.White);
-
-            //Draws potatos to test DrawLevel
-            foreach (GameObject g in objectList)
+            switch (currentState)
             {
-                g.Draw(spriteBatch);
-            }
+                case GameState.Menu:
+                    spriteBatch.DrawString(menuText, "Egg", new Vector2(350, 200), Color.White);
+                    spriteBatch.DrawString(menuText, "Press Enter", new Vector2(300, 300), Color.White);
+                    break;
 
+                case GameState.Game:
+                    //Draws potatos to test DrawLevel
+                    foreach (GameObject g in objectList)
+                    {
+                        g.Draw(spriteBatch);
+                    }
+                    break;
+
+                case GameState.GameOver:
+                    spriteBatch.DrawString(menuText, "You beat a level, but you shouldn't see this yet.", new Vector2(350, 200), Color.White);
+                    break;
+            }
+                       
             spriteBatch.End();
 
             base.Draw(gameTime);
@@ -146,9 +170,29 @@ namespace Egg
 
         public bool SingleKeyPress(Keys n)
         {
-            return false;
+            if (kb.IsKeyDown(n) && !oldKB.IsKeyDown(n))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            
         }
 
+        //Any logic during the game loop (minus drawing) goes here.
+        private void GameUpdateLoop()
+        {
+            foreach (GameObject n in objectList)
+            {
+                if (n is Player)
+                {
+                    n.FiniteState();
+                }
+            } // end foreach
+
+        }
 
         private void UpdateAnimation(GameTime time)
         {
