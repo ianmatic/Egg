@@ -67,6 +67,11 @@ namespace Egg
         GameTime gameTime;
         private int hitstunTimer; //need for constructor
 
+        public override void CheckColliderAgainstEnemy(Enemy e)
+        {
+            throw new NotImplementedException();
+        }
+
         //Property
         public Rectangle HitBox
         {
@@ -528,7 +533,7 @@ namespace Egg
         //not applicable
         public override void CheckColliderAgainstPlayer(Player p)
         {
-            throw new NotImplementedException();
+            //do nothing
         }
     }
 }
