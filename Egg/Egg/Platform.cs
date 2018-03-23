@@ -23,9 +23,5 @@ namespace Egg
         {
             throw new NotImplementedException();
         }
-        public override void CheckColliderAgainstPlayer(Player p)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

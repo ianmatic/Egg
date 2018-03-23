@@ -57,6 +57,11 @@ namespace Egg
             throw new NotImplementedException();
         }
 
+        public override void CheckColliderAgainstPlayer(Player p)
+        {
+            p.CollisionCheck();
+        }
+
         //In progress
         /*public bool CollidingWithCharacter(GameObject g)
         {

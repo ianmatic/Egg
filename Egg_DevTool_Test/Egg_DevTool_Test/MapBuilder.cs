@@ -249,16 +249,16 @@ namespace Egg_DevTool_Test
             button.Top = top;
             tabPage1.Controls.Add(button);
         }
-        #region
+        #region Tablet Setup on Text Change
          /// <summary>
          /// Updates Tablet Buttons as it's changed
          /// </summary>
         private void HeightWidthChange(object sender, EventArgs e)
         {
-            const int BASEX = 320;  // Top left corner of the container
+            const int BASEX = 220;  // Top left corner of the container
             const int BASEY = 40;   // Top right corner of the container
-            const int BASEW = 1080; // The width of the container
-            const int BASEH = 660;  // The height of the container
+            const int BASEW = 830;  // The width of the container
+            const int BASEH = 550;  // The height of the container
 
             int btnX;       // X Position field
             int btnY;       // Y Position field
@@ -399,10 +399,24 @@ namespace Egg_DevTool_Test
 
             foreach (var btn in tabletButts)
             {
+                string btnTag = "";
+                string btnRad = "";
+                if (btn.Tag != null) //Splits up the tag into the tile and the radio tag
+                {
+                    char[] tagSplit = btn.Tag.ToString().ToCharArray();
+                    for (int i = 0; i < tagSplit.Length; i++)
+                    {
+                        if (i >= tagSplit.Length-2)
+                            btnRad += tagSplit[i].ToString();
+                        else
+                            btnTag += tagSplit[i].ToString();
+                    }
+                }
+
                 if (incrementer >= width)  //Check if a new line is needed and add if it is
                 {
                     if (btn.Tag != null)  //Make sure the button has a tag
-                        outputTest += Translator(btn.Tag.ToString()) + "," + Environment.NewLine;
+                        outputTest += Translator(btnTag.ToString()) + btnRad + "," + Environment.NewLine;
                     else  //If there's no tag, add 00
                         outputTest += "00" + "," + Environment.NewLine;
                     incrementer = 0;
@@ -410,7 +424,7 @@ namespace Egg_DevTool_Test
                 else if (0 <= incrementer && incrementer <= width) //If a new line isn't needed, run regularly
                 {
                     if (btn.Tag != null)  //Still make sure the button has a tag
-                        outputTest += Translator(btn.Tag.ToString()) + ",";
+                        outputTest += Translator(btnTag.ToString()) + btnRad + ",";
                     else  //If there's no tag, add 00
                         outputTest += "00" + ",";
                     incrementer++;
@@ -422,9 +436,10 @@ namespace Egg_DevTool_Test
             width += 1;
 
             // Actually export to a text file
-            ClearTextFile("outputTest.txt");  // Clears any text currently in the file
-            StreamWriter writer = new StreamWriter("outputTest.txt");
-            writer.Write(height + ", " + width + Environment.NewLine);
+            string fileName = txtFile.Text;
+            ClearTextFile(fileName + ".txt");  // Clears any text currently in the file
+            StreamWriter writer = new StreamWriter(fileName + ".txt");
+            writer.Write(height + ", " + width + ", " + Environment.NewLine);
             writer.Write(outputTest);         // Overwrites with new text
             writer.Close();
             outputTest = "";

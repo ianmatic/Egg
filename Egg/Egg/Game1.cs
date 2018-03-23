@@ -190,6 +190,8 @@ namespace Egg
                 {
                     n.FiniteState();
                 }
+                n.CheckColliderAgainstPlayer(player);
+
             } // end foreach
 
         }

@@ -34,9 +34,14 @@ namespace Egg
         {
             throw new NotImplementedException();
         }
+
         public override void CheckColliderAgainstPlayer(Player p)
         {
-            throw new NotImplementedException();
+            if (hitbox.Intersects(p.Hitbox))
+            {
+                //Run some method on P to update saved chickens
+                isActive = false;
+            }
         }
     }
 }

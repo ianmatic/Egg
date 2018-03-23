@@ -160,6 +160,17 @@ namespace Egg
             throw new NotImplementedException();
         }
 
+        public override void CheckColliderAgainstPlayer(Player p)
+        {
+            if (hitbox.Intersects(p.Hitbox))
+            {
+                if (p.PlayerState == PlayerState.RollRight || p.PlayerState == PlayerState.RollLeft || p.PlayerState == PlayerState.DownDash)
+                {
+                    TriggerHitstun();
+                }
+            }
+        }
+
         /// <summary>
         /// Checks collision between the enemy and a tile, returns true if colliding
         /// </summary>
