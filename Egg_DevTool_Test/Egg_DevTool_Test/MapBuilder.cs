@@ -249,16 +249,16 @@ namespace Egg_DevTool_Test
             button.Top = top;
             tabPage1.Controls.Add(button);
         }
-        #region
+        #region Tablet Setup on Text Change
          /// <summary>
          /// Updates Tablet Buttons as it's changed
          /// </summary>
         private void HeightWidthChange(object sender, EventArgs e)
         {
-            const int BASEX = 320;  // Top left corner of the container
+            const int BASEX = 220;  // Top left corner of the container
             const int BASEY = 40;   // Top right corner of the container
-            const int BASEW = 1080; // The width of the container
-            const int BASEH = 660;  // The height of the container
+            const int BASEW = 830;  // The width of the container
+            const int BASEH = 550;  // The height of the container
 
             int btnX;       // X Position field
             int btnY;       // Y Position field

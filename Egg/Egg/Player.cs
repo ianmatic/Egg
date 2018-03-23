@@ -37,19 +37,22 @@ namespace Egg
 {
     class Player : GameObject
     {
-        //FSM states
-        
-
         //fields
         private KeyboardState kb;
-        private int timer;
+        private KeyboardState previousKb;   //previousKb used to allow multiple keys at once
+        private int timer; //used to fit constructor
 
         private Rectangle hitBox;
+
+        //for collision
         private Rectangle bottomChecker;
         private Rectangle topChecker;
         private Rectangle sideChecker;
 
+        //for directionality
         private bool isFacingRight;
+        private bool inAir;
+
         private PlayerState playerState;
 
         private int verticalVelocity = 0;
@@ -57,10 +60,12 @@ namespace Egg
 
         private Color color;
 
+        //testing collision
         Enemy enemy;
         Platform platform;
+
         GameTime gameTime;
-        private int hitstunTimer;
+        private int hitstunTimer; //need for constructor
 
         //Property
         public Rectangle HitBox
@@ -73,7 +78,8 @@ namespace Egg
             get { return playerState; }
             set { playerState = value; }
         }
-        //Constructor
+
+        //Constructor for player
         public Player(int drawLevel, Texture2D defaultSprite, Rectangle hitbox, Color color, int x, int y)
             
         {
@@ -109,13 +115,16 @@ namespace Egg
         public override void FiniteState()
         {
             kb = Keyboard.GetState();
-            Gravity();
+            
             //FSM
             switch (playerState)
             {
+
                 case PlayerState.IdleLeft:
                     isFacingRight = false;
+                    inAir = false;
                     Movement();
+
                     if (kb.IsKeyDown(Keys.D))
                     {
                         playerState = PlayerState.WalkRight;
@@ -132,12 +141,14 @@ namespace Egg
                     {
                         playerState = PlayerState.RollLeft;
                     }
-                    //HitStun
+                    //Remember to implement HitStun here
                     break;
 
                 case PlayerState.IdleRight:
                     isFacingRight = true;
+                    inAir = false;
                     Movement();
+
                     if (kb.IsKeyDown(Keys.D))
                     {
                         playerState = PlayerState.WalkRight;
@@ -154,12 +165,14 @@ namespace Egg
                     {
                         playerState = PlayerState.RollRight;
                     }
-                    //HitStun
+                    //Remember to implement HitStun here
                     break;
 
                 case PlayerState.WalkLeft:
                     isFacingRight = false;
+                    inAir = false;
                     Movement();
+
                     if (kb.IsKeyUp(Keys.A))
                     {
                         playerState = PlayerState.IdleLeft;
@@ -172,12 +185,14 @@ namespace Egg
                     {
                         playerState = PlayerState.RollLeft;
                     }
-                    //HitStun
+                    //Remember to implement HitStun here
                     break;
 
                 case PlayerState.WalkRight:
                     isFacingRight = true;
+                    inAir = false;
                     Movement();
+
                     if (kb.IsKeyUp(Keys.D))
                     {
                         playerState = PlayerState.IdleRight;
@@ -190,11 +205,14 @@ namespace Egg
                     {
                         playerState = PlayerState.RollRight;
                     }
-                    //HitStun
+                    //Remember to implement HitStun here
                     break;
                 case PlayerState.RollLeft:
                     isFacingRight = false;
+                    inAir = false;
                     Movement();
+
+                    //touching an enemy
                     if (hitbox.Intersects(enemy.Hitbox))
                     {
                         //bounce in opposite direction
@@ -219,7 +237,10 @@ namespace Egg
                     break;
                 case PlayerState.RollRight:
                     isFacingRight = true;
+                    inAir = false;
                     Movement();
+
+                    //touching an enemy
                     if (hitbox.Intersects(enemy.Hitbox))
                     {
                         //bounce in opposite direction
@@ -245,7 +266,9 @@ namespace Egg
 
                 case PlayerState.JumpLeft:
                     isFacingRight = false;
+                    inAir = true;
                     Movement();
+
                     /*while (timer > 1)
                     {
                         timer--;
@@ -266,7 +289,9 @@ namespace Egg
 
                 case PlayerState.JumpRight:
                     isFacingRight = true;
+                    inAir = true;
                     Movement();
+
                     /*while (timer > 1)
                     {
                         timer--;
@@ -292,6 +317,7 @@ namespace Egg
                     break;*/
                 case PlayerState.Fall:
                     Movement();
+                    inAir = true;
                     if (hitbox.Intersects(platform.Hitbox) && kb.IsKeyDown(Keys.D))
                     {
                         playerState = PlayerState.IdleRight;
@@ -304,6 +330,7 @@ namespace Egg
                     break;
 
                 case PlayerState.DownDash:
+                    inAir = true;
                     Movement();
                     if (hitbox.Intersects(enemy.Hitbox) && kb.IsKeyDown(Keys.A))
                     {
@@ -348,13 +375,9 @@ namespace Egg
                     timer = 2;
                     break;
 
-                    //HitStun cases
+                    //Remember to implement HitStun here
 
             }
-        }
-        public override void Draw(SpriteBatch sb)
-        {
-            sb.Draw(defaultSprite, hitbox, this.color);
         }
 
         /// <summary>
@@ -399,11 +422,11 @@ namespace Egg
         {
             if (vertical)
             {
-                if (playerState == PlayerState.JumpLeft || playerState == PlayerState.JumpRight)
+                if (velocityType < limit)
                 {
-
+                    velocityType += rate;
+                    verticalVelocity = velocityType;
                 }
-                verticalVelocity = velocityType;
             }
             else
             {
@@ -429,7 +452,7 @@ namespace Egg
         /// <summary>
         /// Checks if hitboxes around player touch platforms
         /// </summary>
-        public bool CollisionCheck()
+        public bool CollisionCheck(Tile t)
         {
             bool output = false;
             if (topChecker.Intersects(platform.Hitbox))
@@ -481,12 +504,13 @@ namespace Egg
             //Jump
             else if (playerState == PlayerState.JumpLeft || playerState == PlayerState.JumpRight)
             {
-                Accelerate(verticalVelocity, 3, 10, true);
+                verticalVelocity = -30;
+                playerState = PlayerState.Fall;
             }
             //Fall
             else if (playerState == PlayerState.Fall)
             {
-                Accelerate(verticalVelocity, 3, 12, true);
+                Accelerate(verticalVelocity, 2, 30, true);
             }
             //Down-dash
             else if (playerState == PlayerState.DownDash)
@@ -496,6 +520,15 @@ namespace Egg
 
             X += horizontalVelocity;
             Y += verticalVelocity;
+        }
+        public override void Draw(SpriteBatch sb)
+        {
+            sb.Draw(defaultSprite, hitbox, this.color);
+        }
+        //not applicable
+        public override void CheckColliderAgainstPlayer(Player p)
+        {
+            throw new NotImplementedException();
         }
     }
 }
