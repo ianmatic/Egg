@@ -53,6 +53,11 @@ namespace Egg
             this.type = type;
         }
 
+        public override void CheckColliderAgainstPlayer(Player p)
+        {
+            p.CollisionCheck();
+        }
+
         //In progress
         /*public bool CollidingWithCharacter(GameObject g)
         {
