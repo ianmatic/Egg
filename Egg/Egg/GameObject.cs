@@ -64,5 +64,7 @@ namespace Egg
         public abstract void Movement();
 
         public abstract void FiniteState();
+
+        public abstract void CheckColliderAgainstPlayer(Player p);
     }
 }
