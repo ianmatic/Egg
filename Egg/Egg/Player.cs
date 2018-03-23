@@ -7,37 +7,38 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
+enum PlayerState
+{
+    IdleLeft,
+    IdleRight,
+
+    WalkLeft,
+    WalkRight,
+
+    RollLeft,
+    RollRight,
+
+    JumpLeft,
+    JumpRight,
+
+    FloatLeft,
+    FloatRight,
+
+    Fall,
+    DownDash,
+
+    BounceLeft,
+    BounceRight,
+
+    HitStunRight,
+    HitStunLeft
+}
 namespace Egg
 {
     class Player : GameObject
     {
         //FSM states
-        enum PlayerState
-        {
-            IdleLeft,
-            IdleRight,
-
-            WalkLeft,
-            WalkRight,
-
-            RollLeft,
-            RollRight,
-
-            JumpLeft,
-            JumpRight,
-
-            FloatLeft,
-            FloatRight,
-
-            Fall,
-            DownDash,
-
-            BounceLeft,
-            BounceRight,
-
-            HitStunRight,
-            HitStunLeft
-        }
+        
 
         //fields
         private KeyboardState kb;
@@ -49,7 +50,7 @@ namespace Egg
         private Rectangle sideChecker;
 
         private bool isFacingRight;
-        PlayerState playerState;
+        private PlayerState playerState;
 
         private int verticalVelocity = 0;
         private int horizontalVelocity = 0;
@@ -66,6 +67,11 @@ namespace Egg
         {
             get { return hitbox; }
             set { hitbox = value; }
+        }
+        public PlayerState PlayerState
+        {
+            get { return playerState; }
+            set { playerState = value; }
         }
         //Constructor
         public Player(int drawLevel, Texture2D defaultSprite, Rectangle hitbox, Color color, int x, int y)
@@ -103,6 +109,7 @@ namespace Egg
         public override void FiniteState()
         {
             kb = Keyboard.GetState();
+            Gravity();
             //FSM
             switch (playerState)
             {
@@ -357,6 +364,7 @@ namespace Egg
         /// <param name="rate"></param>
         public void Decelerate(int velocityType, int rate, int limit, bool vertical)
         {
+
             if (isFacingRight)
             {
                 if (velocityType > limit)
@@ -389,32 +397,34 @@ namespace Egg
         /// <param name="limit"></param>
         public void Accelerate(int velocityType, int rate, int limit, bool vertical)
         {
-            if (isFacingRight)
-            {
-                if (velocityType < limit)
-                {
-                    velocityType += rate;
-                }
-            }
-            else
-            {
-                //move negatively (decrease value past 0 until negative limit is hit)
-                limit -= limit * 2;
-                if (velocityType > limit)
-                {
-                    velocityType -= rate;
-                }
-            }
             if (vertical)
             {
+                if (playerState == PlayerState.JumpLeft || playerState == PlayerState.JumpRight)
+                {
+
+                }
                 verticalVelocity = velocityType;
             }
             else
             {
+                if (isFacingRight)
+                {
+                    if (velocityType < limit)
+                    {
+                        velocityType += rate;
+                    }
+                }
+                else
+                {
+                    //move negatively (decrease value past 0 until negative limit is hit)
+                    limit -= limit * 2;
+                    if (velocityType > limit)
+                    {
+                        velocityType -= rate;
+                    }
+                }
                 horizontalVelocity = velocityType;
             }
-            
-
         }
         /// <summary>
         /// Checks if hitboxes around player touch platforms
@@ -476,7 +486,7 @@ namespace Egg
             //Fall
             else if (playerState == PlayerState.Fall)
             {
-                Accelerate(verticalVelocity, 2, 10, true);
+                Accelerate(verticalVelocity, 3, 12, true);
             }
             //Down-dash
             else if (playerState == PlayerState.DownDash)
