@@ -17,29 +17,45 @@ namespace Egg
         protected bool isActive;
         protected bool hasGravity;
 
+        /// <summary>
+        /// The x value of the object's hitbox
+        /// </summary>
         public int X
         {
             get { return hitbox.X; }
             set { hitbox.X = value; }
         }
+
+        /// <summary>
+        /// The x value of the object's hitbox
+        /// </summary>
         public int Y
         {
             get { return hitbox.Y; }
             set { hitbox.Y = value; }
         }
 
-        //The order/layer the sprite should be drawn on screen. 
+        /// <summary>
+        /// The order/layer the sprite should be drawn on screen 
+        /// </summary>
+
         public int DrawLevel
         {
             get { return this.drawLevel; }
             set { this.drawLevel = value; }
         }
 
+        /// <summary>
+        /// The default sprite if the object has no other sprites to draw
+        /// </summary>
         public Texture2D DefaultSprite
         {
             get { return this.defaultSprite; }
         }
 
+        /// <summary>
+        /// The rectangle of the GameObject
+        /// </summary>
         public Rectangle Hitbox
         {
             get { return this.hitbox; }
@@ -66,5 +82,7 @@ namespace Egg
         public abstract void FiniteState();
 
         public abstract void CheckColliderAgainstPlayer(Player p);
+
+        public abstract void CheckColliderAgainstEnemy(Enemy e);
     }
 }

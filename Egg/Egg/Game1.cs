@@ -36,6 +36,8 @@ namespace Egg
         List<GameObject> objectList;
         Stack<GameObject> sortHolder;
 
+        
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -105,6 +107,7 @@ namespace Egg
             oldKB = kb;
             kb = Keyboard.GetState();
 
+            //FSM for switching between main menu, game, and level transition screens
             switch (currentState)
             {
                 case GameState.Menu:
@@ -119,6 +122,7 @@ namespace Egg
                     //Transition to level end not yet implemented
                     break;
 
+                    //Not yet implemented due to being a polish feature
                 case GameState.GameOver:
                     break;
             }            
@@ -142,6 +146,7 @@ namespace Egg
 
             spriteBatch.Begin();
 
+            //Draws sprites & text based on FSM
             switch (currentState)
             {
                 case GameState.Menu:
@@ -167,7 +172,7 @@ namespace Egg
             base.Draw(gameTime);
         }
 
-
+        //Returns true if a key was held for a single frame
         public bool SingleKeyPress(Keys n)
         {
             if (kb.IsKeyDown(n) && !oldKB.IsKeyDown(n))
@@ -181,7 +186,7 @@ namespace Egg
             
         }
 
-        //Any logic during the game loop (minus drawing) goes here.
+        //Any logic during the game loop (minus drawing) goes here, as the Update loop is intended to hold logic involving the FSM between menus
         private void GameUpdateLoop()
         {
             foreach (GameObject n in objectList)
@@ -190,7 +195,12 @@ namespace Egg
                 {
                     n.FiniteState();
                 }
+                else if (n is Enemy)
+                {
+                    n.FiniteState();                   
+                }
                 n.CheckColliderAgainstPlayer(player);
+
 
             } // end foreach
 
@@ -210,39 +220,10 @@ namespace Egg
             }
 
             timeCounter -= secondsPerFrame;
-        }
-        private void DrawWalking(SpriteEffects flip)
-        {
-            //this is what Chris had, feel free to use or remove as needed.
-            //spriteBatch.Draw(
-				//marioTexture,
-				//marioPosition,
-				//new Rectangle(widthOfSingleSprite * currentFrame, 0, 
-                //widthOfSingleSprite, marioTexture.Height),
-				//Color.White,
-				//0.0f,
-				//Vector2.Zero,
-				//1.0f,
-				//flip,
-				//0.0f);
-        }
-
-        private void DrawIdle(SpriteEffects flip)
-        {
-            //spriteBatch.Draw(
-                //marioTexture,
-                //marioPosition,
-                //new Rectangle(0, 0, widthOfSingleSprite, marioTexture.Height),
-                //Color.White,
-                //0.0f,
-                //Vector2.Zero,
-                //1.0f,
-                //flip,
-                //0.0f);
-        }
+        }        
 
         #region Sorting Logic
-        //Adds object g to the list of game objects, sorted by draw level
+        //Adds object g to the list of game objects, sorted by draw level. DO NOT directly add to objectList, or the sorting will be off!
         private void AddObjectToList(GameObject g)
         {
             if (objectList.Count == 0)

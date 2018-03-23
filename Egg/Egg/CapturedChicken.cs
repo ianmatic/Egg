@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Egg
 {
-    //Being used to debug the draw system, feel free to make structural changes later
+    //Defines a chicken that needs to be saved by the player
     class CapturedChicken : GameObject
     {
         Color color;
@@ -25,16 +25,19 @@ namespace Egg
         {
             sb.Draw(defaultSprite, hitbox, this.color);
         }
+        //Chickens won't move, so left unimplemented.
         public override void Movement()
         {
             throw new NotImplementedException();
         }
 
+        //Unknown what will be done with this
         public override void FiniteState()
         {
             throw new NotImplementedException();
         }
 
+        //Checks if player has collected chicken
         public override void CheckColliderAgainstPlayer(Player p)
         {
             if (hitbox.Intersects(p.Hitbox))
@@ -42,6 +45,12 @@ namespace Egg
                 //Run some method on P to update saved chickens
                 isActive = false;
             }
+        }
+
+        //Enemies pass through chickens
+        public override void CheckColliderAgainstEnemy(Enemy e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

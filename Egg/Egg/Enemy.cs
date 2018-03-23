@@ -8,9 +8,10 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Egg
 {
+
     class Enemy : GameObject
     {
-        /* Class designed to handle both stationary and moving players. 
+        /* Class designed to handle both stationary and moving enemies. 
          * Latest commit: Setup most of below, including constructors, fields and properties, FSM transitions, and default draw method
          * 
          * TODO:
@@ -19,16 +20,21 @@ namespace Egg
          * Update draw so it reflects the FSM
          * Method to trigger hitstun
          */
+
         //How long the enemy is in hitstun before dying.
         private int hitstunTimer;
         private int walkSpeed;
         private int walkDistance;
         private bool faceRight;
+
         private EnemyState status;
+
+        //Small hitboxes used in collision detection
         private Rectangle bottomChecker;
         private Rectangle topChecker;
         private Rectangle rightChecker;
         private Rectangle leftChecker;
+
         private int verticalVelocity = 0;
         private int horizontalVelocity = 0;
 
@@ -55,7 +61,7 @@ namespace Egg
         {
             return this.status;
         }
-        
+
 
         public enum EnemyState
         {
@@ -80,7 +86,7 @@ namespace Egg
             rightChecker = new Rectangle(hitbox.X + hitbox.Width, hitbox.Y, Math.Abs(horizontalVelocity), hitbox.Height);
             leftChecker = new Rectangle(hitbox.X - hitbox.Width, hitbox.Y, Math.Abs(horizontalVelocity), hitbox.Height);
 
-            
+
         }
 
         //Constructor for stationary enemy
@@ -94,7 +100,7 @@ namespace Egg
             this.walkDistance = 0;
         }
 
-        //FSM transitions
+        //FSM transitions, moving to FiniteState() soon
         public void UpdateEnemyStatus()
         {
             if (isActive)
@@ -118,7 +124,7 @@ namespace Egg
             }
 
         }
-        //Implementation of FSM
+        //Implementation of FSM, called every update loop
         public void UpdateEnemyData()
         {
             switch (status)
@@ -134,7 +140,7 @@ namespace Egg
             }
         }
 
-        //Placeholder
+        //Causes enemy to enter hitstun animation and eventually die. 
         public void TriggerHitstun()
         {
             throw new NotImplementedException();
@@ -146,6 +152,7 @@ namespace Egg
             sb.Draw(defaultSprite, hitbox, Color.White);
         }
 
+        //Moves enemy
         public override void Movement()
         {
             throw new NotImplementedException();
@@ -172,7 +179,7 @@ namespace Egg
         /// </summary>
         /// <param name="t">The tile to check collision against.</param>
         /// <returns></returns>
-        /*public bool CollisionCheck(Tile t)
+        public bool CollisionCheck(Tile t)
         {
             bool output = false;
             if (topChecker.Intersects(t.Hitbox))
@@ -197,6 +204,13 @@ namespace Egg
             }
 
             return output;
-        }*/
+        }
+
+        //Shouldn't check its collision against other enemies unless we decide enemies bounce off of each other instead of pass through
+        public override void CheckColliderAgainstEnemy(Enemy e)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }
