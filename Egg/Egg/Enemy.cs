@@ -25,6 +25,7 @@ namespace Egg
         private int hitstunTimer;
         private int walkSpeed;
         private int walkDistance;
+        private int walkProgress;
         private bool faceRight;
 
         private EnemyState status;
@@ -86,7 +87,7 @@ namespace Egg
             rightChecker = new Rectangle(hitbox.X + hitbox.Width, hitbox.Y, Math.Abs(horizontalVelocity), hitbox.Height);
             leftChecker = new Rectangle(hitbox.X - hitbox.Width, hitbox.Y, Math.Abs(horizontalVelocity), hitbox.Height);
 
-
+            walkProgress = 0;
         }
 
         //Constructor for stationary enemy
@@ -98,10 +99,73 @@ namespace Egg
             this.isActive = false;
             this.walkSpeed = 0;
             this.walkDistance = 0;
+            this.horizontalVelocity = 1;
+            this.verticalVelocity = 1;
+            walkProgress = 0;
         }
 
-        //FSM transitions, moving to FiniteState() soon
-        public void UpdateEnemyStatus()
+        //Implementation of FSM, called every update loop
+        public void UpdateEnemyData()
+        {
+            switch (status)
+            {
+                case EnemyState.Idle:
+                    break;
+                case EnemyState.WalkLeft:
+                    Movement();
+                    break;
+                case EnemyState.WalkRight:
+                    Movement();
+                    break;
+                case EnemyState.Hitstun:
+                    hitstunTimer += 1;
+                    if (hitstunTimer > 60)
+                    {
+                        isActive = false;
+                    }
+                    break;
+            }
+        }
+
+        //Causes enemy to enter hitstun animation and eventually die. 
+        public void TriggerHitstun()
+        {
+            //Implement once player collision & movement is done
+            throw new NotImplementedException();
+        }
+
+        //Default for now, should change what sprite is drawn depending on FSM
+        public override void Draw(SpriteBatch sb)
+        {
+            if (isActive)
+            {
+                sb.Draw(defaultSprite, hitbox, Color.White);
+            }
+        }
+
+        //Moves enemy
+        public override void Movement()
+        {
+            if (walkSpeed == 0)
+            {
+                return;
+            }
+
+            Point temp = hitbox.Location;
+
+            temp.X += walkSpeed;
+            hitbox.Location = temp;
+
+            walkProgress += 1;
+
+            if (walkProgress == walkDistance)
+            {
+                walkSpeed *= -1;
+            }
+            
+        }
+
+        public override void FiniteState()
         {
             if (isActive)
             {
@@ -122,45 +186,6 @@ namespace Egg
                     this.status = EnemyState.Hitstun;
                 }
             }
-
-        }
-        //Implementation of FSM, called every update loop
-        public void UpdateEnemyData()
-        {
-            switch (status)
-            {
-                case EnemyState.Idle:
-                    break;
-                case EnemyState.WalkLeft:
-                    break;
-                case EnemyState.WalkRight:
-                    break;
-                case EnemyState.Hitstun:
-                    break;
-            }
-        }
-
-        //Causes enemy to enter hitstun animation and eventually die. 
-        public void TriggerHitstun()
-        {
-            throw new NotImplementedException();
-        }
-
-        //Default for now, should change what sprite is drawn depending on FSM
-        public override void Draw(SpriteBatch sb)
-        {
-            sb.Draw(defaultSprite, hitbox, Color.White);
-        }
-
-        //Moves enemy
-        public override void Movement()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void FiniteState()
-        {
-            throw new NotImplementedException();
         }
 
         public override void CheckColliderAgainstPlayer(Player p)
