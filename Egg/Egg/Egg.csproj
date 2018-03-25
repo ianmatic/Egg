@@ -75,6 +75,33 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <Content Include="Resources\blankTile.png" />
+    <Content Include="Resources\dBotLeft.png" />
+    <Content Include="Resources\dBotMid.png" />
+    <Content Include="Resources\dBotRight.png" />
+    <Content Include="Resources\dMidLeft.png" />
+    <Content Include="Resources\dMidRight.png" />
+    <Content Include="Resources\dSolid.png" />
+    <Content Include="Resources\dTopLeft.png" />
+    <Content Include="Resources\dTopMid.png" />
+    <Content Include="Resources\dTopRight.png" />
+    <Content Include="Resources\LBotLeft.png" />
+    <Content Include="Resources\LBotMid.png" />
+    <Content Include="Resources\LBotRight.png" />
+    <Content Include="Resources\levelExports\beep.txt" />
+    <Content Include="Resources\levelExports\tester.txt" />
+    <Content Include="Resources\LMidLeft.png" />
+    <Content Include="Resources\LMidRight.png" />
+    <Content Include="Resources\LTopLeft.png" />
+    <Content Include="Resources\LTopMid.png" />
+    <Content Include="Resources\LTopRight.png" />
+    <Content Include="Resources\nLeftBot.png" />
+    <Content Include="Resources\nLeftTop.png" />
+    <Content Include="Resources\nRightBot.png" />
+    <Content Include="Resources\nRightTop.png" />
+    <Content Include="Resources\tile3_scaled.png" />
+    <Content Include="Resources\tile4_scaled.png" />
+    <Content Include="Resources\Untitled-2.png" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
