@@ -21,6 +21,11 @@ namespace Egg
         SpriteBatch spriteBatch;
         SpriteFont menuText;
         Texture2D testSprite;
+        //test textures
+        Texture2D bottomRectangle;
+        Texture2D topRectangle;
+        Texture2D sideRectangle;
+
         GameState currentState;
         //GameState previousState;
         KeyboardState kb;
@@ -282,15 +287,20 @@ namespace Egg
         private void PotatoDebugging()
         {
             testSprite = Content.Load<Texture2D>("potato");
+            bottomRectangle = Content.Load<Texture2D>("red");
+            sideRectangle = Content.Load<Texture2D>("blue");
+            topRectangle = Content.Load<Texture2D>("green");
 
             AddObjectToList(new CapturedChicken(1, testSprite, new Rectangle(0, 0, 30, 30), Color.Red));
             AddObjectToList(new CapturedChicken(5, testSprite, new Rectangle(0, 15, 30, 30), Color.Blue));
             AddObjectToList(new CapturedChicken(4, testSprite, new Rectangle(0, 30, 30, 30), Color.Green));
             AddObjectToList(new CapturedChicken(3, testSprite, new Rectangle(0, 45, 30, 30), Color.Yellow));
             AddObjectToList(new CapturedChicken(2, testSprite, new Rectangle(0, 60, 30, 30), Color.White));
-            AddObjectToList(new Tile(6, testSprite, new Rectangle(300, 300, 300, 300), Tile.TileType.Normal));
+            AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(300, 300, 500, 300), Tile.TileType.Normal));
+            AddObjectToList(new Tile(7, sideRectangle, new Rectangle(900, 0, 100, 500), Tile.TileType.Normal));
+            AddObjectToList(new Tile(8, topRectangle, new Rectangle(100, 0, 700, 100), Tile.TileType.Normal));
 
-            player = new Player(7, testSprite, new Rectangle(300, 200, 50, 50), Color.Wheat, 50, 50);
+            player = new Player(9, testSprite, new Rectangle(300, 200, 50, 50), Color.Wheat, 50, 50);
             AddObjectToList(player);
 
         }
