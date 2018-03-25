@@ -437,8 +437,15 @@ namespace Egg_DevTool_Test
 
             // Actually export to a text file
             string fileName = txtFile.Text;
-            ClearTextFile(fileName + ".txt");  // Clears any text currently in the file
-            StreamWriter writer = new StreamWriter(fileName + ".txt");
+            try
+            {
+                ClearTextFile(@"..\..\..\..\Resources\levelExports\" + fileName + ".txt");  // Clears any text currently in the file
+            }
+            catch (System.IO.DirectoryNotFoundException)
+            {
+                Console.WriteLine("Nothing to see here, just trying to debug.");
+            }
+            StreamWriter writer = new StreamWriter(@"..\..\..\..\Resources\levelExports\" + fileName + ".txt");
             writer.Write(height + ", " + width + ", " + Environment.NewLine);
             writer.Write(outputTest);         // Overwrites with new text
             writer.Close();
