@@ -205,7 +205,10 @@ namespace Egg
                 }
                 else if (n is Enemy)
                 {
-                    n.FiniteState();
+                    Enemy e = (Enemy)n;
+                    e.FiniteState();
+                    e.UpdateEnemyData();
+                    e.CheckColliderAgainstPlayer(player);
                 }
                 else
                 {

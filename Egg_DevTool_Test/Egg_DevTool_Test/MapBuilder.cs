@@ -476,6 +476,15 @@ namespace Egg_DevTool_Test
                 case "LBotRight":
                     return "b9";
 
+                // Light interior tiles
+                case "nLeftTop":
+                    return "n1";
+                case "nRightTop":
+                    return "n2";
+                case "nLeftBot":
+                    return "n3";
+                case "nRightBot":
+                    return "n4";
 
                     // Dark grass tiles
                 case "dTopLeft":
@@ -496,6 +505,7 @@ namespace Egg_DevTool_Test
                     return "i8";
                 case "dBotRight":
                     return "i9";
+
 
                 default:
                     return "#### TRANSLATOR BROKEN #####";
