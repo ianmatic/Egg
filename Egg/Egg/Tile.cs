@@ -55,7 +55,8 @@ namespace Egg
             this.hasGravity = false;
             this.type = type;
         }
-        
+
+
         public override void CheckColliderAgainstPlayer(Player p)
         {
             if (p.CollisionCheck(this))
