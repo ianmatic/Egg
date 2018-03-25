@@ -38,6 +38,30 @@ namespace Egg
         double secondsPerFrame;
         double timeCounter;
 
+
+        //Tile Fields
+        public Texture2D LTopLeft;
+        public Texture2D LTopMid;
+        public Texture2D LTopRight;
+        public Texture2D LMidRight;
+        public Texture2D LMidLeft;
+        public Texture2D LBotLeft;
+        public Texture2D LBotMid;
+        public Texture2D LBotRight;
+        public Texture2D dTopLeft;
+        public Texture2D dTopMid;
+        public Texture2D dTopRight;
+        public Texture2D dMidLeft;
+        public Texture2D dSolid;
+        public Texture2D dMidRight;
+        public Texture2D dBotLeft;
+        public Texture2D dBotMid;
+        public Texture2D dBotRight;
+        public Texture2D nLeftBot;
+        public Texture2D nLeftTop;
+        public Texture2D nRightBot;
+        public Texture2D nRightTop;
+
         //DO NOT ADD DIRECTLY TO THIS LIST
         List<GameObject> objectList;
         Stack<GameObject> sortHolder;
@@ -96,6 +120,30 @@ namespace Egg
             frameRate = 60.0; //assuming we are doing 60fps here, change if not
             secondsPerFrame = 1.0f / frameRate;
             timeCounter = 0;
+
+            //loading Tiles
+            LTopLeft = Content.Load<Texture2D>("LTopLeft");
+            LTopMid = Content.Load<Texture2D>("LTopMid");
+            LTopRight = Content.Load<Texture2D>("LTopRight");
+            LMidLeft = Content.Load<Texture2D>("LMidLeft");
+            LMidRight = Content.Load<Texture2D>("LMidRight");
+            LBotLeft = Content.Load<Texture2D>("LBotLeft");
+            LBotRight = Content.Load<Texture2D>("LBotRight");
+            LBotMid = Content.Load<Texture2D>("LBotMid");
+            dBotLeft = Content.Load<Texture2D>("dBotLeft");
+            dBotMid = Content.Load<Texture2D>("dBotMid");
+            dBotRight = Content.Load<Texture2D>("dBotRight");
+            dMidLeft = Content.Load<Texture2D>("dMidLeft");
+            dMidRight = Content.Load<Texture2D>("dMidRight");
+            dTopLeft = Content.Load<Texture2D>("dTopLeft");
+            dSolid = Content.Load<Texture2D>("dSolid");
+            dTopMid = Content.Load<Texture2D>("dTopMid");
+            dTopRight = Content.Load<Texture2D>("dTopRight");
+            nLeftTop = Content.Load<Texture2D>("nLeftTop");
+            nLeftBot = Content.Load<Texture2D>("nLeftbot");
+            nRightBot = Content.Load<Texture2D>("nRightBot");
+            nRightTop = Content.Load<Texture2D>("nRightTop");
+
         }
 
         /// <summary>
