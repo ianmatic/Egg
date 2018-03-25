@@ -43,6 +43,9 @@ namespace Egg
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferWidth = 1920 / 2;
+            graphics.PreferredBackBufferHeight = 1080 / 2;
+            graphics.ApplyChanges();
             Content.RootDirectory = "Content";
         }
 
