@@ -31,7 +31,45 @@ namespace Egg
 
         }
 
-        public void LevelInterpreter(string s)
+        public void LoadTiles(Player p)
+        {
+            const int SCREEN_LENGTH = 16;
+            const int SCREEN_WIDTH = 9;
+
+            //Calculate player's tile
+            int playerTileX = (int)Math.Round((double)p.Hitbox.X / SCREEN_LENGTH);
+            int playerTileY = (int)Math.Round((double)p.Hitbox.Y / SCREEN_WIDTH);
+
+            //the loop
+
+            for (int row = 0; row < tileY; row++)
+            {
+                for (int column = 0; column < tileX; column++)
+                {
+                    if (row > (playerTileY - 6) && row < (playerTileY + 6))
+                    {
+                        if (column > (playerTileX - 9) && column < (playerTileX + 9))
+                        {
+                            tileList[row, column].IsActive = true;
+                        }
+                        else
+                        {
+                            tileList[row, column].IsActive = false;
+                        }
+                    }
+                    else
+                    {
+                        tileList[row, column].IsActive = false;
+                    }
+                }
+            } //End loop
+
+        }
+
+        /// <summary>
+        /// Takes in the file in the parameter and returns it as a 2d array
+        /// </summary>
+        public string[,] LevelInterpreter(string s)
         {
             //fields
             string line;
@@ -41,23 +79,27 @@ namespace Egg
             string tempString = "";
             string[] split;
            
-
             interpreter = new StreamReader(s + ".txt");
+
+            //Setup for creating the level's 2d array
             line = interpreter.ReadLine(); //reads FIRST line only
             split = line.Split(','); //splits into array of 2
-
             row = int.Parse(split[0]); //reads rows of level array
             col = int.Parse(split[1]); //reads collumns of level array
             level = new string[row, col]; //creates level array with determined dimensions
+
+            //Reading in the tiles from the file and placing them into the array
             string array = interpreter.ReadToEnd();
             split = array.Split(','); // for last one when drawing skip it
-
-
-            for (int i = 0; i <= split.Length - 2; i++) //getting rid of \r\n
+            
+            //getting rid of "\r\n"
+            for (int i = 0; i <= split.Length - 2; i++)
             {
                 tempString = split[i]; //fixes everything going null 
                 char[] temp = split[i].ToCharArray(); //creates a char array
-                if (temp.Length > 4) //checks if tile ID is more than 4 charcters (\r\n count as 2 characters)
+
+                //cleaning tile names which contain '\r\n'
+                if (temp.Length > 4) 
                 {
                     tempString = ""; //clears tempString so we dont get \r\nb1nt b1nt
                     char space = ' ';
@@ -71,11 +113,8 @@ namespace Egg
                 }
                 split[i] = tempString;
             }
-
-
-
-
-
+            
+            //actually sets all of the individual tiles into the 2d array
             for (int i = 0; i <= level.GetLength(0) - 1; i++)
             {
 
@@ -88,12 +127,14 @@ namespace Egg
                 }
 
             }
-
-
             interpreter.Close();
+            return level;
         }
 
-
+        /// <summary>
+        /// Draws the level to the screen using the level map array
+        /// </summary>
+        /// <param name="level">level map 2d array</param>
         public void DrawLevel(string[,] level)
         {
             //fields
@@ -102,7 +143,7 @@ namespace Egg
             // graphics device doesnt work for some reason
 
             //int tileWidth = GraphicsDevice.Viewport.Width / level.GetLength(0);
-           // int tileHeight = GraphicsDevice.Viewport.Height / level.GetLength(1);
+            //int tileHeight = GraphicsDevice.Viewport.Height / level.GetLength(1);
             int x = level.GetLength(0) - 1;
             int y = level.GetLength(1) - 1;
             List<Tile> tileList = new List<Tile>();
@@ -231,45 +272,6 @@ namespace Egg
                 }
 
             }
-        }
-
-
-            
-        }
-
-        public void LoadTiles(Player p)
-        {
-            const int SCREEN_LENGTH = 16;
-            const int SCREEN_WIDTH = 9;
-
-            //Calculate player's tile
-            int playerTileX = (int)Math.Round((double)p.Hitbox.X / SCREEN_LENGTH);
-            int playerTileY = (int)Math.Round((double)p.Hitbox.Y / SCREEN_WIDTH);
-
-            //the loop
-
-            for (int row = 0; row < tileY; row++)
-            {               
-                for(int column = 0; column < tileX; column++)
-                {
-                    if (row > (playerTileY - 6) && row < (playerTileY + 6))
-                    {
-                        if (column > (playerTileX - 9) && column < (playerTileX + 9))
-                        {
-                            tileList[row, column].IsActive = true;
-                        }
-                        else
-                        {
-                            tileList[row, column].IsActive = false;
-                        }
-                    }
-                    else
-                    {
-                        tileList[row, column].IsActive = false;
-                    }
-                }
-            } //End loop
-
-        }
+        }       
     }
 }
