@@ -9,6 +9,9 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Egg
 {
+    /// <summary>
+    /// Represents a single tile of level geometry
+    /// </summary>
     class Tile : GameObject
     {
         private TileType type;
@@ -52,11 +55,7 @@ namespace Egg
             this.hasGravity = false;
             this.type = type;
         }
-        public override void CheckColliderAgainstPlayer(Player p)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public override void CheckColliderAgainstPlayer(Player p)
         {
             if (p.CollisionCheck(this))
