@@ -33,8 +33,10 @@ namespace Egg
         double secondsPerFrame;
         double timeCounter;
 
+        //DO NOT ADD DIRECTLY TO THIS LIST
         List<GameObject> objectList;
         Stack<GameObject> sortHolder;
+
         List<Texture2D> tileSpriteList;
         
 
