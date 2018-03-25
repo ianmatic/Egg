@@ -36,7 +36,7 @@ namespace Egg
         }
 
         /// <summary>
-        /// The order/layer the sprite should be drawn on screen 
+        /// The order/layer the sprite should be drawn on screen. The larger the DrawLevel, the closer the object is to the front of the screen 
         /// </summary>
 
         public int DrawLevel
@@ -61,28 +61,50 @@ namespace Egg
             get { return this.hitbox; }
         }
 
+        /// <summary>
+        /// Returns true if the object is active.
+        /// </summary>
         public bool IsActive
         {
             get { return this.isActive; }
             set { this.isActive = value; }
         } 
+
+        /// <summary>
+        /// Returns true if the object is pulled downward by gravity.
+        /// </summary>
         public bool HasGravity
         {
             get { return hasGravity; }
             set { hasGravity = value; }
         }
 
-
-        public abstract void Draw(SpriteBatch sb);
         /// <summary>
-        /// implement movement mechanics for appropriate gameObjects
+        /// Draws the object to the screen
+        /// </summary>
+        /// <param name="sb">The SpriteBatch object used to draw the object (be sure to Open() & Close()!!!)</param>
+        public abstract void Draw(SpriteBatch sb);
+       
+        /// <summary>
+        /// Triggers an object to run its movement logic
         /// </summary>
         public abstract void Movement();
 
+        /// <summary>
+        /// Triggers an object to update its finite state machine, if applicable
+        /// </summary>
         public abstract void FiniteState();
 
+        /// <summary>
+        /// Tests for a collision between the object and a player
+        /// </summary>
+        /// <param name="p">The player to check collision against</param>
         public abstract void CheckColliderAgainstPlayer(Player p);
 
+        /// <summary>
+        /// Tests for a collision between the object and an enemy
+        /// </summary>
+        /// <param name="e">The enemy to check collision against</param>
         public abstract void CheckColliderAgainstEnemy(Enemy e);
     }
 }

@@ -9,6 +9,9 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Egg
 {
+    /// <summary>
+    /// Represents a single tile of level geometry
+    /// </summary>
     class Tile : GameObject
     {
         private TileType type;
