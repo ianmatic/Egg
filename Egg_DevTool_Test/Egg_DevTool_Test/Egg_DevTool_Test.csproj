@@ -48,6 +48,9 @@
     <Compile Include="MapBuilder.Designer.cs">
       <DependentUpon>MapBuilder.cs</DependentUpon>
     </Compile>
+    <Compile Include="ImageBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -67,6 +70,7 @@
     <Content Include="Content\tile3.png" />
     <Content Include="Content\tile4.png" />
     <Content Include="Icon.ico" />
+    <Content Include="Resources\blankTile.png" />
     <Content Include="Resources\LBotLeft.png" />
     <Content Include="Resources\LBotMid.png" />
     <Content Include="Resources\LBotRight.png" />

@@ -16,7 +16,7 @@ namespace Egg_DevTool_Test
 {
     public partial class Mappy : Form
     {
-        List<Button> tabletButts = new List<Button>();
+        List<PictureBox> tabletButts = new List<PictureBox>();
 
         #region Text Output
 
@@ -61,7 +61,7 @@ namespace Egg_DevTool_Test
                 }
             }
             */
-            List<Button> tabletBtns = new List<Button>();
+            List<PictureBox> tabletBtns = new List<PictureBox>();
 
             #region grossly hand-inputting all the buttons
             /*
@@ -244,7 +244,7 @@ namespace Egg_DevTool_Test
             int top = 200;
             int left = 400;
 
-            Button button = new Button();
+            PictureBox button = new PictureBox();
             button.Left = left;
             button.Top = top;
             tabPage1.Controls.Add(button);
@@ -296,7 +296,15 @@ namespace Egg_DevTool_Test
                         btnX = BASEX + ((w - 1) * btnWidth);
                         btnY = BASEY + ((h - 1) * btnHeight);
 
-                        Button temp = new Button() { Height = btnHeight, Width = btnWidth, Left = btnX, Top = btnY, Visible = true };
+                        ImageBox temp = new ImageBox();
+                        temp.Height = btnHeight;
+                        temp.Width = btnWidth;
+                        temp.Left = btnX;
+                        temp.Top = btnY;
+                        temp.Visible = true;
+                        temp.Image = ImageSelect("blankTile");
+                        temp.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                        temp.SizeMode = PictureBoxSizeMode.Zoom;
                         temp.Click += TabletClick;
 
                         tabletButts.Add(temp);
@@ -337,7 +345,7 @@ namespace Egg_DevTool_Test
             {
                 test = Image.FromFile(@"..\..\..\..\Resources\" + s + ".png");
             }
-            catch (System.IO.FileNotFoundException e)
+            catch (System.IO.FileNotFoundException)
             {
                 Form broken = new Form() { Width = 300 , Height = 20};
                 MessageBox.Show("Please select an image from the drop-list to the left.");
@@ -365,7 +373,7 @@ namespace Egg_DevTool_Test
             else
                 radioTag = "nt";            //neutral/normal
 
-            Button tempCopy = (Button)sender;
+            PictureBox tempCopy = (PictureBox)sender;
             // Drop the an image equal to the current drop 
             if (chkDeleter.Checked == false)    
             {
