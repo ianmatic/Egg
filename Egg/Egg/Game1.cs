@@ -33,9 +33,11 @@ namespace Egg
         double secondsPerFrame;
         double timeCounter;
 
+        //DO NOT ADD DIRECTLY TO THIS LIST
         List<GameObject> objectList;
         Stack<GameObject> sortHolder;
 
+        List<Texture2D> tileSpriteList;
         
 
         public Game1()
@@ -75,6 +77,9 @@ namespace Egg
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             menuText= Content.Load<SpriteFont>("menutext");
+
+            tileSpriteList = new List<Texture2D>();
+            //Put tile loop here
 
             PotatoDebugging();
 
@@ -197,9 +202,13 @@ namespace Egg
                 }
                 else if (n is Enemy)
                 {
-                    n.FiniteState();                   
+                    n.FiniteState();
                 }
-                n.CheckColliderAgainstPlayer(player);
+                else
+                {
+                    n.CheckColliderAgainstPlayer(player);
+                }
+                
 
 
             } // end foreach
