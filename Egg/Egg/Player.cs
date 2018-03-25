@@ -127,6 +127,8 @@ namespace Egg
             }
             
             topChecker = new Rectangle(X, Y - hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
+
+
             if (isFacingRight)
             {
                 sideChecker = new Rectangle(X + hitBox.Width, Y, Math.Abs(horizontalVelocity), hitbox.Height);
@@ -485,10 +487,12 @@ namespace Egg
         {
             bool output = false;
             bottomIntersects = false;
+            topIntersects = false;
 
             if (topChecker.Intersects(t.Hitbox))
             {
-                verticalVelocity = 0;
+                verticalVelocity = 8;
+                hitBox.Y = t.Y + hitBox.Height;
                 topIntersects = true;
                 output = true;
             }
@@ -496,9 +500,17 @@ namespace Egg
             {
                 verticalVelocity = 0;
                 hitbox.Y = t.Y - hitbox.Height;
-               if (kb.IsKeyDown(Keys.A))
+                if (kb.IsKeyDown(Keys.A) && kb.IsKeyDown(Keys.LeftShift))
+                {
+                    playerState = PlayerState.RollLeft;
+                }
+                else if (kb.IsKeyDown(Keys.A))
                 {
                     playerState = PlayerState.WalkLeft;
+                }
+                else if (kb.IsKeyDown(Keys.D) && kb.IsKeyDown(Keys.LeftShift))
+                {
+                    playerState = PlayerState.RollRight;
                 }
                 else if (kb.IsKeyDown(Keys.D))
                 {
