@@ -70,7 +70,7 @@ namespace Egg
 
         public override void CheckColliderAgainstEnemy(Enemy e)
         {
-            e.CollisionCheck(this);
+            e.CollisionCheck(this);      
         }
 
         //In progress

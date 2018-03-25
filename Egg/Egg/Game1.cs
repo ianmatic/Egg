@@ -72,8 +72,8 @@ namespace Egg
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 1920 / 2;
-            graphics.PreferredBackBufferHeight = 1080 / 2;
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferHeight = 720;
             graphics.ApplyChanges();
             Content.RootDirectory = "Content";
         }
@@ -252,23 +252,25 @@ namespace Egg
         {
             foreach (GameObject n in objectList)
             {
-                if (n is Player)
-                {
-                    n.FiniteState();
-                }
-                else if (n is Enemy)
-                {
-                    Enemy e = (Enemy)n;
-                    e.FiniteState();
-                    e.UpdateEnemyData();
-                    e.CheckColliderAgainstPlayer(player);
-                }
-                else
-                {
-                    n.CheckColliderAgainstPlayer(player);
-                }
-                
+                //if (n.IsActive)
+                //{
+                    if (n is Player)
+                    {
+                        n.FiniteState();
+                    }
+                    else if (n is Enemy)
+                    {
+                        Enemy e = (Enemy)n;
+                        e.FiniteState();
+                        e.UpdateEnemyData();
+                        e.CheckColliderAgainstPlayer(player);
+                    }
+                    else
+                    {
+                        n.CheckColliderAgainstPlayer(player);
+                    }
 
+                //}
 
             } // end foreach
 

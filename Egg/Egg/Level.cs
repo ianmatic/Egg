@@ -23,5 +23,6 @@ namespace Egg
             this.remainingChickens = totalChickens;
         }
 
+        
     }
 }
