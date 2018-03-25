@@ -418,7 +418,7 @@ namespace Egg_DevTool_Test
                     if (btn.Tag != null)  //Make sure the button has a tag
                         outputTest += Translator(btnTag.ToString()) + btnRad + "," + Environment.NewLine;
                     else  //If there's no tag, add 00
-                        outputTest += "00" + "," + Environment.NewLine;
+                        outputTest += "0000" + "," + Environment.NewLine;
                     incrementer = 0;
                 }
                 else if (0 <= incrementer && incrementer <= width) //If a new line isn't needed, run regularly
@@ -426,7 +426,7 @@ namespace Egg_DevTool_Test
                     if (btn.Tag != null)  //Still make sure the button has a tag
                         outputTest += Translator(btnTag.ToString()) + btnRad + ",";
                     else  //If there's no tag, add 00
-                        outputTest += "00" + ",";
+                        outputTest += "0000" + ",";
                     incrementer++;
                 }
             }
