@@ -273,8 +273,9 @@ namespace Egg
             AddObjectToList(new CapturedChicken(4, testSprite, new Rectangle(0, 30, 30, 30), Color.Green));
             AddObjectToList(new CapturedChicken(3, testSprite, new Rectangle(0, 45, 30, 30), Color.Yellow));
             AddObjectToList(new CapturedChicken(2, testSprite, new Rectangle(0, 60, 30, 30), Color.White));
-            AddObjectToList(new Tile(6, testSprite, new Rectangle(300, 500, 300, 300), Tile.TileType.Normal));
-            player = new Player(7, testSprite, new Rectangle(300, 300, 100, 100), Color.Wheat, 50, 50);
+            AddObjectToList(new Tile(6, testSprite, new Rectangle(300, 300, 300, 300), Tile.TileType.Normal));
+
+            player = new Player(7, testSprite, new Rectangle(300, 200, 50, 50), Color.Wheat, 50, 50);
             AddObjectToList(player);
 
         }

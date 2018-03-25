@@ -49,6 +49,9 @@ namespace Egg
         private Rectangle bottomChecker;
         private Rectangle topChecker;
         private Rectangle sideChecker;
+        private bool bottomIntersects;
+        private bool topIntersects;
+        private bool sideIntersects;
 
         //for directionality
         private bool isFacingRight;
@@ -94,23 +97,18 @@ namespace Egg
             this.color = color;
 
             //checkers used for collision detection, one on top of Player, one below, and one to the side
-            bottomChecker = new Rectangle(x, y + hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
-            topChecker = new Rectangle(x, y - hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
-            if (isFacingRight)
-            {
-                sideChecker = new Rectangle(x + hitBox.Width, y, Math.Abs(horizontalVelocity), hitbox.Height);
-            }
-            else
-            {
-                sideChecker = new Rectangle(x - hitBox.Width, y, Math.Abs(horizontalVelocity), hitbox.Height);
-            }
 
             enemy = new Enemy(hitBox, defaultSprite, drawLevel, hitstunTimer);
             platform = new Platform();
             hasGravity = true;
 
+
+            bottomIntersects = false;
+            topIntersects = false;
+            sideIntersects = false;
+
             gameTime = new GameTime();
-            delay = 30;
+            delay = 13;
             miliseconds = gameTime.ElapsedGameTime.TotalMilliseconds;
         }
 
@@ -121,6 +119,22 @@ namespace Egg
         public override void FiniteState()
         {
             kb = Keyboard.GetState();
+
+            bottomChecker = new Rectangle(X, Y + hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
+            if (verticalVelocity == 0 && !kb.IsKeyDown(Keys.Space))
+            {
+                bottomChecker = new Rectangle(X, Y + hitbox.Height, hitbox.Width, 1);
+            }
+            
+            topChecker = new Rectangle(X, Y - hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
+            if (isFacingRight)
+            {
+                sideChecker = new Rectangle(X + hitBox.Width, Y, Math.Abs(horizontalVelocity), hitbox.Height);
+            }
+            else
+            {
+                sideChecker = new Rectangle(X - hitBox.Width, Y, Math.Abs(horizontalVelocity), hitbox.Height);
+            }
 
             //FSM
             switch (playerState)
@@ -177,7 +191,16 @@ namespace Egg
                     isFacingRight = false;
                     Movement();
 
-                    if (kb.IsKeyUp(Keys.A))
+
+                    if(!bottomIntersects)
+                    {
+                        playerState = PlayerState.Fall;
+                    }
+                    else if (kb.IsKeyDown(Keys.Space))
+                    {
+                        playerState = PlayerState.JumpLeft;
+                    }
+                    else if (kb.IsKeyUp(Keys.A))
                     {
                         playerState = PlayerState.IdleLeft;
                     }
@@ -189,18 +212,23 @@ namespace Egg
                     {
                         playerState = PlayerState.RollLeft;
                     }
-                    else if (kb.IsKeyDown(Keys.Space))
-                    {
-                        playerState = PlayerState.JumpLeft;
-                    }
+
+                    
                     //Remember to implement HitStun here
                     break;
 
                 case PlayerState.WalkRight:
                     isFacingRight = true;
                     Movement();
-
-                    if (kb.IsKeyUp(Keys.D))
+                    if (!bottomIntersects)
+                    {
+                        playerState = PlayerState.Fall;
+                    }
+                    else if (kb.IsKeyDown(Keys.Space))
+                    {
+                        playerState = PlayerState.JumpRight;
+                    }
+                    else if (kb.IsKeyUp(Keys.D))
                     {
                         playerState = PlayerState.IdleRight;
                     }
@@ -212,18 +240,18 @@ namespace Egg
                     {
                         playerState = PlayerState.RollRight;
                     }
-                    else if (kb.IsKeyDown(Keys.Space))
-                    {
-                        playerState = PlayerState.JumpRight;
-                    }
+
                     //Remember to implement HitStun here
                     break;
                 case PlayerState.RollLeft:
                     isFacingRight = false;
                     Movement();
 
-                    //touching an enemy
-                    if (hitbox.Intersects(enemy.Hitbox))
+                    if (!bottomIntersects)
+                    {
+                        playerState = PlayerState.Fall;
+                    }
+                    else if (hitbox.Intersects(enemy.Hitbox))
                     {
                         //bounce in opposite direction
                         playerState = PlayerState.BounceRight;
@@ -244,17 +272,16 @@ namespace Egg
                     {
                         playerState = PlayerState.JumpLeft;
                     }
-                    /*else if (!hitbox.Intersects(platform.Hitbox) && !hitbox.Intersects(enemy.Hitbox))
-                    {
-                        playerState = PlayerState.Fall;
-                    }*/
                     break;
                 case PlayerState.RollRight:
                     isFacingRight = true;
                     Movement();
 
-                    //touching an enemy
-                    if (hitbox.Intersects(enemy.Hitbox))
+                    if (!bottomIntersects)
+                    {
+                        playerState = PlayerState.Fall;
+                    }
+                    else if (hitbox.Intersects(enemy.Hitbox))
                     {
                         //bounce in opposite direction
                         playerState = PlayerState.BounceLeft;
@@ -275,10 +302,6 @@ namespace Egg
                     {
                         playerState = PlayerState.JumpRight;
                     }
-                    /*else if (!hitbox.Intersects(platform.Hitbox) && !hitbox.Intersects(enemy.Hitbox))
-                    {
-                        playerState = PlayerState.Fall;
-                    }*/
                     break;
 
                 case PlayerState.JumpLeft:
@@ -341,6 +364,8 @@ namespace Egg
                     {
                         playerState = PlayerState.IdleLeft;
                     }
+
+                    delay = 13;
                     //HitStun
                     break;
 
@@ -355,18 +380,7 @@ namespace Egg
                         playerState = PlayerState.BounceRight;
                     }
                     //not sure how to determine what direction player will face if no key is pressed
-                    else if (hitbox.Intersects(platform.Hitbox) && kb.IsKeyDown(Keys.A))
-                    {
-                        playerState = PlayerState.IdleLeft;
-                    }
-                    else if (hitbox.Intersects(platform.Hitbox) && kb.IsKeyDown(Keys.D))
-                    {
-                        playerState = PlayerState.IdleRight;
-                    }
-                    else if (hitbox.Intersects(platform.Hitbox) && kb.IsKeyDown(Keys.LeftShift))
-                    {
-                        playerState = PlayerState.RollLeft;
-                    }
+
                     break;
 
                 case PlayerState.BounceLeft:
@@ -434,6 +448,7 @@ namespace Egg
         /// <param name="limit"></param>
         public void Accelerate(int velocityType, int rate, int limit, bool vertical)
         {
+            //if vertical velocity is 0, bottom checker is 0, so it has to pretend to be size 1
             if (vertical)
             {
                 if (velocityType < limit)
@@ -469,19 +484,42 @@ namespace Egg
         public bool CollisionCheck(Tile t)
         {
             bool output = false;
-            if (topChecker.Intersects(platform.Hitbox))
+            bottomIntersects = false;
+
+            if (topChecker.Intersects(t.Hitbox))
             {
                 verticalVelocity = 0;
+                topIntersects = true;
                 output = true;
             }
-            else if (bottomChecker.Intersects(platform.Hitbox))
+            else if (bottomChecker.Intersects(t.Hitbox))
             {
                 verticalVelocity = 0;
+                hitbox.Y = t.Y - hitbox.Height;
+               if (kb.IsKeyDown(Keys.A))
+                {
+                    playerState = PlayerState.WalkLeft;
+                }
+                else if (kb.IsKeyDown(Keys.D))
+                {
+                    playerState = PlayerState.WalkRight;
+                }
+                else if (isFacingRight && !kb.IsKeyDown(Keys.D))
+                {
+                    playerState = PlayerState.IdleRight;
+                }
+                else if (!isFacingRight && !kb.IsKeyDown(Keys.A))
+                {
+                    playerState = PlayerState.IdleLeft;
+                }
+
+                bottomIntersects = true;
                 output = true;
             }
-            if (sideChecker.Intersects(platform.Hitbox))
+            if (sideChecker.Intersects(t.Hitbox))
             {
                 horizontalVelocity = 0;
+                sideIntersects = true;
                 output = true;
             }
 
