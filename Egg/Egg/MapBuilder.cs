@@ -385,7 +385,7 @@ namespace Egg
             // Clear the button if the delete is checked
             else if (chkDeleter.Checked == true) 
             {
-                tempCopy.Image = null;
+                tempCopy.Image = ImageSelect("blankTile");
                 tempCopy.Tag = null;
             }
             sender = tempCopy;

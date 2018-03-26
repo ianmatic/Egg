@@ -184,7 +184,7 @@ namespace Egg
                     break;
 
                 case GameState.Game:
-                    testScreen = new Screen("tester", player);
+                    testScreen = new Screen("testLevel", player);
                     GameUpdateLoop();
                     //Transition to level end not yet implemented
                     break;

@@ -32,15 +32,26 @@ namespace Egg
             LoadTiles(p, pleaseWork);
         }
 
+        /// <summary>
+        /// Loads the tiles based on the player's position in the context of the loaded textMap
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="textMap"></param>
         public void LoadTiles(Player p, string[,] textMap)
         {
+            // #################################
+            // ## Something in here is broken ##
+            // #################################
+
             const int SCREEN_TILES_L = 16;  //How many tiles across to draw on screen
             const int SCREEN_TILES_H = 9;   //How many tiles high to draw on screen
             string[,] screenTiles = new string[SCREEN_TILES_L, SCREEN_TILES_H];
 
             //Calculate player's tile
-            int playerTileX = (int)Math.Round((double)p.Hitbox.X / SCREEN_TILES_H); //player's x in relation to tiles
-            int playerTileY = (int)Math.Round((double)p.Hitbox.Y / SCREEN_TILES_L); //player's y in relation to tiles
+            //int playerTileX = (int)Math.Round((double)p.Hitbox.X / SCREEN_TILES_H); //player's x in relation to tiles
+            //int playerTileY = (int)Math.Round((double)p.Hitbox.Y / SCREEN_TILES_L); //player's y in relation to tiles
+            int playerTileX = 5;
+            int playerTileY = 5;
             const int P_BUFFER_X = 3;   
             const int P_BUFFER_Y = 2;
 
