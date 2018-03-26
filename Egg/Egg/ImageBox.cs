@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Egg
+namespace Egg_DevTool_Test
 {
     public class ImageBox : PictureBox
     {

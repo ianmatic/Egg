@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework.Input;
 
-namespace Egg
+namespace Egg_DevTool_Test
 {
     public partial class Mappy : Form
     {
@@ -244,7 +244,7 @@ namespace Egg
         private void ButtonTest(object sender, EventArgs e)
         {
             int top = 200;
-            int left = 600;
+            int left = 400;
 
             PictureBox button = new PictureBox();
             button.Left = left;
@@ -257,10 +257,10 @@ namespace Egg
          /// </summary>
         private void HeightWidthChange(object sender, EventArgs e)
         {
-            const int BASEX = 300;  // Top left corner of the container
-            const int BASEY = 20;   // Top right corner of the container
-            const int BASEW = 1100;  // The width of the container
-            const int BASEH = 700;  // The height of the container
+            const int BASEX = 220;  // Top left corner of the container
+            const int BASEY = 40;   // Top right corner of the container
+            const int BASEW = 830;  // The width of the container
+            const int BASEH = 550;  // The height of the container
 
             int btnX;       // X Position field
             int btnY;       // Y Position field
@@ -385,7 +385,7 @@ namespace Egg
             // Clear the button if the delete is checked
             else if (chkDeleter.Checked == true) 
             {
-                tempCopy.Image = ImageSelect("blankTile");
+                tempCopy.Image = null;
                 tempCopy.Tag = null;
             }
             sender = tempCopy;

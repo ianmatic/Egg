@@ -40,10 +40,10 @@ namespace Egg
     {
         //fields
         private KeyboardState kb;
+        private KeyboardState previousKb; //used to prevent jump spamming
+
         private double miliseconds; //used for float/downdash
         private double delay; //used for float/downdash
-
-        private Rectangle hitBox;
 
         //for collision
         private Rectangle bottomChecker;
@@ -51,11 +51,10 @@ namespace Egg
         private Rectangle sideChecker;
         private bool bottomIntersects;
         private bool topIntersects;
-        private bool sideIntersects;
 
-        //for directionality
+
+        //for directionality and FSM
         private bool isFacingRight;
-
         private PlayerState playerState;
 
         private int verticalVelocity = 0;
@@ -63,24 +62,9 @@ namespace Egg
 
         private Color color;
 
-        //testing collision
-        Enemy enemy;
-        Platform platform;
-
         GameTime gameTime;
-        private int hitstunTimer; //need for enemy constructor
-
-        public override void CheckColliderAgainstEnemy(Enemy e)
-        {
-            throw new NotImplementedException();
-        }
 
         //Property
-        public Rectangle HitBox
-        {
-            get { return hitbox; }
-            set { hitbox = value; }
-        }
         public PlayerState PlayerState
         {
             get { return playerState; }
@@ -89,327 +73,140 @@ namespace Egg
 
         //Constructor for player
         public Player(int drawLevel, Texture2D defaultSprite, Rectangle hitbox, Color color, int x, int y)
-            
         {
             this.drawLevel = drawLevel;
             this.defaultSprite = defaultSprite;
             this.hitbox = hitbox;
             this.color = color;
 
-            //checkers used for collision detection, one on top of Player, one below, and one to the side
-
-            enemy = new Enemy(hitBox, defaultSprite, drawLevel, hitstunTimer);
-            platform = new Platform();
-            hasGravity = true;
+            hasGravity = true; //no point other than it must be implement since it inherets GameObject
 
 
             bottomIntersects = false;
             topIntersects = false;
-            sideIntersects = false;
 
             gameTime = new GameTime();
             delay = 13;
-            miliseconds = gameTime.ElapsedGameTime.TotalMilliseconds;
+            miliseconds = 2;
         }
-
-
         /// <summary>
-        /// determines player state based on input and collision with enemies/platforms
+        /// speed up the object by the rate until the limit velocity is reached
         /// </summary>
-        public override void FiniteState()
+        /// <param name="velocityType"></param>
+        /// <param name="rate"></param>
+        /// <param name="limit"></param>
+        public void Accelerate(int velocityType, int rate, int limit, bool vertical)
         {
-            kb = Keyboard.GetState();
 
-            bottomChecker = new Rectangle(X, Y + hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
-            if (verticalVelocity == 0 && !kb.IsKeyDown(Keys.Space))
+            if (vertical)
             {
-                bottomChecker = new Rectangle(X, Y + hitbox.Height, hitbox.Width, 1);
+                if (velocityType < limit)
+                {
+                    velocityType += rate;
+                    verticalVelocity = velocityType;
+                }
             }
-            
-            topChecker = new Rectangle(X, Y - hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
-
-
-            if (isFacingRight)
+            else //horizontal
             {
-                sideChecker = new Rectangle(X + hitBox.Width, Y, Math.Abs(horizontalVelocity), hitbox.Height);
-            }
-            else
-            {
-                sideChecker = new Rectangle(X - hitBox.Width, Y, Math.Abs(horizontalVelocity), hitbox.Height);
-            }
-
-            //FSM
-            switch (playerState)
-            {
-
-                case PlayerState.IdleLeft:
-                    isFacingRight = false;
-                    Movement();
-
-                    if (kb.IsKeyDown(Keys.Space))
+                if (isFacingRight)
+                {
+                    if (velocityType < limit)
                     {
-                        playerState = PlayerState.JumpLeft;
+                        velocityType += rate;
                     }
-                    else if (kb.IsKeyDown(Keys.D))
+                }
+                else //facing left
+                {
+                    //moving left means moving negatively (decrease value past 0 until negative limit is hit)
+                    limit -= limit * 2;
+                    if (velocityType > limit)
                     {
-                        playerState = PlayerState.WalkRight;
+                        velocityType -= rate;
                     }
-                    else if (kb.IsKeyDown(Keys.A))
-                    {
-                        playerState = PlayerState.WalkLeft;
-                    }
-                    else if (kb.IsKeyDown(Keys.LeftShift))
-                    {
-                        playerState = PlayerState.RollLeft;
-                    }
-                    //Remember to implement HitStun here
-                    break;
-
-                case PlayerState.IdleRight:
-                    isFacingRight = true;
-                    Movement();
-
-                    if (kb.IsKeyDown(Keys.Space))
-                    {
-                        playerState = PlayerState.JumpRight;
-                    }
-                    else if (kb.IsKeyDown(Keys.D))
-                    {
-                        playerState = PlayerState.WalkRight;
-                    }
-                    else if (kb.IsKeyDown(Keys.A))
-                    {
-                        playerState = PlayerState.WalkLeft;
-                    }
-
-                    else if (kb.IsKeyDown(Keys.LeftShift))
-                    {
-                        playerState = PlayerState.RollRight;
-                    }
-                    //Remember to implement HitStun here
-                    break;
-
-                case PlayerState.WalkLeft:
-                    isFacingRight = false;
-                    Movement();
-
-
-                    if(!bottomIntersects)
-                    {
-                        playerState = PlayerState.Fall;
-                    }
-                    else if (kb.IsKeyDown(Keys.Space))
-                    {
-                        playerState = PlayerState.JumpLeft;
-                    }
-                    else if (kb.IsKeyUp(Keys.A))
-                    {
-                        playerState = PlayerState.IdleLeft;
-                    }
-                    else if (kb.IsKeyDown(Keys.D))
-                    {
-                        playerState = PlayerState.WalkRight;
-                    }
-                    else if (kb.IsKeyDown(Keys.LeftShift))
-                    {
-                        playerState = PlayerState.RollLeft;
-                    }
-
-                    
-                    //Remember to implement HitStun here
-                    break;
-
-                case PlayerState.WalkRight:
-                    isFacingRight = true;
-                    Movement();
-                    if (!bottomIntersects)
-                    {
-                        playerState = PlayerState.Fall;
-                    }
-                    else if (kb.IsKeyDown(Keys.Space))
-                    {
-                        playerState = PlayerState.JumpRight;
-                    }
-                    else if (kb.IsKeyUp(Keys.D))
-                    {
-                        playerState = PlayerState.IdleRight;
-                    }
-                    else if (kb.IsKeyDown(Keys.A))
-                    {
-                        playerState = PlayerState.WalkLeft;
-                    }
-                    else if (kb.IsKeyDown(Keys.LeftShift))
-                    {
-                        playerState = PlayerState.RollRight;
-                    }
-
-                    //Remember to implement HitStun here
-                    break;
-                case PlayerState.RollLeft:
-                    isFacingRight = false;
-                    Movement();
-
-                    if (!bottomIntersects)
-                    {
-                        playerState = PlayerState.Fall;
-                    }
-                    else if (hitbox.Intersects(enemy.Hitbox))
-                    {
-                        //bounce in opposite direction
-                        playerState = PlayerState.BounceRight;
-                    }
-                    else if (kb.IsKeyUp(Keys.LeftShift) && kb.IsKeyDown(Keys.A))
-                    {
-                        playerState = PlayerState.WalkLeft;
-                    }
-                    else if (kb.IsKeyUp(Keys.LeftShift) && kb.IsKeyDown(Keys.D))
-                    {
-                        playerState = PlayerState.WalkRight;
-                    }
-                    else if (kb.IsKeyUp(Keys.LeftShift))
-                    {
-                        playerState = PlayerState.IdleLeft;
-                    }
-                    else if (kb.IsKeyDown(Keys.Space))
-                    {
-                        playerState = PlayerState.JumpLeft;
-                    }
-                    break;
-                case PlayerState.RollRight:
-                    isFacingRight = true;
-                    Movement();
-
-                    if (!bottomIntersects)
-                    {
-                        playerState = PlayerState.Fall;
-                    }
-                    else if (hitbox.Intersects(enemy.Hitbox))
-                    {
-                        //bounce in opposite direction
-                        playerState = PlayerState.BounceLeft;
-                    }
-                    else if (kb.IsKeyUp(Keys.LeftShift) && kb.IsKeyDown(Keys.A))
-                    {
-                        playerState = PlayerState.WalkLeft;
-                    }
-                    else if (kb.IsKeyUp(Keys.LeftShift) && kb.IsKeyDown(Keys.D))
-                    {
-                        playerState = PlayerState.WalkRight;
-                    }
-                    else if (kb.IsKeyUp(Keys.LeftShift))
-                    {
-                        playerState = PlayerState.IdleRight;
-                    }
-                    else if (kb.IsKeyDown(Keys.Space))
-                    {
-                        playerState = PlayerState.JumpRight;
-                    }
-                    break;
-
-                case PlayerState.JumpLeft:
-                    isFacingRight = false;
-                    Movement();
-
-
-                    if (kb.IsKeyDown(Keys.Space))
-                    {
-                        playerState = PlayerState.FloatLeft;
-                    }
-                    else if (kb.IsKeyDown(Keys.LeftAlt))
-                    {
-                        playerState = PlayerState.DownDash;
-                    }
-                    
-                    playerState = PlayerState.Fall;
-                    miliseconds = 2;
-                    //HitStun
-                    break;
-
-                case PlayerState.JumpRight:
-                    isFacingRight = true;
-                    Movement();
-
-                    while (miliseconds > 1)
-                    {
-                        miliseconds--;
-                    }
-                    if (kb.IsKeyDown(Keys.Space))
-                    {
-                        playerState = PlayerState.FloatLeft;
-                    }
-                    else if (kb.IsKeyDown(Keys.LeftAlt))
-                    {
-                        playerState = PlayerState.DownDash;
-                    }
-                    playerState = PlayerState.Fall;
-
-                    miliseconds = 2;
-                    //HitStun
-                    break;
-                case PlayerState.FloatLeft:
-                    Movement();
-                    break;
-                case PlayerState.FloatRight:
-                    Movement();
-                    break;
-                case PlayerState.Fall:
-                    Movement();
-                    if (kb.IsKeyDown(Keys.LeftAlt))
-                    {
-                        playerState = PlayerState.DownDash;
-                    }
-                    if (hitbox.Intersects(platform.Hitbox) && kb.IsKeyDown(Keys.D))
-                    {
-                        playerState = PlayerState.IdleRight;
-                    }
-                    else if (hitbox.Intersects(platform.Hitbox) && kb.IsKeyDown(Keys.A))
-                    {
-                        playerState = PlayerState.IdleLeft;
-                    }
-
-                    delay = 13;
-                    //HitStun
-                    break;
-
-                case PlayerState.DownDash:
-                    Movement();
-                    if (hitbox.Intersects(enemy.Hitbox) && kb.IsKeyDown(Keys.A))
-                    {
-                        playerState = PlayerState.BounceLeft;
-                    }
-                    else if (hitbox.Intersects(enemy.Hitbox) && kb.IsKeyDown(Keys.D))
-                    {
-                        playerState = PlayerState.BounceRight;
-                    }
-                    //not sure how to determine what direction player will face if no key is pressed
-
-                    break;
-
-                case PlayerState.BounceLeft:
-                    isFacingRight = false;
-                    while (miliseconds > 0)
-                    {
-                        miliseconds--;
-                    }
-                    playerState = PlayerState.Fall;
-                    miliseconds = 2;
-                    break;
-
-                case PlayerState.BounceRight:
-                    isFacingRight = true;
-                    while (miliseconds > 0)
-                    {
-                        miliseconds--;
-                    }
-                    playerState = PlayerState.Fall;
-                    miliseconds = 2;
-                    break;
-
-                    //Remember to implement HitStun here
-
+                }
+                horizontalVelocity = velocityType;
             }
         }
+        /// <summary>
+        /// Checks if hitboxes around player touch Tile t
+        /// </summary>
+        public bool CollisionCheck(Tile t)
+        {
+            bool output = false;
+            bottomIntersects = false;
 
+            //ceiling collision (collision box above player)
+            if (topChecker.Intersects(t.Hitbox))
+            {
+                if (topIntersects) //this is used to ensure player is placed at the ceiling only once per jump
+                {
+                    hitbox.Y = t.Y + t.Hitbox.Height; //place player at ceiling (illusion of hitting it)
+                }
+                topIntersects = false; //set to false so that the player isn't placed to the ceiling again until they touch the ground
+                verticalVelocity = (int)(Math.Abs(verticalVelocity) * .75); //launch the player downwards
+                output = true;
+            }
+            //floor collision (collision box below player)
+            else if (bottomChecker.Intersects(t.Hitbox))
+            {
+                verticalVelocity = 0; //stop the player from falling
+                hitbox.Y = t.Y - hitbox.Height; //place the player on top of tile
+
+                //FSM states are changed here so that the player can move after touching the ground
+
+                //Roll Left
+                if (kb.IsKeyDown(Keys.A) && kb.IsKeyDown(Keys.LeftShift))
+                {
+                    playerState = PlayerState.RollLeft;
+                }
+                //Walk Left
+                else if (kb.IsKeyDown(Keys.A) && !kb.IsKeyDown(Keys.D))
+                {
+                    playerState = PlayerState.WalkLeft;
+                }
+                //Roll Right
+                else if (kb.IsKeyDown(Keys.D) && kb.IsKeyDown(Keys.LeftShift))
+                {
+                    playerState = PlayerState.RollRight;
+                }
+                //Walk Right
+                else if (kb.IsKeyDown(Keys.D))
+                {
+                    playerState = PlayerState.WalkRight;
+                }
+                //Idle Right
+                else if (isFacingRight && !kb.IsKeyDown(Keys.D))
+                {
+                    playerState = PlayerState.IdleRight;
+                }
+                //Idle Left
+                else if (!isFacingRight && !kb.IsKeyDown(Keys.A))
+                {
+                    playerState = PlayerState.IdleLeft;
+                }
+
+                bottomIntersects = true;
+
+                //everytime the player lands from a jump (or falls), the next time they jump they will hit the ceiling
+                topIntersects = true; 
+                output = true;
+            }
+            //wall collision (collision box next to player depending on direction facing)
+            if (sideChecker.Intersects(t.Hitbox))
+            {
+                horizontalVelocity = 0; //stop player from moving through wall
+                if (isFacingRight && t.X > hitbox.X) //player facing right and tile is to the right of player
+                {
+                    hitbox.X = t.X - hitbox.Width; //place player left of tile
+                }
+                else if (t.X < hitbox.X) //player facing left and tile is to the left of player
+                {
+                    hitbox.X = t.X + t.Hitbox.Width; //place player right of tile
+                }
+                output = true;
+            }
+            return output;
+        }
         /// <summary>
         /// slowdown the object by the rate until the limit velocity is reached 
         /// </summary>
@@ -422,14 +219,14 @@ namespace Egg
             {
                 if (velocityType > limit)
                 {
-                    velocityType -= rate;
+                    velocityType -= rate; //reduce velocity normally
                 }
             }
             else
             {
                 if (velocityType < limit)
                 {
-                    velocityType += rate;
+                    velocityType += rate; //increase velocity since moving left is negative
                 }
             }
 
@@ -443,99 +240,309 @@ namespace Egg
             }
         }
         /// <summary>
-        /// speed up the object by the rate until the limit velocity is reached
+        /// determines player state based on input and collision with enemies/platforms
         /// </summary>
-        /// <param name="velocityType"></param>
-        /// <param name="rate"></param>
-        /// <param name="limit"></param>
-        public void Accelerate(int velocityType, int rate, int limit, bool vertical)
+        public override void FiniteState()
         {
-            //if vertical velocity is 0, bottom checker is 0, so it has to pretend to be size 1
-            if (vertical)
+            //previousKb used to prevent jump spamming (holding down space) 
+            previousKb = kb;
+            kb = Keyboard.GetState();
+
+            //Facing right
+            if (isFacingRight)
             {
-                if (velocityType < limit)
+                //floor collider is created at same X as player, Y is at bottom of player
+                //width depends on horizontal velocity, height has to always be positive and depends on vertical velocity
+                bottomChecker = new Rectangle(X, Y + hitbox.Height, hitbox.Width - horizontalVelocity, Math.Abs(verticalVelocity));
+
+                //special condition where height of checker would normally be 0 if player had no vertical velocity
+                if (verticalVelocity == 0 && !kb.IsKeyDown(Keys.Space))
                 {
-                    velocityType += rate;
-                    verticalVelocity = velocityType;
+                    bottomChecker = new Rectangle(X, Y + hitbox.Height, hitbox.Width, 1);
                 }
+                //ceiling collider is created at same X as player, Y is above player
+                //width is dependent on horizontal velocity (less than player width so topChecker doesn't trigger if the player hits a wall)
+                //height is player height with vertical velocity added on (subtracting makes the height go "up" aka toward the ceiling)
+                topChecker = new Rectangle(X, Y - hitbox.Height, hitbox.Width - Math.Abs(horizontalVelocity), hitbox.Height - Math.Abs(verticalVelocity));
             }
+            //Facing left
             else
             {
-                if (isFacingRight)
+                //same as right, except X subtracts horizontalVelocity to prevent player from clipping through walls
+                bottomChecker = new Rectangle(X - horizontalVelocity, Y + hitbox.Height, hitbox.Width - horizontalVelocity, Math.Abs(verticalVelocity));
+
+                //same as right
+                if (verticalVelocity == 0 && !kb.IsKeyDown(Keys.Space))
                 {
-                    if (velocityType < limit)
+                    bottomChecker = new Rectangle(X, Y + hitbox.Height, hitbox.Width, 1);
+                }
+
+                //same as right, except X subtracts horizontalVelocity to prevent player from clipping through walls
+                topChecker = new Rectangle(X - horizontalVelocity, Y - hitbox.Height, hitbox.Width - Math.Abs(horizontalVelocity), hitbox.Height - Math.Abs(verticalVelocity));
+            }
+
+
+            if (isFacingRight)
+            {
+                //X is right of player, Y is the same as player, width depends on horizontalVelocity, height is same as player
+                sideChecker = new Rectangle(X + hitbox.Width, Y, horizontalVelocity, hitbox.Height);
+            }
+            //Facing left
+            else
+            {
+                //X is same as player (which is left edge), Y is the same as player
+                //width depends on horizontalVelocity, height is same as player
+                sideChecker = new Rectangle(X, Y, horizontalVelocity, hitbox.Height);
+            }
+
+            //FSM
+            switch (playerState)
+            {
+                //Idle Left
+                case PlayerState.IdleLeft:
+                    isFacingRight = false;
+                    Movement();
+
+                    if (SingleKeyPress(Keys.Space))
                     {
-                        velocityType += rate;
+                        playerState = PlayerState.JumpLeft;
                     }
-                }
-                else
-                {
-                    //move negatively (decrease value past 0 until negative limit is hit)
-                    limit -= limit * 2;
-                    if (velocityType > limit)
+                    else if (kb.IsKeyDown(Keys.D))
                     {
-                        velocityType -= rate;
+                        playerState = PlayerState.WalkRight;
                     }
-                }
-                horizontalVelocity = velocityType;
-            }
-        }
-        /// <summary>
-        /// Checks if hitboxes around player touch platforms
-        /// </summary>
-        public bool CollisionCheck(Tile t)
-        {
-            bool output = false;
-            bottomIntersects = false;
-            topIntersects = false;
+                    else if (kb.IsKeyDown(Keys.A))
+                    {
+                        playerState = PlayerState.WalkLeft;
+                    }
+                    else if (kb.IsKeyDown(Keys.LeftShift))
+                    {
+                        playerState = PlayerState.RollLeft;
+                    }
+                    //Remember to implement HitStun here
+                    break;
 
-            if (topChecker.Intersects(t.Hitbox))
-            {
-                verticalVelocity = 8;
-                hitBox.Y = t.Y + hitBox.Height;
-                topIntersects = true;
-                output = true;
-            }
-            else if (bottomChecker.Intersects(t.Hitbox))
-            {
-                verticalVelocity = 0;
-                hitbox.Y = t.Y - hitbox.Height;
-                if (kb.IsKeyDown(Keys.A) && kb.IsKeyDown(Keys.LeftShift))
-                {
-                    playerState = PlayerState.RollLeft;
-                }
-                else if (kb.IsKeyDown(Keys.A))
-                {
-                    playerState = PlayerState.WalkLeft;
-                }
-                else if (kb.IsKeyDown(Keys.D) && kb.IsKeyDown(Keys.LeftShift))
-                {
-                    playerState = PlayerState.RollRight;
-                }
-                else if (kb.IsKeyDown(Keys.D))
-                {
-                    playerState = PlayerState.WalkRight;
-                }
-                else if (isFacingRight && !kb.IsKeyDown(Keys.D))
-                {
-                    playerState = PlayerState.IdleRight;
-                }
-                else if (!isFacingRight && !kb.IsKeyDown(Keys.A))
-                {
-                    playerState = PlayerState.IdleLeft;
-                }
+                //Idle Right
+                case PlayerState.IdleRight:
+                    isFacingRight = true;
+                    Movement();
 
-                bottomIntersects = true;
-                output = true;
-            }
-            if (sideChecker.Intersects(t.Hitbox))
-            {
-                horizontalVelocity = 0;
-                sideIntersects = true;
-                output = true;
-            }
+                    if (SingleKeyPress(Keys.Space))
+                    {
+                        playerState = PlayerState.JumpRight;
+                    }
+                    else if (kb.IsKeyDown(Keys.D))
+                    {
+                        playerState = PlayerState.WalkRight;
+                    }
+                    else if (kb.IsKeyDown(Keys.A))
+                    {
+                        playerState = PlayerState.WalkLeft;
+                    }
+                    else if (kb.IsKeyDown(Keys.LeftShift))
+                    {
+                        playerState = PlayerState.RollRight;
+                    }
+                    //Remember to implement HitStun here
+                    break;
+                
+                    //Walk Left
+                case PlayerState.WalkLeft:
+                    isFacingRight = false;
+                    Movement();
 
-            return output;
+                    if(!bottomIntersects) //not touching ground
+                    {
+                        playerState = PlayerState.Fall;
+                    }
+                    else if (SingleKeyPress(Keys.Space))
+                    {
+                        playerState = PlayerState.JumpLeft;
+                    }
+                    else if (kb.IsKeyUp(Keys.A)) //stop moving left
+                    {
+                        playerState = PlayerState.IdleLeft;
+                    }
+                    else if (kb.IsKeyDown(Keys.D))
+                    {
+                        playerState = PlayerState.WalkRight;
+                    }
+                    else if (kb.IsKeyDown(Keys.LeftShift))
+                    {
+                        playerState = PlayerState.RollLeft;
+                    }
+                    //Remember to implement HitStun here
+                    break;
+                //Walk Right
+                case PlayerState.WalkRight:
+                    isFacingRight = true;
+                    Movement();
+
+                    if (!bottomIntersects) //not touching ground
+                    {
+                        playerState = PlayerState.Fall;
+                    }
+                    else if (SingleKeyPress(Keys.Space))
+                    {
+                        playerState = PlayerState.JumpRight;
+                    }
+                    else if (kb.IsKeyUp(Keys.D)) //stop moving right
+                    {
+                        playerState = PlayerState.IdleRight;
+                    }
+                    else if (kb.IsKeyDown(Keys.A)) //moving left
+                    {
+                        playerState = PlayerState.WalkLeft;
+                    }
+                    else if (kb.IsKeyDown(Keys.LeftShift))
+                    {
+                        playerState = PlayerState.RollRight;
+                    }
+
+                    //Remember to implement HitStun here
+                    break;
+
+                //Roll Left
+                case PlayerState.RollLeft:
+                    isFacingRight = false;
+                    Movement();
+
+                    if (!bottomIntersects) //not touching ground
+                    {
+                        playerState = PlayerState.Fall;
+                    }
+                    else if (kb.IsKeyUp(Keys.LeftShift) && kb.IsKeyDown(Keys.A)) //release shift to return to walking left
+                    {
+                        playerState = PlayerState.WalkLeft;
+                    }
+                    else if (kb.IsKeyUp(Keys.LeftShift) && kb.IsKeyDown(Keys.D)) //release shift and walk right
+                    {
+                        playerState = PlayerState.WalkRight;
+                    }
+                    else if (kb.IsKeyUp(Keys.LeftShift))
+                    {
+                        playerState = PlayerState.IdleLeft;
+                    }
+                    else if (SingleKeyPress(Keys.Space))
+                    {
+                        playerState = PlayerState.JumpLeft;
+                    }
+                    break;
+
+                //Roll Right
+                case PlayerState.RollRight:
+                    isFacingRight = true;
+                    Movement();
+
+                    if (!bottomIntersects) //not touching ground
+                    {
+                        playerState = PlayerState.Fall;
+                    }
+                    else if (kb.IsKeyUp(Keys.LeftShift) && kb.IsKeyDown(Keys.A)) //release shift and walk left
+                    {
+                        playerState = PlayerState.WalkLeft;
+                    }
+                    else if (kb.IsKeyUp(Keys.LeftShift) && kb.IsKeyDown(Keys.D)) //release shift and return to walking right
+                    {
+                        playerState = PlayerState.WalkRight;
+                    }
+                    else if (kb.IsKeyUp(Keys.LeftShift))
+                    {
+                        playerState = PlayerState.IdleRight;
+                    }
+                    else if (SingleKeyPress(Keys.Space))
+                    {
+                        playerState = PlayerState.JumpRight;
+                    }
+                    break;
+
+                //Jump Left
+                case PlayerState.JumpLeft:
+                    isFacingRight = false;
+                    Movement();
+
+                    if (kb.IsKeyDown(Keys.LeftAlt))
+                    {
+                        playerState = PlayerState.DownDash;
+                    }
+                    //Float
+
+                    //default to fall if no other condition is met (no hitstun here, use fall's hitstun)
+                    playerState = PlayerState.Fall;
+                    break;
+
+                //Jump Right
+                case PlayerState.JumpRight:
+                    isFacingRight = true;
+                    Movement();
+
+                    if (kb.IsKeyDown(Keys.LeftAlt))
+                    {
+                        playerState = PlayerState.DownDash;
+                    }
+                    //Float
+
+                    //default to fall if no other condition is met (no hitstun here, use fall's hitstun)
+                    playerState = PlayerState.Fall;
+                    break;
+
+                //Float Left
+                case PlayerState.FloatLeft:
+                    //Need to fully implement
+                    Movement();
+                    break;
+
+                //Float Right
+                case PlayerState.FloatRight:
+                    //Need to fully implement
+                    Movement();
+                    break;
+
+                //Fall 
+                case PlayerState.Fall:
+                    Movement();
+                    if (kb.IsKeyDown(Keys.LeftAlt))
+                    {
+                        playerState = PlayerState.DownDash;
+                    }
+
+                    //adjust delay to determine how long delay is for downdash
+                    delay = 13;
+                    //HitStun
+                    break;
+
+                case PlayerState.DownDash:
+                    Movement();
+                    //Implement interaction with enemy here
+                    break;
+
+                //Bounce Left
+                case PlayerState.BounceLeft:
+                    //Adjusting this causes glitches, so leave alone for now
+                    isFacingRight = false;
+                    while (miliseconds > 0)
+                    {
+                        miliseconds--;
+                    }
+                    playerState = PlayerState.Fall;
+                    miliseconds = 2;
+                    break;
+
+                //Bounce Right
+                case PlayerState.BounceRight:
+                    //Adjusting this causes glitches, so leave alone for now
+                    isFacingRight = true;
+                    while (miliseconds > 0)
+                    {
+                        miliseconds--;
+                    }
+                    playerState = PlayerState.Fall;
+                    miliseconds = 2;
+                    break;
+
+                    //Remember to implement HitStun here
+
+            }
         }
         /// <summary>
         /// Calls accelerate/decelerate methods based on FSM state, the direction is accounted for in the methods
@@ -546,10 +553,12 @@ namespace Egg
             //Idle
             if (playerState == PlayerState.IdleLeft || playerState == PlayerState.IdleRight)
             {
+                //slow-down and stop the player if they are walking
                 if (horizontalVelocity <= 10 && horizontalVelocity >= -10)
                 {
                     Decelerate(horizontalVelocity, 1, 0, false);
                 }
+                //slow-down and stop the player if they are rolling
                 else if (horizontalVelocity > 10 || horizontalVelocity < -10)
                 {
                     Decelerate(horizontalVelocity, 2, 0, false);
@@ -558,6 +567,11 @@ namespace Egg
             //Walk
             else if (playerState == PlayerState.WalkLeft || playerState == PlayerState.WalkRight)
             {
+                //slow-down the player if they were rolling
+                if (horizontalVelocity > 10 || horizontalVelocity < -10)
+                {
+                    Decelerate(horizontalVelocity, 1, 10, false);
+                }
                 Accelerate(horizontalVelocity, 5, 10, false);
             }
             //Roll
@@ -568,21 +582,26 @@ namespace Egg
             //Jump
             else if (playerState == PlayerState.JumpLeft || playerState == PlayerState.JumpRight)
             {
+                //give huge start velocity then transition to fall and allow gravity to create arch
                 verticalVelocity = -30;
                 playerState = PlayerState.Fall;
             }
+            //Float
             else if (playerState == PlayerState.FloatLeft || playerState == PlayerState.FloatRight)
             {
+                //Need to finish implementing
                 verticalVelocity = 0;
             }
             //Fall
             else if (playerState == PlayerState.Fall)
             {
+                //Gravity
                 Accelerate(verticalVelocity, 2, 30, true);
             }
             //Down-dash
             else if (playerState == PlayerState.DownDash)
             {
+                //stop in midair (illusion of delay)
                 horizontalVelocity = 0;
                 verticalVelocity = 0;
 
@@ -596,14 +615,36 @@ namespace Egg
             X += horizontalVelocity;
             Y += verticalVelocity;
         }
-        public override void Draw(SpriteBatch sb)
+        /// <summary>
+        /// used to prevent holding down a key from spamming an action
+        /// </summary>
+        /// <param name="pressedKey"></param>
+        /// <returns></returns>
+        public bool SingleKeyPress(Keys pressedKey)
         {
-            sb.Draw(defaultSprite, hitbox, this.color);
+            if (kb.IsKeyDown(pressedKey) && previousKb.IsKeyUp(pressedKey))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        //Implement when working on enemy collision
+        public override void CheckColliderAgainstEnemy(Enemy e)
+        {
+            throw new NotImplementedException();
         }
         //not applicable
         public override void CheckColliderAgainstPlayer(Player p)
         {
             //do nothing
         }
+        public override void Draw(SpriteBatch sb)
+        {
+            sb.Draw(defaultSprite, hitbox, this.color);
+        }
+
     }
 }

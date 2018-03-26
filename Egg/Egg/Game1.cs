@@ -62,12 +62,6 @@ namespace Egg
         public Texture2D nRightBot;
         public Texture2D nRightTop;
 
-        //Screen Drawing
-        Screen testScreen;
-
-        //Map Builder
-        Mappy MapBuilder = new Mappy();
-
         //DO NOT ADD DIRECTLY TO THIS LIST
         List<GameObject> objectList;
         Stack<GameObject> sortHolder;
@@ -102,6 +96,7 @@ namespace Egg
             objectList = new List<GameObject>();
             sortHolder = new Stack<GameObject>();
             currentState = GameState.Menu;
+
             base.Initialize();
         }
 
@@ -127,6 +122,7 @@ namespace Egg
             timeCounter = 0;
 
             //loading Tiles
+            /*
             LTopLeft = Content.Load<Texture2D>("LTopLeft");
             LTopMid = Content.Load<Texture2D>("LTopMid");
             LTopRight = Content.Load<Texture2D>("LTopRight");
@@ -148,7 +144,7 @@ namespace Egg
             nLeftBot = Content.Load<Texture2D>("nLeftbot");
             nRightBot = Content.Load<Texture2D>("nRightBot");
             nRightTop = Content.Load<Texture2D>("nRightTop");
-
+            */
         }
 
         /// <summary>
@@ -184,7 +180,6 @@ namespace Egg
                     break;
 
                 case GameState.Game:
-                    testScreen = new Screen("testLevel", player);
                     GameUpdateLoop();
                     //Transition to level end not yet implemented
                     break;
@@ -197,7 +192,7 @@ namespace Egg
             //Must hold down P, O, and G at the same time to activate level editor
             if (kb.IsKeyDown(Keys.P) && kb.IsKeyDown(Keys.O) && kb.IsKeyDown(Keys.G))
             {
-                MapBuilder.ShowDialog();
+                //Show dialog goes here.
             }
 
             base.Update(gameTime);
@@ -352,78 +347,26 @@ namespace Egg
             AddObjectToList(new CapturedChicken(4, testSprite, new Rectangle(0, 30, 30, 30), Color.Green));
             AddObjectToList(new CapturedChicken(3, testSprite, new Rectangle(0, 45, 30, 30), Color.Yellow));
             AddObjectToList(new CapturedChicken(2, testSprite, new Rectangle(0, 60, 30, 30), Color.White));
+
+            /* PLATFORM CODE
+            AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(100, 600, 500, 300), Tile.TileType.Normal));
+            AddObjectToList(new Tile(7, sideRectangle, new Rectangle(0, 0, 100, 900), Tile.TileType.Normal));
+            AddObjectToList(new Tile(8, bottomRectangle, new Rectangle(800, 600, 300, 300), Tile.TileType.Normal));
+            AddObjectToList(new Tile(9, sideRectangle, new Rectangle(600, 400, 200, 400), Tile.TileType.Normal));
+            */
+            /* BOX CODE */
             AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(300, 300, 500, 300), Tile.TileType.Normal));
-            AddObjectToList(new Tile(7, sideRectangle, new Rectangle(900, 0, 100, 500), Tile.TileType.Normal));
-            AddObjectToList(new Tile(8, topRectangle, new Rectangle(100, 0, 700, 100), Tile.TileType.Normal));
+            AddObjectToList(new Tile(7, sideRectangle, new Rectangle(800, 0, 100, 500), Tile.TileType.Normal));
+            AddObjectToList(new Tile(8, sideRectangle, new Rectangle(200, 0, 100, 500), Tile.TileType.Normal));
+            AddObjectToList(new Tile(9, topRectangle, new Rectangle(100, -50, 700, 100), Tile.TileType.Normal));
+            
 
-            player = new Player(9, testSprite, new Rectangle(300, 200, 50, 50), Color.Wheat, 50, 50);
+            player = new Player(10, testSprite, new Rectangle(400, 200, 50, 50), Color.Wheat, 50, 50);
             AddObjectToList(player);
+
         }
 
-        public int Viewport(string s)
-        {
-            if (s == "h")
-                return GraphicsDevice.Viewport.Height;
-            else if (s == "w")
-                return GraphicsDevice.Viewport.Width;
-            else
-                return -1;
-        }
 
-        //Gets a texture based on 
-        public Texture2D GetTexture(string s)
-        {
-            switch (s)
-            {
-                case "LTopLeft":
-                    return LTopLeft;
-                case "LTopMid":
-                    return LTopMid;
-                case "LTopRight":
-                    return LTopRight;
-                case "LMidLeft":
-                    return LMidLeft;
-                case "LMidRight":
-                    return LMidRight;
-                case "LBotLeft":
-                    return LBotLeft;
-                case "LBotMid":
-                    return LBotMid;
-                case "LBotRight":
-                    return LBotRight;
-
-                case "dTopLeft":
-                    return dTopLeft;
-                case "dTopMid":
-                    return dTopMid;
-                case "dTopRight":
-                    return dTopRight;
-                case "dMidLeft":
-                    return dMidLeft;
-                case "dSolid":
-                    return dSolid;
-                case "dMidRight":
-                    return dMidRight;
-                case "dBotLeft":
-                    return dBotLeft;
-                case "dBotMid":
-                    return dBotMid;
-                case "dBotRight":
-                    return dBotRight;
-
-                case "nLeftTop":
-                    return nLeftTop;
-                case "nLeftBot":
-                    return nLeftBot;
-                case "nRightTop":
-                    return nRightTop;
-                case "nRightBot":
-                    return nRightBot;
-
-                default:    //failsafe case
-                    return dSolid;
-            }
-        }
     }
 
    
