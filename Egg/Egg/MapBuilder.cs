@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework.Input;
 
-namespace Egg_DevTool_Test
+namespace Egg
 {
     public partial class Mappy : Form
     {

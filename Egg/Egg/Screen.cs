@@ -26,26 +26,50 @@ namespace Egg
         int lengthX; // (Tiles in X direction)*(Length of a side of a single tile)
         int lengthY; // (Tiles in Y direction)*(Length of a side of a single tile)
 
-        public Screen(string textFile)
+        public Screen(string textFile, Player p)
         {
-
+            string[,] pleaseWork = LevelInterpreter(textFile);
+            LoadTiles(p, pleaseWork);
         }
 
-        public void LoadTiles(Player p)
+        public void LoadTiles(Player p, string[,] textMap)
         {
-            const int SCREEN_LENGTH = 16;
-            const int SCREEN_WIDTH = 9;
+            const int SCREEN_TILES_L = 16;  //How many tiles across to draw on screen
+            const int SCREEN_TILES_H = 9;   //How many tiles high to draw on screen
+            string[,] screenTiles = new string[SCREEN_TILES_L, SCREEN_TILES_H];
 
             //Calculate player's tile
-            int playerTileX = (int)Math.Round((double)p.Hitbox.X / SCREEN_LENGTH);
-            int playerTileY = (int)Math.Round((double)p.Hitbox.Y / SCREEN_WIDTH);
+            int playerTileX = (int)Math.Round((double)p.Hitbox.X / SCREEN_TILES_H); //player's x in relation to tiles
+            int playerTileY = (int)Math.Round((double)p.Hitbox.Y / SCREEN_TILES_L); //player's y in relation to tiles
+            const int P_BUFFER_X = 3;   
+            const int P_BUFFER_Y = 2;
 
-            //the loop
+            int drawStartTileX = 0;     //assume x drawing starts at textMap x of 0
+            int drawStartTileY = 0;     //assume y drawing starts at textMap y of 0
 
+            //determine if the player is far enough over along the xMap to move the drawing start tile to the left
+            if (drawStartTileX < (playerTileX - (1 / 2) * SCREEN_TILES_L))    
+                drawStartTileY = playerTileX - (1 / 2) * SCREEN_TILES_L;
+            //determine if the player is far enough over to move the drawing start tile to the right
+            if (drawStartTileX > SCREEN_TILES_L - P_BUFFER_X)
+                drawStartTileX = SCREEN_TILES_L - P_BUFFER_X;
+            //determine if the player is far enough over to move the drawing start tile down
+            if (drawStartTileY < (playerTileY - (1 / 2) * SCREEN_TILES_H))
+                drawStartTileY = playerTileY - (1 / 2) * SCREEN_TILES_H;
+            //determine if the player is far enough over to move the drawing start tile up
+            if (drawStartTileY > SCREEN_TILES_H - P_BUFFER_Y)
+                drawStartTileY = SCREEN_TILES_H - P_BUFFER_Y;
+
+            //main drawing loop
             for (int row = 0; row < tileY; row++)
             {
                 for (int column = 0; column < tileX; column++)
                 {
+                    
+                    screenTiles[column, row] = Translator(textMap[drawStartTileX + column, drawStartTileY + row]);
+
+                    #region temporarily removed to try and implement screen tile drawing
+                    /*
                     if (row > (playerTileY - 6) && row < (playerTileY + 6))
                     {
                         if (column > (playerTileX - 9) && column < (playerTileX + 9))
@@ -61,6 +85,8 @@ namespace Egg
                     {
                         tileList[row, column].IsActive = false;
                     }
+                    */
+                    #endregion
                 }
             } //End loop
 
@@ -79,7 +105,7 @@ namespace Egg
             string tempString = "";
             string[] split;
            
-            interpreter = new StreamReader(s + ".txt");
+            interpreter = new StreamReader(@"..\..\..\..\Resources\levelExports\" + s + ".txt");
 
             //Setup for creating the level's 2d array
             line = interpreter.ReadLine(); //reads FIRST line only
@@ -131,19 +157,19 @@ namespace Egg
             return level;
         }
 
+
         /// <summary>
         /// Draws the level to the screen using the level map array
         /// </summary>
         /// <param name="level">level map 2d array</param>
-        public void DrawLevel(string[,] level)
+        public List<Tile> DrawLevel(string[,] level)
         {
             //fields
-            
-            
-            // graphics device doesnt work for some reason
 
-            //int tileWidth = GraphicsDevice.Viewport.Width / level.GetLength(0);
-            //int tileHeight = GraphicsDevice.Viewport.Height / level.GetLength(1);
+
+            // graphics device doesnt work for some reason
+            //int tileWidth = Game1.Viewport("w") / level.GetLength(0);
+            //int tileHeight = Game1.Viewport("h")/ level.GetLength(1);
             int x = level.GetLength(0) - 1;
             int y = level.GetLength(1) - 1;
             List<Tile> tileList = new List<Tile>();
@@ -175,15 +201,17 @@ namespace Egg
                     }
 
                     //Texture2d's not loaded in screen, put them in later
-                    /*
+                    
                     switch (tileID) //positions are not final, everything rectangle is same size with same position so far
                     {
                         //checks tileID and makes a new rectangle with corresponding texture
+                        //returns the texture2D that should come outta these
+                        /*
                         case "b1":
                             tileTemp = new Tile(0, LTopLeft, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
                             tileList.Add(tileTemp);
                             break;
-                        case "b2":
+                      case "b2":
                             tileTemp = new Tile(0, LTopMid, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
                             tileList.Add(tileTemp);
                             break;
@@ -267,11 +295,72 @@ namespace Egg
                             break;
                         case "#### TRANSLATOR BROKEN #####":
                             break;
+                            */
                     }
-                    */
                 }
 
             }
-        }       
+
+            return tileList;
+        }
+
+        /// <summary>
+        /// Translates text file names for tiles back to tiles names
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public string Translator(string s)
+        {
+            switch (s)
+            {
+                case "b1":
+                    return "LTopLeft";
+                case "b2":
+                    return "LTopMid";
+                case "b3":
+                    return "LTopRight";
+                case "b4":
+                    return "LMidLeft";
+                case "b6":
+                    return "LMidRight";
+                case "b7":
+                    return "LBotLeft";
+                case "b8":
+                    return "LBotMid";
+                case "b9":
+                    return "LBotRight";
+
+                case "i1":
+                    return "dTopLeft";
+                case "i2":
+                    return "dTopMid";
+                case "i3":
+                    return "dTopRight";
+                case "i4":
+                    return "dMidLeft";
+                case "i5":
+                    return "dSolid";
+                case "i6":
+                    return "dMidRight";
+                case "i7":
+                    return "dBotLeft";
+                case "i8":
+                    return "dBotMid";
+                case "i9":
+                    return "dBotRight";
+
+                case "n1":
+                    return "nLeftTop";
+                case "n3":
+                    return "nLeftBot";
+                case "n2":
+                    return "nRightTop";
+                case "n4":
+                    return "nRightBot";
+
+                default:    //failsafe case
+                    return "i5";
+            }
+        }
     }
 }

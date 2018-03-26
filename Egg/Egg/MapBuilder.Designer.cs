@@ -1,4 +1,4 @@
-﻿namespace Egg_DevTool_Test
+﻿namespace Egg
 {
     partial class Mappy
     {

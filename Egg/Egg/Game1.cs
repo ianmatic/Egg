@@ -62,6 +62,12 @@ namespace Egg
         public Texture2D nRightBot;
         public Texture2D nRightTop;
 
+        //Screen Drawing
+        Screen testScreen;
+
+        //Map Builder
+        Mappy MapBuilder = new Mappy();
+
         //DO NOT ADD DIRECTLY TO THIS LIST
         List<GameObject> objectList;
         Stack<GameObject> sortHolder;
@@ -96,7 +102,6 @@ namespace Egg
             objectList = new List<GameObject>();
             sortHolder = new Stack<GameObject>();
             currentState = GameState.Menu;
-
             base.Initialize();
         }
 
@@ -179,6 +184,7 @@ namespace Egg
                     break;
 
                 case GameState.Game:
+                    testScreen = new Screen("tester", player);
                     GameUpdateLoop();
                     //Transition to level end not yet implemented
                     break;
@@ -191,7 +197,7 @@ namespace Egg
             //Must hold down P, O, and G at the same time to activate level editor
             if (kb.IsKeyDown(Keys.P) && kb.IsKeyDown(Keys.O) && kb.IsKeyDown(Keys.G))
             {
-                //Show dialog goes here.
+                MapBuilder.ShowDialog();
             }
 
             base.Update(gameTime);
@@ -352,10 +358,72 @@ namespace Egg
 
             player = new Player(9, testSprite, new Rectangle(300, 200, 50, 50), Color.Wheat, 50, 50);
             AddObjectToList(player);
-
         }
 
+        public int Viewport(string s)
+        {
+            if (s == "h")
+                return GraphicsDevice.Viewport.Height;
+            else if (s == "w")
+                return GraphicsDevice.Viewport.Width;
+            else
+                return -1;
+        }
 
+        //Gets a texture based on 
+        public Texture2D GetTexture(string s)
+        {
+            switch (s)
+            {
+                case "LTopLeft":
+                    return LTopLeft;
+                case "LTopMid":
+                    return LTopMid;
+                case "LTopRight":
+                    return LTopRight;
+                case "LMidLeft":
+                    return LMidLeft;
+                case "LMidRight":
+                    return LMidRight;
+                case "LBotLeft":
+                    return LBotLeft;
+                case "LBotMid":
+                    return LBotMid;
+                case "LBotRight":
+                    return LBotRight;
+
+                case "dTopLeft":
+                    return dTopLeft;
+                case "dTopMid":
+                    return dTopMid;
+                case "dTopRight":
+                    return dTopRight;
+                case "dMidLeft":
+                    return dMidLeft;
+                case "dSolid":
+                    return dSolid;
+                case "dMidRight":
+                    return dMidRight;
+                case "dBotLeft":
+                    return dBotLeft;
+                case "dBotMid":
+                    return dBotMid;
+                case "dBotRight":
+                    return dBotRight;
+
+                case "nLeftTop":
+                    return nLeftTop;
+                case "nLeftBot":
+                    return nLeftBot;
+                case "nRightTop":
+                    return nRightTop;
+                case "nRightBot":
+                    return nRightBot;
+
+                default:    //failsafe case
+                    return dSolid;
+            }
+        }
     }
 
    
