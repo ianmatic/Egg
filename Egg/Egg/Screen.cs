@@ -72,6 +72,7 @@ namespace Egg
                 drawStartTileY = SCREEN_TILES_H - P_BUFFER_Y;
 
             //main drawing loop
+            /*
             for (int row = 0; row < SCREEN_TILES_L; row++)
             {
                 for (int column = 0; column < SCREEN_TILES_H; column++)
@@ -79,7 +80,7 @@ namespace Egg
                     
                     screenTiles[column, row] = Translator(textMap[drawStartTileX + column, drawStartTileY + row]);
 
-                    #region temporarily removed to try and implement screen tile drawing
+                    // temporarily removed to try and implement screen tile drawing
                     /*
                     if (row > (playerTileY - 6) && row < (playerTileY + 6))
                     {
@@ -96,11 +97,11 @@ namespace Egg
                     {
                         tileList[row, column].IsActive = false;
                     }
-                    */
-                    #endregion
+                    
                 }
+        
             } //End loop
-
+            */
         }
 
         /// <summary>
@@ -372,6 +373,7 @@ namespace Egg
                 default:    //failsafe case
                     return "i5";
             }
+
         }
     }
 }
