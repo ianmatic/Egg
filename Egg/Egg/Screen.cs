@@ -61,9 +61,9 @@ namespace Egg
                 drawStartTileY = SCREEN_TILES_H - P_BUFFER_Y;
 
             //main drawing loop
-            for (int row = 0; row < tileY; row++)
+            for (int row = 0; row < SCREEN_TILES_L; row++)
             {
-                for (int column = 0; column < tileX; column++)
+                for (int column = 0; column < SCREEN_TILES_H; column++)
                 {
                     
                     screenTiles[column, row] = Translator(textMap[drawStartTileX + column, drawStartTileY + row]);
