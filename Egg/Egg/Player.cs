@@ -269,7 +269,7 @@ namespace Egg
             else
             {
                 //same as right, except X subtracts horizontalVelocity to prevent player from clipping through walls
-                bottomChecker = new Rectangle(X - horizontalVelocity, Y + hitbox.Height, hitbox.Width - horizontalVelocity, Math.Abs(verticalVelocity));
+                bottomChecker = new Rectangle(X - horizontalVelocity, Y + hitbox.Height, hitbox.Width + horizontalVelocity, Math.Abs(verticalVelocity));
 
                 //same as right
                 if (verticalVelocity == 0 && !kb.IsKeyDown(Keys.Space))
@@ -597,6 +597,22 @@ namespace Egg
             {
                 //Gravity
                 Accelerate(verticalVelocity, 2, 30, true);
+
+                if (kb.IsKeyDown(Keys.A))
+                {
+                    //temp used to return isFacingRight to original state
+                    bool temp = isFacingRight;
+                    isFacingRight = false;
+                    Accelerate(horizontalVelocity, 1, 10, false);
+                    isFacingRight = temp;
+                }
+                if (kb.IsKeyDown(Keys.D))
+                {
+                    bool temp = isFacingRight;
+                    isFacingRight = true;
+                    Accelerate(horizontalVelocity, 1, 10, false);
+                    isFacingRight = temp;
+                }
             }
             //Down-dash
             else if (playerState == PlayerState.DownDash)

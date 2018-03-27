@@ -358,7 +358,7 @@ namespace Egg
             AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(300, 300, 500, 300), Tile.TileType.Normal));
             AddObjectToList(new Tile(7, sideRectangle, new Rectangle(800, 0, 100, 500), Tile.TileType.Normal));
             AddObjectToList(new Tile(8, sideRectangle, new Rectangle(200, 0, 100, 500), Tile.TileType.Normal));
-            AddObjectToList(new Tile(9, topRectangle, new Rectangle(100, -50, 700, 100), Tile.TileType.Normal));
+            AddObjectToList(new Tile(9, topRectangle, new Rectangle(100, -500, 700, 100), Tile.TileType.Normal));
             
 
             player = new Player(10, testSprite, new Rectangle(400, 200, 50, 50), Color.Wheat, 50, 50);
