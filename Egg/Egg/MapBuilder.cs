@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework.Input;
 
-namespace Egg_DevTool_Test
+namespace Egg
 {
     public partial class Mappy : Form
     {
@@ -243,7 +243,7 @@ namespace Egg_DevTool_Test
         /// </summary>
         private void ButtonTest(object sender, EventArgs e)
         {
-            int top = 200;
+            int top = 100;
             int left = 400;
 
             PictureBox button = new PictureBox();
@@ -257,10 +257,10 @@ namespace Egg_DevTool_Test
          /// </summary>
         private void HeightWidthChange(object sender, EventArgs e)
         {
-            const int BASEX = 220;  // Top left corner of the container
-            const int BASEY = 40;   // Top right corner of the container
-            const int BASEW = 830;  // The width of the container
-            const int BASEH = 550;  // The height of the container
+            const int BASEX = 204;  // Top left corner of the container
+            const int BASEY = 18;   // Top right corner of the container
+            const int BASEW = 1190;  // The width of the container
+            const int BASEH = 660;  // The height of the container
 
             int btnX;       // X Position field
             int btnY;       // Y Position field
@@ -449,7 +449,7 @@ namespace Egg_DevTool_Test
             string fileName = txtFile.Text;
             try
             {
-                ClearTextFile(@"..\..\..\..\Resources\levelExports\" + fileName + ".txt");  // Clears any text currently in the file
+                ClearTextFile(fileName);  // Clears any text currently in the file
             }
             catch (System.IO.DirectoryNotFoundException)
             {
@@ -534,7 +534,7 @@ namespace Egg_DevTool_Test
         /// </summary>
         private void ClearTextFile(string path)
         {
-            File.Delete(path);
+            File.Delete(@"..\..\..\..\Resources\levelExports\" + path + ".txt");
         }
         #endregion
 
@@ -566,9 +566,133 @@ namespace Egg_DevTool_Test
         }
         #endregion
 
+        #region Translator
+        /// <summary>
+        /// Translates text file names for tiles back to tiles names
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public string Retranslator(string s)
+        {
+            switch (s)
+            {
+                case "b1":
+                    return "LTopLeft";
+                case "b2":
+                    return "LTopMid";
+                case "b3":
+                    return "LTopRight";
+                case "b4":
+                    return "LMidLeft";
+                case "b6":
+                    return "LMidRight";
+                case "b7":
+                    return "LBotLeft";
+                case "b8":
+                    return "LBotMid";
+                case "b9":
+                    return "LBotRight";
+
+                case "i1":
+                    return "dTopLeft";
+                case "i2":
+                    return "dTopMid";
+                case "i3":
+                    return "dTopRight";
+                case "i4":
+                    return "dMidLeft";
+                case "i5":
+                    return "dSolid";
+                case "i6":
+                    return "dMidRight";
+                case "i7":
+                    return "dBotLeft";
+                case "i8":
+                    return "dBotMid";
+                case "i9":
+                    return "dBotRight";
+
+                case "n1":
+                    return "nLeftTop";
+                case "n3":
+                    return "nLeftBot";
+                case "n2":
+                    return "nRightTop";
+                case "n4":
+                    return "nRightBot";
+
+                default:    //failsafe case
+                    return "i5";
+            }
+
+        }
+
+        #endregion
 
         private void MapBuilder_Load(object sender, EventArgs e)
         {
+            InitialMap();
+        }
+
+        private void InitialMap()
+        {
+            const int BASEX = 204;  // Top left corner of the container
+            const int BASEY = 18;   // Top right corner of the container
+            const int BASEW = 1190;  // The width of the container
+            const int BASEH = 660;  // The height of the container
+
+            int btnX;       // X Position field
+            int btnY;       // Y Position field
+            int btnWidth;   // How wide the buttons are
+            int btnHeight;  // How tall the buttons are
+
+            int btnStacks; // How many buttons tall (pulled from form)
+            int.TryParse(tabletHeight.Text, out btnStacks);
+            int btnRows;  // How many buttons wide (pulled from form)
+            int.TryParse(tabletWidth.Text, out btnRows);
+
+            if (btnRows == 0 || btnStacks == 0)  //Check if the tablet's height and width will yeild a result
+            {
+                return; // Break the function if nothing it's not going to work
+            }
+            else // If there will be a result, change the tablet's setup
+            {
+                // First, clear all currently existing buttons in tabletButts
+                foreach (var button in tabletButts)
+                {
+                    tabPage1.Controls.Remove(button);
+                }
+                for (int buttonNumber = tabletButts.Count - 1; buttonNumber >= 0; buttonNumber--)
+                {
+                    tabletButts.Remove(tabletButts[buttonNumber]);
+                }
+
+                // Next, recreate all of the buttons according to the new height and widths
+                for (int h = 1; h <= btnStacks; h++)
+                {
+                    for (int w = 1; w <= btnRows; w++)
+                    {
+                        btnWidth = BASEW / btnRows;
+                        btnHeight = BASEH / btnStacks;
+                        btnX = BASEX + ((w - 1) * btnWidth);
+                        btnY = BASEY + ((h - 1) * btnHeight);
+
+                        ImageBox temp = new ImageBox();
+                        temp.Height = btnHeight;
+                        temp.Width = btnWidth;
+                        temp.Left = btnX;
+                        temp.Top = btnY;
+                        temp.Visible = true;
+                        temp.Image = ImageSelect("blankTile");
+                        temp.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                        temp.SizeMode = PictureBoxSizeMode.Zoom;
+                        temp.Click += TabletClick;
+
+                        tabletButts.Add(temp);
+                        tabPage1.Controls.Add(temp);
+                    }
+                }
+            }
         }
     }
 }
