@@ -80,31 +80,31 @@ namespace Egg
         }
 
         /// <summary>
-        /// Draws the object to the screen
+        /// Tests for a collision between the object and an enemy
         /// </summary>
-        /// <param name="sb">The SpriteBatch object used to draw the object (be sure to Open() & Close()!!!)</param>
-        public abstract void Draw(SpriteBatch sb);
-       
-        /// <summary>
-        /// Triggers an object to run its movement logic
-        /// </summary>
-        public abstract void Movement();
-
-        /// <summary>
-        /// Triggers an object to update its finite state machine, if applicable
-        /// </summary>
-        public abstract void FiniteState();
-
+        /// <param name="e">The enemy to check collision against</param>
+        public abstract void CheckColliderAgainstEnemy(Enemy e);
         /// <summary>
         /// Tests for a collision between the object and a player
         /// </summary>
         /// <param name="p">The player to check collision against</param>
         public abstract void CheckColliderAgainstPlayer(Player p);
+        /// <summary>
+        /// Draws the object to the screen
+        /// </summary>
+        /// <param name="sb">The SpriteBatch object used to draw the object (be sure to Open() & Close()!!!)</param>
+        public abstract void Draw(SpriteBatch sb);
 
         /// <summary>
-        /// Tests for a collision between the object and an enemy
+        /// Triggers an object to update its finite state machine, if applicable
         /// </summary>
-        /// <param name="e">The enemy to check collision against</param>
-        public abstract void CheckColliderAgainstEnemy(Enemy e);
+        public abstract void FiniteState();
+        /// <summary>
+        /// Triggers an object to run its movement logic
+        /// </summary>
+        public abstract void Movement();
+
+
+
     }
 }
