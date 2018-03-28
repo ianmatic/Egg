@@ -51,6 +51,7 @@ namespace Egg
         public Texture2D DefaultSprite
         {
             get { return this.defaultSprite; }
+            set { DefaultSprite = value; }
         }
 
         /// <summary>

@@ -18,52 +18,85 @@ namespace Egg
         StreamReader interpreter;
 
 
-        Tile[,] tileList;
-        Enemy[] listOfEnemies;
-        int tileX;
-        int tileY;
+        Tile[,] screenTiles = new Tile[16, 9];
 
-        int lengthX; // (Tiles in X direction)*(Length of a side of a single tile)
-        int lengthY; // (Tiles in Y direction)*(Length of a side of a single tile)
 
-        public Screen(string textFile)
+        public Tile[,] LoadTiles(string[,] levelMap, List<Texture2D> textures)
         {
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 16; j++)
+                {
+                    screenTiles[j, i].DefaultSprite = textures[0]; 
+                }
+            }
 
+            for (int h = 0; h < 9; h++)
+            {
+                for (int w = 0; w < 16; w++)
+                {
+                    screenTiles[w, h].DefaultSprite = textures[GetTexture(levelMap[w, h])];
+                }
+            }
+
+            return screenTiles;
         }
 
-        public void LoadTiles(Player p)
+
+
+        //Gets a texture based on the string (s) passed in
+        public int GetTexture(string s)
         {
-            const int SCREEN_LENGTH = 16;
-            const int SCREEN_WIDTH = 9;
-
-            //Calculate player's tile
-            int playerTileX = (int)Math.Round((double)p.Hitbox.X / SCREEN_LENGTH);
-            int playerTileY = (int)Math.Round((double)p.Hitbox.Y / SCREEN_WIDTH);
-
-            //the loop
-
-            for (int row = 0; row < tileY; row++)
+            switch (s)
             {
-                for (int column = 0; column < tileX; column++)
-                {
-                    if (row > (playerTileY - 6) && row < (playerTileY + 6))
-                    {
-                        if (column > (playerTileX - 9) && column < (playerTileX + 9))
-                        {
-                            tileList[row, column].IsActive = true;
-                        }
-                        else
-                        {
-                            tileList[row, column].IsActive = false;
-                        }
-                    }
-                    else
-                    {
-                        tileList[row, column].IsActive = false;
-                    }
-                }
-            } //End loop
+                case "LTopLeft":
+                    return 0;
+                case "LTopMid":
+                    return 1;
+                case "LTopRight":
+                    return 2;
+                case "LMidLeft":
+                    return 3;
+                case "LMidRight":
+                    return 4;
+                case "LBotLeft":
+                    return 5;
+                case "LBotMid":
+                    return 6;
+                case "LBotRight":
+                    return 7;
 
+                case "dTopLeft":
+                    return 8;
+                case "dTopMid":
+                    return 9;
+                case "dTopRight":
+                    return 10;
+                case "dMidLeft":
+                    return 11;
+                case "dSolid":
+                    return 12;
+                case "dMidRight":
+                    return 13;
+                case "dBotLeft":
+                    return 14;
+                case "dBotMid":
+                    return 15;
+                case "dBotRight":
+                    return 16;
+
+                case "nLeftTop":
+                    return 17;
+                case "nLeftBot":
+                    return 18;
+                case "nRightTop":
+                    return 19;
+                case "nRightBot":
+                    return 20;
+
+                default:    //failsafe case
+                    return 0;
+            }
         }
 
         /// <summary>
@@ -78,7 +111,7 @@ namespace Egg
             int c = 0;
             string tempString = "";
             string[] split;
-           
+
             interpreter = new StreamReader(s + ".txt");
 
             //Setup for creating the level's 2d array
@@ -135,142 +168,24 @@ namespace Egg
         /// Draws the level to the screen using the level map array
         /// </summary>
         /// <param name="level">level map 2d array</param>
-        public void DrawLevel(string[,] level)
+        public void DrawLevel(Tile[,] level)
         {
-            //fields
-            
-            
-            // graphics device doesnt work for some reason
+            int xPos = 0;
+            int yPos = 0;
+            int tileLength = 0; //Set up as screen length divided into segments
+            int tileHeight = 0;
+            int screenLength = 0;
+            int screenHeight = 0;
 
-            //int tileWidth = GraphicsDevice.Viewport.Width / level.GetLength(0);
-            //int tileHeight = GraphicsDevice.Viewport.Height / level.GetLength(1);
-            int x = level.GetLength(0) - 1;
-            int y = level.GetLength(1) - 1;
-            List<Tile> tileList = new List<Tile>();
-
-            string temp;
-            char[] array;
-            Tile tileTemp;
-            for (int i = 0; i <= level.GetLength(0) - 1; i++)
+            for (int r = 0; r < 9; r++)
             {
-
-                for (int j = 0; j <= level.GetLength(1) - 1; j++)
+                for (int c = 0; c < 16; c++)
                 {
-                    string tileID = "";
-                    string tileProp = "";
-
-                    temp = level[i, j];
-                    array = temp.ToCharArray();
-                    for (int k = 0; k <= array.Length; k++)
-                    {
-
-                        if (k >= array.Length - 2)
-                        {
-                            tileID += array[i].ToString();
-                        }
-                        else
-                        {
-                            tileProp += array[i].ToString();
-                        }
-                    }
-
-                    //Texture2d's not loaded in screen, put them in later
-                    /*
-                    switch (tileID) //positions are not final, everything rectangle is same size with same position so far
-                    {
-                        //checks tileID and makes a new rectangle with corresponding texture
-                        case "b1":
-                            tileTemp = new Tile(0, LTopLeft, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "b2":
-                            tileTemp = new Tile(0, LTopMid, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "b3":
-                            tileTemp = new Tile(0, LTopRight, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "b4":
-                            tileTemp = new Tile(0, LMidRight, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "b5": //no b5 tile sprite
-                            break;
-                        case "b6":
-                            tileTemp = new Tile(0, LMidLeft, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "b7":
-                            tileTemp = new Tile(0, LBotLeft, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "b8":
-                            tileTemp = new Tile(0, LBotMid, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "b9":
-                            tileTemp = new Tile(0, LBotRight, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "i1":
-                            tileTemp = new Tile(0, dTopLeft, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "i2":
-                            tileTemp = new Tile(0, dTopMid, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "i3":
-                            tileTemp = new Tile(0, dTopRight, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "i4":
-                            tileTemp = new Tile(0, dMidLeft, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "i5":
-                            tileTemp = new Tile(0, dSolid, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "i6":
-                            tileTemp = new Tile(0, dMidRight, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "i7":
-                            tileTemp = new Tile(0, dBotLeft, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "i8":
-                            tileTemp = new Tile(0, dBotMid, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "i9":
-                            tileTemp = new Tile(0, dBotRight, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "n1":
-                            tileTemp = new Tile(0, nLeftTop, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "n2":
-                            tileTemp = new Tile(0, nRightTop, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "n3":
-                            tileTemp = new Tile(0, nLeftBot, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "n4":
-                            tileTemp = new Tile(0, nRightBot, new Rectangle(0, 0, tileWidth, tileHeight), Tile.TileType.Normal);
-                            tileList.Add(tileTemp);
-                            break;
-                        case "#### TRANSLATOR BROKEN #####":
-                            break;
-                    }
-                    */
+                    xPos = ((screenLength / 16) * c) - ((1 / 2) * tileLength);
+                    yPos = ((screenHeight / 9) * r) - ((1 / 2) * tileHeight);
+                    level[c, r].X = xPos;
+                    level[c, r].Y = yPos;
                 }
-
             }
         }       
     }
