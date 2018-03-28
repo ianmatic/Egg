@@ -51,7 +51,7 @@ namespace Egg
         private Rectangle sideChecker;
         private bool bottomIntersects;
         private bool topIntersects;
-
+        Texture2D bottomTexture;
 
         //for directionality and FSM
         private bool isFacingRight;
@@ -69,6 +69,18 @@ namespace Egg
         {
             get { return playerState; }
             set { playerState = value; }
+        }
+        public Rectangle BottomChecker
+        {
+            get { return bottomChecker; }
+        }
+        public Rectangle TopChecker
+        {
+            get { return topChecker; }
+        }
+        public Rectangle SideChecker
+        {
+            get { return sideChecker; }
         }
 
         //Constructor for player
@@ -135,6 +147,20 @@ namespace Egg
             bool output = false;
             bottomIntersects = false;
 
+            //wall collision (collision box next to player depending on direction facing)
+            if (sideChecker.Intersects(t.Hitbox))
+            {
+                horizontalVelocity = 0; //stop player from moving through wall
+                if (isFacingRight && t.X > hitbox.X) //player facing right and tile is to the right of player
+                {
+                    hitbox.X = t.X - hitbox.Width; //place player left of tile
+                }
+                else if (t.X < hitbox.X) //player facing left and tile is to the left of player
+                {
+                    hitbox.X = t.X + t.Hitbox.Width; //place player right of tile
+                }
+                output = true;
+            }
             //ceiling collision (collision box above player)
             if (topChecker.Intersects(t.Hitbox))
             {
@@ -152,6 +178,7 @@ namespace Egg
                 verticalVelocity = 0; //stop the player from falling
                 hitbox.Y = t.Y - hitbox.Height; //place the player on top of tile
 
+                bottomIntersects = true;
                 //FSM states are changed here so that the player can move after touching the ground
 
                 //Roll Left
@@ -185,24 +212,8 @@ namespace Egg
                     playerState = PlayerState.IdleLeft;
                 }
 
-                bottomIntersects = true;
-
                 //everytime the player lands from a jump (or falls), the next time they jump they will hit the ceiling
                 topIntersects = true; 
-                output = true;
-            }
-            //wall collision (collision box next to player depending on direction facing)
-            if (sideChecker.Intersects(t.Hitbox))
-            {
-                horizontalVelocity = 0; //stop player from moving through wall
-                if (isFacingRight && t.X > hitbox.X) //player facing right and tile is to the right of player
-                {
-                    hitbox.X = t.X - hitbox.Width; //place player left of tile
-                }
-                else if (t.X < hitbox.X) //player facing left and tile is to the left of player
-                {
-                    hitbox.X = t.X + t.Hitbox.Width; //place player right of tile
-                }
                 output = true;
             }
             return output;
@@ -248,51 +259,27 @@ namespace Egg
             previousKb = kb;
             kb = Keyboard.GetState();
 
-            //Facing right
-            if (isFacingRight)
-            {
-                //floor collider is created at same X as player, Y is at bottom of player
-                //width depends on horizontal velocity, height has to always be positive and depends on vertical velocity
-                bottomChecker = new Rectangle(X, Y + hitbox.Height, hitbox.Width - horizontalVelocity, Math.Abs(verticalVelocity));
-
-                //special condition where height of checker would normally be 0 if player had no vertical velocity
-                if (verticalVelocity == 0 && !kb.IsKeyDown(Keys.Space))
-                {
-                    bottomChecker = new Rectangle(X, Y + hitbox.Height, hitbox.Width, 1);
-                }
-                //ceiling collider is created at same X as player, Y is above player
-                //width is dependent on horizontal velocity (less than player width so topChecker doesn't trigger if the player hits a wall)
-                //height is player height with vertical velocity added on (subtracting makes the height go "up" aka toward the ceiling)
-                topChecker = new Rectangle(X, Y - hitbox.Height, hitbox.Width - Math.Abs(horizontalVelocity), hitbox.Height - Math.Abs(verticalVelocity));
-            }
-            //Facing left
-            else
-            {
-                //same as right, except X subtracts horizontalVelocity to prevent player from clipping through walls
-                bottomChecker = new Rectangle(X - horizontalVelocity, Y + hitbox.Height, hitbox.Width + horizontalVelocity, Math.Abs(verticalVelocity));
-
-                //same as right
-                if (verticalVelocity == 0 && !kb.IsKeyDown(Keys.Space))
-                {
-                    bottomChecker = new Rectangle(X, Y + hitbox.Height, hitbox.Width, 1);
-                }
-
-                //same as right, except X subtracts horizontalVelocity to prevent player from clipping through walls
-                topChecker = new Rectangle(X - horizontalVelocity, Y - hitbox.Height, hitbox.Width - Math.Abs(horizontalVelocity), hitbox.Height - Math.Abs(verticalVelocity));
-            }
-
-
             if (isFacingRight)
             {
                 //X is right of player, Y is the same as player, width depends on horizontalVelocity, height is same as player
-                sideChecker = new Rectangle(X + hitbox.Width, Y, horizontalVelocity, hitbox.Height);
+                sideChecker = new Rectangle(X + hitbox.Width, Y + 10, Math.Abs(horizontalVelocity), hitbox.Height - 20);
             }
             //Facing left
             else
             {
                 //X is same as player (which is left edge), Y is the same as player
                 //width depends on horizontalVelocity, height is same as player
-                sideChecker = new Rectangle(X, Y, horizontalVelocity, hitbox.Height);
+                sideChecker = new Rectangle(X - Math.Abs(horizontalVelocity), Y + 10, Math.Abs(horizontalVelocity), hitbox.Height - 20);
+            }
+            //height is player height with vertical velocity added on (subtracting makes the height go "up" aka toward the ceiling)
+            topChecker = new Rectangle(X + 10, Y - Math.Abs(verticalVelocity), hitbox.Width - 20, Math.Abs(verticalVelocity));
+
+
+            bottomChecker = new Rectangle(X + 10, Y + hitbox.Height, hitbox.Width - 20, Math.Abs(verticalVelocity));
+
+            if (verticalVelocity == 0 && !kb.IsKeyDown(Keys.Space))
+            {
+                bottomChecker = new Rectangle(X + 10, Y + hitbox.Height, hitbox.Width - 20, 1);
             }
 
             //FSM
@@ -598,6 +585,7 @@ namespace Egg
                 //Gravity
                 Accelerate(verticalVelocity, 2, 30, true);
 
+
                 if (kb.IsKeyDown(Keys.A))
                 {
                     //temp used to return isFacingRight to original state
@@ -660,6 +648,9 @@ namespace Egg
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(defaultSprite, hitbox, this.color);
+            //sb.Draw(defaultSprite, bottomChecker, Color.Black);
+            //sb.Draw(defaultSprite, sideChecker, Color.Red);
+            //sb.Draw(defaultSprite, topChecker, Color.Cyan);
         }
 
     }
