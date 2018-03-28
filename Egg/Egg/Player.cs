@@ -51,6 +51,8 @@ namespace Egg
         private Rectangle sideChecker;
         private bool bottomIntersects;
         private bool topIntersects;
+        private bool isDebugging = false;
+        private bool playerVisible = true;
 
         //for directionality and FSM
         private bool isFacingRight;
@@ -258,6 +260,13 @@ namespace Egg
             //previousKb used to prevent jump spamming (holding down space) 
             previousKb = kb;
             kb = Keyboard.GetState();
+
+            //Debugging code (hold down lCTRL + rALT + f)
+            if (kb.IsKeyDown(Keys.LeftControl) && kb.IsKeyDown(Keys.RightAlt) && SingleKeyPress(Keys.F))
+            {
+                //switch between debugging and not everytime you press combo
+                isDebugging = !isDebugging;
+            }
 
             if (isFacingRight)
             {
@@ -647,10 +656,34 @@ namespace Egg
         }
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(defaultSprite, hitbox, this.color);
-            //sb.Draw(defaultSprite, bottomChecker, Color.Black);
-            //sb.Draw(defaultSprite, sideChecker, Color.Red);
-            //sb.Draw(defaultSprite, topChecker, Color.Cyan);
+            if (isDebugging)
+            {
+                //press C to toggle player transparency
+                if (SingleKeyPress(Keys.C))
+                {
+                    playerVisible = !playerVisible;
+                }
+                if (playerVisible)
+                {
+                    sb.Draw(defaultSprite, hitbox, Color.Black);
+                    sb.Draw(defaultSprite, bottomChecker, Color.Black);
+                    sb.Draw(defaultSprite, sideChecker, Color.Red);
+                    sb.Draw(defaultSprite, topChecker, Color.Cyan);
+                }
+                else
+                {
+                    sb.Draw(defaultSprite, hitbox, Color.Transparent);
+                    sb.Draw(defaultSprite, bottomChecker, Color.Black);
+                    sb.Draw(defaultSprite, sideChecker, Color.Red);
+                    sb.Draw(defaultSprite, topChecker, Color.Cyan);
+                }
+
+            }
+            else
+            {
+                sb.Draw(defaultSprite, hitbox, this.color);
+            }
+ 
         }
 
     }
