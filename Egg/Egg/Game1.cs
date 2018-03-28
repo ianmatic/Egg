@@ -374,7 +374,7 @@ namespace Egg
             */
 
 
-            player = new Player(5, collisionTest, new Rectangle(300, 300, 75, 75), Color.White, 50, 50);
+            player = new Player(17, collisionTest, new Rectangle(300, 300, 75, 75), Color.White, 50, 50);
             AddObjectToList(player);
 
         }

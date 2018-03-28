@@ -19,11 +19,7 @@ namespace Egg
             this.hasGravity = false;
         }
 
-        //No movement of checkpoints
-        public override void Movement()
-        {
-            throw new NotImplementedException();
-        }
+
 
         public override void Draw(SpriteBatch sb)
         {
@@ -33,11 +29,7 @@ namespace Egg
             }
         }
 
-        //Doesn't change states
-        public override void FiniteState()
-        {
-            throw new NotImplementedException();
-        }
+
 
         public override void CheckColliderAgainstPlayer(Player p)
         {
@@ -49,6 +41,16 @@ namespace Egg
 
         //Enemies don't need a spawn point
         public override void CheckColliderAgainstEnemy(Enemy e)
+        {
+            throw new NotImplementedException();
+        }
+        //Doesn't change states
+        public override void FiniteState()
+        {
+            throw new NotImplementedException();
+        }
+        //No movement of checkpoints
+        public override void Movement()
         {
             throw new NotImplementedException();
         }

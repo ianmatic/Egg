@@ -21,15 +21,6 @@ namespace Egg
             this.color = color;
             this.isActive = true;
         }
-        public override void Draw(SpriteBatch sb)
-        {
-            sb.Draw(defaultSprite, hitbox, this.color);
-        }
-        //Chickens won't move, so left unimplemented.
-        public override void Movement()
-        {
-            throw new NotImplementedException();
-        }
 
         //Unknown what will be done with this
         public override void FiniteState()
@@ -46,11 +37,20 @@ namespace Egg
                 isActive = false;
             }
         }
-
+        public override void Draw(SpriteBatch sb)
+        {
+            sb.Draw(defaultSprite, hitbox, this.color);
+        }
         //Enemies pass through chickens
         public override void CheckColliderAgainstEnemy(Enemy e)
         {
             throw new NotImplementedException();
         }
+        //Chickens won't move, so left unimplemented.
+        public override void Movement()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

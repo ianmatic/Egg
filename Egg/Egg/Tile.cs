@@ -36,16 +36,6 @@ namespace Egg
             }
         }
 
-        public override void Movement()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void FiniteState()
-        {
-            throw new NotImplementedException();
-        }
-
         public Tile(int drawLevel, Texture2D defaultSprite, Rectangle hitbox, TileType type)
         {
             this.drawLevel = drawLevel;
@@ -55,7 +45,6 @@ namespace Egg
             this.hasGravity = false;
             this.type = type;
         }
-
 
         public override void CheckColliderAgainstPlayer(Player p)
         {
@@ -72,25 +61,14 @@ namespace Egg
         {
             e.CollisionCheck(this);      
         }
-
-        //In progress
-        /*public bool CollidingWithCharacter(GameObject g)
+        public override void FiniteState()
         {
-            if (g is Player)
-            {
-                Player p = (Player)g;
-                return p.CollisionCheck();
-            }
-            else if (g is Enemy)
-            {
-                Enemy e = (Enemy)g;
-                return e.CollisionCheck(this);     
-            }
-            else
-            {
-                return false;
-            }
-        }*/
+            throw new NotImplementedException();
+        }
+        public override void Movement()
+        {
+            throw new NotImplementedException();
+        }
 
     }
 }

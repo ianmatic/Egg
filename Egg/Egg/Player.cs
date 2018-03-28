@@ -72,18 +72,6 @@ namespace Egg
             get { return playerState; }
             set { playerState = value; }
         }
-        public Rectangle BottomChecker
-        {
-            get { return bottomChecker; }
-        }
-        public Rectangle TopChecker
-        {
-            get { return topChecker; }
-        }
-        public Rectangle SideChecker
-        {
-            get { return sideChecker; }
-        }
 
         //Constructor for player
         public Player(int drawLevel, Texture2D defaultSprite, Rectangle hitbox, Color color, int x, int y)
@@ -233,6 +221,10 @@ namespace Egg
                 if (velocityType > limit)
                 {
                     velocityType -= rate; //reduce velocity normally
+                    if (!bottomIntersects)
+                    {
+                        playerState = PlayerState.Fall;
+                    }
                 }
             }
             else
@@ -240,6 +232,10 @@ namespace Egg
                 if (velocityType < limit)
                 {
                     velocityType += rate; //increase velocity since moving left is negative
+                    if (!bottomIntersects)
+                    {
+                        playerState = PlayerState.Fall;
+                    }
                 }
             }
 
