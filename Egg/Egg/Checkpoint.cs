@@ -18,9 +18,6 @@ namespace Egg
             this.isActive = true;
             this.hasGravity = false;
         }
-
-
-
         public override void Draw(SpriteBatch sb)
         {
             if (isActive)
@@ -28,9 +25,6 @@ namespace Egg
                 sb.Draw(defaultSprite, hitbox, Color.White);
             }
         }
-
-
-
         public override void CheckColliderAgainstPlayer(Player p)
         {
             if (hitbox.Intersects(p.Hitbox))

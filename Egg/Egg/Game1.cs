@@ -17,6 +17,7 @@ namespace Egg
             GameOver
         }
 
+        List<Texture2D> tileList;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SpriteFont menuText;
@@ -100,6 +101,7 @@ namespace Egg
 
             objectList = new List<GameObject>();
             sortHolder = new Stack<GameObject>();
+            tileList = new List<Texture2D>();
             currentState = GameState.Menu;
 
             base.Initialize();
@@ -127,7 +129,6 @@ namespace Egg
             timeCounter = 0;
 
             //loading Tiles
-            
             LTopLeft = Content.Load<Texture2D>(@"tiles\LTopLeft");
             LTopMid = Content.Load<Texture2D>(@"tiles\LTopMid");
             LTopRight = Content.Load<Texture2D>(@"tiles\LTopRight");
@@ -149,7 +150,28 @@ namespace Egg
             nLeftBot = Content.Load<Texture2D>(@"tiles\nLeftbot");
             nRightBot = Content.Load<Texture2D>(@"tiles\nRightBot");
             nRightTop = Content.Load<Texture2D>(@"tiles\nRightTop");
-            
+
+            tileList.Add(LTopLeft);
+            tileList.Add(LTopMid);
+            tileList.Add(LTopRight);
+            tileList.Add(LMidLeft);
+            tileList.Add(LMidRight);
+            tileList.Add(LBotLeft);
+            tileList.Add(LBotRight);
+            tileList.Add(LBotMid);
+            tileList.Add(dBotLeft);
+            tileList.Add(dBotMid);
+            tileList.Add(dBotRight);
+            tileList.Add(dMidLeft);
+            tileList.Add(dMidRight);
+            tileList.Add(dTopLeft);
+            tileList.Add(dSolid);
+            tileList.Add(dTopRight);
+            tileList.Add(nLeftTop);
+            tileList.Add(nLeftBot);
+            tileList.Add(nRightBot);
+            tileList.Add(nRightTop);
+
         }
 
         /// <summary>
@@ -353,22 +375,24 @@ namespace Egg
             collisionTest = Content.Load<Texture2D>("white");
 
             AddObjectToList(new CapturedChicken(1, testSprite, new Rectangle(0, 0, 30, 30), Color.Red));
+            AddObjectToList(new CapturedChicken(5, testSprite, new Rectangle(0, 15, 30, 30), Color.Blue));
             AddObjectToList(new CapturedChicken(4, testSprite, new Rectangle(0, 30, 30, 30), Color.Green));
             AddObjectToList(new CapturedChicken(3, testSprite, new Rectangle(0, 45, 30, 30), Color.Yellow));
             AddObjectToList(new CapturedChicken(2, testSprite, new Rectangle(0, 60, 30, 30), Color.White));
+
 
             //PLATFORM CODE
             AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(900, 600, 300, 100), Tile.TileType.Normal));
             AddObjectToList(new Tile(7, bottomRectangle, new Rectangle(0, 600, 500, 300), Tile.TileType.Normal));
             AddObjectToList(new Tile(8, bottomRectangle, new Rectangle(1300, 600, 500, 300), Tile.TileType.Normal));
-            AddObjectToList(new Tile(11, bottomRectangle, new Rectangle(1500, 600, 300, 100), Tile.TileType.Normal));
-            AddObjectToList(new Tile(16, bottomRectangle, new Rectangle(1700, 200, 200, 100), Tile.TileType.Normal));
-            AddObjectToList(new Tile(9, sideRectangle, new Rectangle(0, 0, 100, 900), Tile.TileType.Normal));
-            AddObjectToList(new Tile(10, sideRectangle, new Rectangle(500, 400, 200, 400), Tile.TileType.Normal));
-            AddObjectToList(new Tile(14, sideRectangle, new Rectangle(1500, 400, 100, 200), Tile.TileType.Normal));
-            AddObjectToList(new Tile(15, sideRectangle, new Rectangle(1600, 200, 100, 400), Tile.TileType.Normal));
-            AddObjectToList(new Tile(12, topRectangle, new Rectangle(0, 200, 400, 100), Tile.TileType.Normal));
-            AddObjectToList(new Tile(13, topRectangle, new Rectangle(1000, 200, 400, 100), Tile.TileType.Normal));
+            AddObjectToList(new Tile(9, bottomRectangle, new Rectangle(1500, 600, 300, 100), Tile.TileType.Normal));
+            AddObjectToList(new Tile(10, bottomRectangle, new Rectangle(1700, 200, 200, 100), Tile.TileType.Normal));
+            AddObjectToList(new Tile(11, sideRectangle, new Rectangle(0, 0, 100, 900), Tile.TileType.Normal));
+            AddObjectToList(new Tile(12, sideRectangle, new Rectangle(500, 400, 200, 400), Tile.TileType.Normal));
+            AddObjectToList(new Tile(13, sideRectangle, new Rectangle(1500, 400, 100, 200), Tile.TileType.Normal));
+            AddObjectToList(new Tile(14, sideRectangle, new Rectangle(1600, 200, 100, 400), Tile.TileType.Normal));
+            AddObjectToList(new Tile(15, topRectangle, new Rectangle(0, 200, 400, 100), Tile.TileType.Normal));
+            AddObjectToList(new Tile(16, topRectangle, new Rectangle(1000, 200, 400, 100), Tile.TileType.Normal));
 
             /* BOX CODE
             AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(200, 1600, 1300, 100), Tile.TileType.Normal));
@@ -384,60 +408,8 @@ namespace Egg
         }
 
 
-        //Gets a texture based on the string (s) passed in
-        public Texture2D GetTexture(string s)
-        {
-            switch (s)
-            {
-                case "LTopLeft":
-                    return LTopLeft;
-                case "LTopMid":
-                    return LTopMid;
-                case "LTopRight":
-                    return LTopRight;
-                case "LMidLeft":
-                    return LMidLeft;
-                case "LMidRight":
-                    return LMidRight;
-                case "LBotLeft":
-                    return LBotLeft;
-                case "LBotMid":
-                    return LBotMid;
-                case "LBotRight":
-                    return LBotRight;
 
-                case "dTopLeft":
-                    return dTopLeft;
-                case "dTopMid":
-                    return dTopMid;
-                case "dTopRight":
-                    return dTopRight;
-                case "dMidLeft":
-                    return dMidLeft;
-                case "dSolid":
-                    return dSolid;
-                case "dMidRight":
-                    return dMidRight;
-                case "dBotLeft":
-                    return dBotLeft;
-                case "dBotMid":
-                    return dBotMid;
-                case "dBotRight":
-                    return dBotRight;
-
-                case "nLeftTop":
-                    return nLeftTop;
-                case "nLeftBot":
-                    return nLeftBot;
-                case "nRightTop":
-                    return nRightTop;
-                case "nRightBot":
-                    return nRightBot;
-
-                default:    //failsafe case
-                    return dSolid;
-            }
-        }
+        
 
     }
 }

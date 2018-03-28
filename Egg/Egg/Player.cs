@@ -222,6 +222,7 @@ namespace Egg
                 if (velocityType > limit)
                 {
                     velocityType -= rate; //reduce velocity normally
+                    
                     if (!bottomIntersects)
                     {
                         playerState = PlayerState.Fall;
@@ -233,6 +234,7 @@ namespace Egg
                 if (velocityType < limit)
                 {
                     velocityType += rate; //increase velocity since moving left is negative
+                    //needed to prevent player from hovering in air if they decelerate on an edge
                     if (!bottomIntersects)
                     {
                         playerState = PlayerState.Fall;
