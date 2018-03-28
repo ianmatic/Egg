@@ -1,4 +1,4 @@
-﻿namespace Egg_DevTool_Test
+﻿namespace Egg
 {
     partial class Mappy
     {
@@ -57,11 +57,11 @@
             this.tabHolder.Controls.Add(this.tabPage1);
             this.tabHolder.Controls.Add(this.tabPage2);
             this.tabHolder.Controls.Add(this.tabPage3);
-            this.tabHolder.Location = new System.Drawing.Point(2, 1);
+            this.tabHolder.Location = new System.Drawing.Point(11, 11);
             this.tabHolder.Margin = new System.Windows.Forms.Padding(2);
             this.tabHolder.Name = "tabHolder";
             this.tabHolder.SelectedIndex = 0;
-            this.tabHolder.Size = new System.Drawing.Size(1076, 637);
+            this.tabHolder.Size = new System.Drawing.Size(1407, 718);
             this.tabHolder.TabIndex = 0;
             // 
             // tabPage1
@@ -85,7 +85,7 @@
             this.tabPage1.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage1.Size = new System.Drawing.Size(1068, 611);
+            this.tabPage1.Size = new System.Drawing.Size(1399, 692);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -93,7 +93,7 @@
             // 
             // txtFile
             // 
-            this.txtFile.Location = new System.Drawing.Point(37, 423);
+            this.txtFile.Location = new System.Drawing.Point(31, 472);
             this.txtFile.Name = "txtFile";
             this.txtFile.Size = new System.Drawing.Size(156, 20);
             this.txtFile.TabIndex = 16;
@@ -103,7 +103,7 @@
             // 
             this.rad5.AutoSize = true;
             this.rad5.Checked = true;
-            this.rad5.Location = new System.Drawing.Point(35, 227);
+            this.rad5.Location = new System.Drawing.Point(29, 276);
             this.rad5.Name = "rad5";
             this.rad5.Size = new System.Drawing.Size(58, 17);
             this.rad5.TabIndex = 15;
@@ -114,7 +114,7 @@
             // chkDeleter
             // 
             this.chkDeleter.AutoSize = true;
-            this.chkDeleter.Location = new System.Drawing.Point(144, 57);
+            this.chkDeleter.Location = new System.Drawing.Point(138, 106);
             this.chkDeleter.Name = "chkDeleter";
             this.chkDeleter.Size = new System.Drawing.Size(57, 17);
             this.chkDeleter.TabIndex = 14;
@@ -124,7 +124,7 @@
             // rad4
             // 
             this.rad4.AutoSize = true;
-            this.rad4.Location = new System.Drawing.Point(35, 318);
+            this.rad4.Location = new System.Drawing.Point(29, 367);
             this.rad4.Name = "rad4";
             this.rad4.Size = new System.Drawing.Size(60, 17);
             this.rad4.TabIndex = 13;
@@ -133,7 +133,7 @@
             // 
             // button151
             // 
-            this.button151.Location = new System.Drawing.Point(35, 465);
+            this.button151.Location = new System.Drawing.Point(29, 514);
             this.button151.Name = "button151";
             this.button151.Size = new System.Drawing.Size(163, 64);
             this.button151.TabIndex = 12;
@@ -143,7 +143,7 @@
             // 
             // tileView
             // 
-            this.tileView.Location = new System.Drawing.Point(88, 145);
+            this.tileView.Location = new System.Drawing.Point(82, 194);
             this.tileView.Name = "tileView";
             this.tileView.Size = new System.Drawing.Size(50, 55);
             this.tileView.TabIndex = 11;
@@ -152,7 +152,7 @@
             // rad3
             // 
             this.rad3.AutoSize = true;
-            this.rad3.Location = new System.Drawing.Point(35, 297);
+            this.rad3.Location = new System.Drawing.Point(29, 346);
             this.rad3.Name = "rad3";
             this.rad3.Size = new System.Drawing.Size(86, 17);
             this.rad3.TabIndex = 10;
@@ -162,7 +162,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(124, 366);
+            this.label3.Location = new System.Drawing.Point(118, 415);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(71, 13);
             this.label3.TabIndex = 8;
@@ -170,7 +170,7 @@
             // 
             // tabletWidth
             // 
-            this.tabletWidth.Location = new System.Drawing.Point(127, 388);
+            this.tabletWidth.Location = new System.Drawing.Point(121, 437);
             this.tabletWidth.Name = "tabletWidth";
             this.tabletWidth.Size = new System.Drawing.Size(66, 20);
             this.tabletWidth.TabIndex = 7;
@@ -180,7 +180,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(34, 366);
+            this.label2.Location = new System.Drawing.Point(28, 415);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(74, 13);
             this.label2.TabIndex = 6;
@@ -189,7 +189,7 @@
             // 
             // tabletHeight
             // 
-            this.tabletHeight.Location = new System.Drawing.Point(37, 388);
+            this.tabletHeight.Location = new System.Drawing.Point(31, 437);
             this.tabletHeight.Name = "tabletHeight";
             this.tabletHeight.Size = new System.Drawing.Size(64, 20);
             this.tabletHeight.TabIndex = 5;
@@ -199,7 +199,7 @@
             // rad2
             // 
             this.rad2.AutoSize = true;
-            this.rad2.Location = new System.Drawing.Point(35, 274);
+            this.rad2.Location = new System.Drawing.Point(29, 323);
             this.rad2.Name = "rad2";
             this.rad2.Size = new System.Drawing.Size(96, 17);
             this.rad2.TabIndex = 4;
@@ -209,7 +209,7 @@
             // rad1
             // 
             this.rad1.AutoSize = true;
-            this.rad1.Location = new System.Drawing.Point(35, 250);
+            this.rad1.Location = new System.Drawing.Point(29, 299);
             this.rad1.Name = "rad1";
             this.rad1.Size = new System.Drawing.Size(73, 17);
             this.rad1.TabIndex = 3;
@@ -219,7 +219,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(46, 85);
+            this.label1.Location = new System.Drawing.Point(40, 134);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(27, 13);
             this.label1.TabIndex = 2;
@@ -253,7 +253,7 @@
             "dBotMid",
             "dBotRight",
             "Delete"});
-            this.boxSelect.Location = new System.Drawing.Point(35, 101);
+            this.boxSelect.Location = new System.Drawing.Point(29, 150);
             this.boxSelect.Name = "boxSelect";
             this.boxSelect.Size = new System.Drawing.Size(163, 21);
             this.boxSelect.TabIndex = 1;
@@ -287,7 +287,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1079, 639);
+            this.ClientSize = new System.Drawing.Size(1429, 740);
             this.Controls.Add(this.tabHolder);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Mappy";

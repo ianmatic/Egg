@@ -68,7 +68,10 @@ namespace Egg
         Stack<GameObject> sortHolder;
 
         List<Texture2D> tileSpriteList;
-        
+
+
+        //Map Builder Tool
+        Mappy Builder = new Mappy();
 
         public Game1()
         {
@@ -123,29 +126,29 @@ namespace Egg
             timeCounter = 0;
 
             //loading Tiles
-            /*
-            LTopLeft = Content.Load<Texture2D>("LTopLeft");
-            LTopMid = Content.Load<Texture2D>("LTopMid");
-            LTopRight = Content.Load<Texture2D>("LTopRight");
-            LMidLeft = Content.Load<Texture2D>("LMidLeft");
-            LMidRight = Content.Load<Texture2D>("LMidRight");
-            LBotLeft = Content.Load<Texture2D>("LBotLeft");
-            LBotRight = Content.Load<Texture2D>("LBotRight");
-            LBotMid = Content.Load<Texture2D>("LBotMid");
-            dBotLeft = Content.Load<Texture2D>("dBotLeft");
-            dBotMid = Content.Load<Texture2D>("dBotMid");
-            dBotRight = Content.Load<Texture2D>("dBotRight");
-            dMidLeft = Content.Load<Texture2D>("dMidLeft");
-            dMidRight = Content.Load<Texture2D>("dMidRight");
-            dTopLeft = Content.Load<Texture2D>("dTopLeft");
-            dSolid = Content.Load<Texture2D>("dSolid");
-            dTopMid = Content.Load<Texture2D>("dTopMid");
-            dTopRight = Content.Load<Texture2D>("dTopRight");
-            nLeftTop = Content.Load<Texture2D>("nLeftTop");
-            nLeftBot = Content.Load<Texture2D>("nLeftbot");
-            nRightBot = Content.Load<Texture2D>("nRightBot");
-            nRightTop = Content.Load<Texture2D>("nRightTop");
-            */
+            
+            LTopLeft = Content.Load<Texture2D>(@"tiles\LTopLeft");
+            LTopMid = Content.Load<Texture2D>(@"tiles\LTopMid");
+            LTopRight = Content.Load<Texture2D>(@"tiles\LTopRight");
+            LMidLeft = Content.Load<Texture2D>(@"tiles\LMidLeft");
+            LMidRight = Content.Load<Texture2D>(@"tiles\LMidRight");
+            LBotLeft = Content.Load<Texture2D>(@"tiles\LBotLeft");
+            LBotRight = Content.Load<Texture2D>(@"tiles\LBotRight");
+            LBotMid = Content.Load<Texture2D>(@"tiles\LBotMid");
+            dBotLeft = Content.Load<Texture2D>(@"tiles\dBotLeft");
+            dBotMid = Content.Load<Texture2D>(@"tiles\dBotMid");
+            dBotRight = Content.Load<Texture2D>(@"tiles\dBotRight");
+            dMidLeft = Content.Load<Texture2D>(@"tiles\dMidLeft");
+            dMidRight = Content.Load<Texture2D>(@"tiles\dMidRight");
+            dTopLeft = Content.Load<Texture2D>(@"tiles\dTopLeft");
+            dSolid = Content.Load<Texture2D>(@"tiles\dSolid");
+            dTopMid = Content.Load<Texture2D>(@"tiles\dTopMid");
+            dTopRight = Content.Load<Texture2D>(@"tiles\dTopRight");
+            nLeftTop = Content.Load<Texture2D>(@"tiles\nLeftTop");
+            nLeftBot = Content.Load<Texture2D>(@"tiles\nLeftbot");
+            nRightBot = Content.Load<Texture2D>(@"tiles\nRightBot");
+            nRightTop = Content.Load<Texture2D>(@"tiles\nRightTop");
+            
         }
 
         /// <summary>
@@ -194,6 +197,7 @@ namespace Egg
             if (kb.IsKeyDown(Keys.P) && kb.IsKeyDown(Keys.O) && kb.IsKeyDown(Keys.G))
             {
                 //Show dialog goes here.
+                Builder.ShowDialog();
             }
 
             base.Update(gameTime);
@@ -371,10 +375,60 @@ namespace Egg
         }
 
 
+        //Gets a texture based on the string (s) passed in
+        public Texture2D GetTexture(string s)
+        {
+            switch (s)
+            {
+                case "LTopLeft":
+                    return LTopLeft;
+                case "LTopMid":
+                    return LTopMid;
+                case "LTopRight":
+                    return LTopRight;
+                case "LMidLeft":
+                    return LMidLeft;
+                case "LMidRight":
+                    return LMidRight;
+                case "LBotLeft":
+                    return LBotLeft;
+                case "LBotMid":
+                    return LBotMid;
+                case "LBotRight":
+                    return LBotRight;
+
+                case "dTopLeft":
+                    return dTopLeft;
+                case "dTopMid":
+                    return dTopMid;
+                case "dTopRight":
+                    return dTopRight;
+                case "dMidLeft":
+                    return dMidLeft;
+                case "dSolid":
+                    return dSolid;
+                case "dMidRight":
+                    return dMidRight;
+                case "dBotLeft":
+                    return dBotLeft;
+                case "dBotMid":
+                    return dBotMid;
+                case "dBotRight":
+                    return dBotRight;
+
+                case "nLeftTop":
+                    return nLeftTop;
+                case "nLeftBot":
+                    return nLeftBot;
+                case "nRightTop":
+                    return nRightTop;
+                case "nRightBot":
+                    return nRightBot;
+
+                default:    //failsafe case
+                    return dSolid;
+            }
+        }
+
     }
-
-   
-
-
-
 }
