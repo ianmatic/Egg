@@ -31,6 +31,7 @@ namespace Egg
         //GameState previousState;
         KeyboardState kb;
         KeyboardState oldKB;
+        Enemy enemy;
         Player player;
 
         //animation fields
@@ -263,6 +264,9 @@ namespace Egg
                     if (n is Player)
                     {
                         n.FiniteState();
+
+                        //This should work on any enemy (i.e. enemy list of a screen), fix this later!
+                        n.CheckColliderAgainstEnemy(enemy);
                     }
                     else if (n is Enemy)
                     {
@@ -372,8 +376,8 @@ namespace Egg
             AddObjectToList(new Tile(8, sideRectangle, new Rectangle(100, 1000, 100, 800), Tile.TileType.Normal));
             AddObjectToList(new Tile(9, topRectangle, new Rectangle(100,  1000, 1000, 100), Tile.TileType.Normal));
             */
-
-
+            enemy = new Enemy(new Rectangle(350, 120, 75, 75), collisionTest, 16, 60);
+            AddObjectToList(enemy);
             player = new Player(17, collisionTest, new Rectangle(300, 300, 75, 75), Color.White, 50, 50);
             AddObjectToList(player);
 

@@ -23,6 +23,7 @@ namespace Egg
 
         //How long the enemy is in hitstun before dying.
         private int hitstunTimer;
+        private int maxHitstunTime = 60;
         private int walkSpeed;
         private int walkDistance;
         private int walkProgress;
@@ -73,14 +74,16 @@ namespace Egg
         }
 
         //Constructor for moving enemy
-        public Enemy(Rectangle hitbox, Texture2D defaultSprite, int drawLevel, int hitstunTimer, int walkSpeed, int walkDistance)
+        public Enemy(Rectangle hitbox, Texture2D defaultSprite, int drawLevel, int maxHitstunTime, int walkSpeed, int walkDistance)
         {
             this.hitbox = hitbox;
             this.defaultSprite = defaultSprite;
             this.drawLevel = drawLevel;
-            this.isActive = false;
+            this.isActive = true;
             this.walkSpeed = walkSpeed;
             this.walkDistance = walkDistance;
+            this.maxHitstunTime = maxHitstunTime;
+
 
             bottomChecker = new Rectangle(hitbox.X, hitbox.Y + hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
             topChecker = new Rectangle(hitbox.X, hitbox.Y - hitbox.Height, hitbox.Width, Math.Abs(verticalVelocity));
@@ -91,16 +94,17 @@ namespace Egg
         }
 
         //Constructor for stationary enemy
-        public Enemy(Rectangle hitbox, Texture2D defaultSprite, int drawLevel, int hitstunTimer)
+        public Enemy(Rectangle hitbox, Texture2D defaultSprite, int drawLevel, int maxHitstunTime)
         {
             this.hitbox = hitbox;
             this.defaultSprite = defaultSprite;
             this.drawLevel = drawLevel;
-            this.isActive = false;
+            this.isActive = true;
             this.walkSpeed = 0;
             this.walkDistance = 0;
             this.horizontalVelocity = 1;
             this.verticalVelocity = 1;
+            this.maxHitstunTime = maxHitstunTime;
             walkProgress = 0;
         }
 
@@ -119,7 +123,7 @@ namespace Egg
                     break;
                 case EnemyState.Hitstun:
                     hitstunTimer += 1;
-                    if (hitstunTimer > 60)
+                    if (hitstunTimer > maxHitstunTime)
                     {
                         isActive = false;
                     }
@@ -130,16 +134,19 @@ namespace Egg
         //Causes enemy to enter hitstun animation and eventually die. 
         public void TriggerHitstun()
         {
-            //Implement once player collision & movement is done
-            throw new NotImplementedException();
+            hitstunTimer++;
         }
 
         //Default for now, should change what sprite is drawn depending on FSM
         public override void Draw(SpriteBatch sb)
         {
-            if (isActive)
+            if (isActive && status != EnemyState.Hitstun)
             {
                 sb.Draw(defaultSprite, hitbox, Color.White);
+            }
+            else if (isActive && status == EnemyState.Hitstun)
+            {
+                sb.Draw(defaultSprite, hitbox, Color.Red);
             }
         }
 
