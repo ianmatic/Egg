@@ -56,7 +56,6 @@
     <Compile Include="MapBuilder.Designer.cs">
       <DependentUpon>MapBuilder.cs</DependentUpon>
     </Compile>
-    <Compile Include="Platform.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
