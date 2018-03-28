@@ -51,12 +51,12 @@ namespace Egg
         private Rectangle sideChecker;
         private bool bottomIntersects;
         private bool topIntersects;
-        Texture2D bottomTexture;
 
         //for directionality and FSM
         private bool isFacingRight;
         private PlayerState playerState;
 
+        //for movement
         private int verticalVelocity = 0;
         private int horizontalVelocity = 0;
 
@@ -338,11 +338,11 @@ namespace Egg
                     isFacingRight = false;
                     Movement();
 
-                    if(!bottomIntersects) //not touching ground
+                     if(!bottomIntersects) //not touching ground
                     {
-                        playerState = PlayerState.Fall;
+                         playerState = PlayerState.Fall;
                     }
-                    else if (SingleKeyPress(Keys.Space))
+                    if (SingleKeyPress(Keys.Space))
                     {
                         playerState = PlayerState.JumpLeft;
                     }
@@ -369,7 +369,7 @@ namespace Egg
                     {
                         playerState = PlayerState.Fall;
                     }
-                    else if (SingleKeyPress(Keys.Space))
+                    if (SingleKeyPress(Keys.Space))
                     {
                         playerState = PlayerState.JumpRight;
                     }
@@ -398,7 +398,7 @@ namespace Egg
                     {
                         playerState = PlayerState.Fall;
                     }
-                    else if (kb.IsKeyUp(Keys.LeftShift) && kb.IsKeyDown(Keys.A)) //release shift to return to walking left
+                    if (kb.IsKeyUp(Keys.LeftShift) && kb.IsKeyDown(Keys.A)) //release shift to return to walking left
                     {
                         playerState = PlayerState.WalkLeft;
                     }
@@ -425,6 +425,10 @@ namespace Egg
                     {
                         playerState = PlayerState.Fall;
                     }
+                    if (SingleKeyPress(Keys.Space))
+                    {
+                        playerState = PlayerState.JumpRight;
+                    }
                     else if (kb.IsKeyUp(Keys.LeftShift) && kb.IsKeyDown(Keys.A)) //release shift and walk left
                     {
                         playerState = PlayerState.WalkLeft;
@@ -436,10 +440,6 @@ namespace Egg
                     else if (kb.IsKeyUp(Keys.LeftShift))
                     {
                         playerState = PlayerState.IdleRight;
-                    }
-                    else if (SingleKeyPress(Keys.Space))
-                    {
-                        playerState = PlayerState.JumpRight;
                     }
                     break;
 
