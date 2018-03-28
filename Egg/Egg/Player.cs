@@ -52,6 +52,7 @@ namespace Egg
         private bool bottomIntersects;
         private bool topIntersects;
         private bool isDebugging = false;
+        private bool debugEnemyCollision = false; 
         private bool playerVisible = true;
 
         //for directionality and FSM
@@ -71,18 +72,6 @@ namespace Egg
         {
             get { return playerState; }
             set { playerState = value; }
-        }
-        public Rectangle BottomChecker
-        {
-            get { return bottomChecker; }
-        }
-        public Rectangle TopChecker
-        {
-            get { return topChecker; }
-        }
-        public Rectangle SideChecker
-        {
-            get { return sideChecker; }
         }
 
         //Constructor for player
@@ -233,6 +222,11 @@ namespace Egg
                 if (velocityType > limit)
                 {
                     velocityType -= rate; //reduce velocity normally
+                    
+                    if (!bottomIntersects)
+                    {
+                        playerState = PlayerState.Fall;
+                    }
                 }
             }
             else
@@ -240,6 +234,11 @@ namespace Egg
                 if (velocityType < limit)
                 {
                     velocityType += rate; //increase velocity since moving left is negative
+                    //needed to prevent player from hovering in air if they decelerate on an edge
+                    if (!bottomIntersects)
+                    {
+                        playerState = PlayerState.Fall;
+                    }
                 }
             }
 
@@ -647,7 +646,14 @@ namespace Egg
         //Implement when working on enemy collision
         public override void CheckColliderAgainstEnemy(Enemy e)
         {
-            throw new NotImplementedException();
+            if (hitbox.Intersects(e.Hitbox))
+            {
+                debugEnemyCollision = true;
+            }
+            else
+            {
+                debugEnemyCollision = false;
+            }
         }
         //not applicable
         public override void CheckColliderAgainstPlayer(Player p)
@@ -681,7 +687,15 @@ namespace Egg
             }
             else
             {
-                sb.Draw(defaultSprite, hitbox, this.color);
+                if (debugEnemyCollision)
+                {
+                    sb.Draw(defaultSprite, hitbox, Color.Orange);
+                }
+                else
+                {
+                    sb.Draw(defaultSprite, hitbox, this.color);
+                }
+                
             }
  
         }

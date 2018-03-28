@@ -371,22 +371,24 @@ namespace Egg
             collisionTest = Content.Load<Texture2D>("white");
 
             AddObjectToList(new CapturedChicken(1, testSprite, new Rectangle(0, 0, 30, 30), Color.Red));
+            AddObjectToList(new CapturedChicken(5, testSprite, new Rectangle(0, 15, 30, 30), Color.Blue));
             AddObjectToList(new CapturedChicken(4, testSprite, new Rectangle(0, 30, 30, 30), Color.Green));
             AddObjectToList(new CapturedChicken(3, testSprite, new Rectangle(0, 45, 30, 30), Color.Yellow));
             AddObjectToList(new CapturedChicken(2, testSprite, new Rectangle(0, 60, 30, 30), Color.White));
+
 
             //PLATFORM CODE
             AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(900, 600, 300, 100), Tile.TileType.Normal));
             AddObjectToList(new Tile(7, bottomRectangle, new Rectangle(0, 600, 500, 300), Tile.TileType.Normal));
             AddObjectToList(new Tile(8, bottomRectangle, new Rectangle(1300, 600, 500, 300), Tile.TileType.Normal));
-            AddObjectToList(new Tile(11, bottomRectangle, new Rectangle(1500, 600, 300, 100), Tile.TileType.Normal));
-            AddObjectToList(new Tile(16, bottomRectangle, new Rectangle(1700, 200, 200, 100), Tile.TileType.Normal));
-            AddObjectToList(new Tile(9, sideRectangle, new Rectangle(0, 0, 100, 900), Tile.TileType.Normal));
-            AddObjectToList(new Tile(10, sideRectangle, new Rectangle(500, 400, 200, 400), Tile.TileType.Normal));
-            AddObjectToList(new Tile(14, sideRectangle, new Rectangle(1500, 400, 100, 200), Tile.TileType.Normal));
-            AddObjectToList(new Tile(15, sideRectangle, new Rectangle(1600, 200, 100, 400), Tile.TileType.Normal));
-            AddObjectToList(new Tile(12, topRectangle, new Rectangle(0, 200, 400, 100), Tile.TileType.Normal));
-            AddObjectToList(new Tile(13, topRectangle, new Rectangle(1000, 200, 400, 100), Tile.TileType.Normal));
+            AddObjectToList(new Tile(9, bottomRectangle, new Rectangle(1500, 600, 300, 100), Tile.TileType.Normal));
+            AddObjectToList(new Tile(10, bottomRectangle, new Rectangle(1700, 200, 200, 100), Tile.TileType.Normal));
+            AddObjectToList(new Tile(11, sideRectangle, new Rectangle(0, 0, 100, 900), Tile.TileType.Normal));
+            AddObjectToList(new Tile(12, sideRectangle, new Rectangle(500, 400, 200, 400), Tile.TileType.Normal));
+            AddObjectToList(new Tile(13, sideRectangle, new Rectangle(1500, 400, 100, 200), Tile.TileType.Normal));
+            AddObjectToList(new Tile(14, sideRectangle, new Rectangle(1600, 200, 100, 400), Tile.TileType.Normal));
+            AddObjectToList(new Tile(15, topRectangle, new Rectangle(0, 200, 400, 100), Tile.TileType.Normal));
+            AddObjectToList(new Tile(16, topRectangle, new Rectangle(1000, 200, 400, 100), Tile.TileType.Normal));
 
             /* BOX CODE
             AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(200, 1600, 1300, 100), Tile.TileType.Normal));
@@ -396,7 +398,7 @@ namespace Egg
             */
 
 
-            player = new Player(5, collisionTest, new Rectangle(300, 300, 75, 75), Color.White, 50, 50);
+            player = new Player(17, collisionTest, new Rectangle(225, 450, 75, 75), Color.White, 50, 50);
             AddObjectToList(player);
 
         }
