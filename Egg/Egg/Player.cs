@@ -346,7 +346,7 @@ namespace Egg
                     isFacingRight = false;
                     Movement();
 
-                     if(!bottomIntersects) //not touching ground
+                    if(!bottomIntersects) //not touching ground
                     {
                          playerState = PlayerState.Fall;
                     }
