@@ -150,6 +150,19 @@ namespace Egg
                 {
                     hitbox.X = t.X + t.Hitbox.Width -1; //place player right of tile
                 }
+
+                if (playerState == PlayerState.Fall)
+                {
+                    if (isFacingRight)
+                    {
+                        hitbox.X -= 1;
+                    }
+                    else
+                    {
+                        hitbox.X += 1;
+                    }
+
+                }
                 output = true;
             }
             //ceiling collision (collision box above player)
@@ -271,17 +284,28 @@ namespace Egg
                 isDebugging = !isDebugging;
             }
 
-            if (isFacingRight)
+            if (horizontalVelocity > 0)
             {
                 //X is right of player, Y is the same as player, width depends on horizontalVelocity, height is same as player
                 sideChecker = new Rectangle(X + hitbox.Width, Y + 10, Math.Abs(horizontalVelocity), hitbox.Height - 20);
             }
             //Facing left
-            else
+            else if (horizontalVelocity < 0)
             {
                 //X is same as player (which is left edge), Y is the same as player
                 //width depends on horizontalVelocity, height is same as player
                 sideChecker = new Rectangle(X - Math.Abs(horizontalVelocity), Y + 10, Math.Abs(horizontalVelocity), hitbox.Height - 20);
+            }
+            else
+            {
+                if (isFacingRight)
+                {
+                    sideChecker = new Rectangle(X + hitbox.Width, Y + 10, Math.Abs(horizontalVelocity), hitbox.Height - 20);
+                }
+                else
+                {
+                    sideChecker = new Rectangle(X - Math.Abs(horizontalVelocity), Y + 10, Math.Abs(horizontalVelocity), hitbox.Height - 20);
+                }
             }
             //height is player height with vertical velocity added on (subtracting makes the height go "up" aka toward the ceiling)
             topChecker = new Rectangle(X + 10, Y - Math.Abs(verticalVelocity), hitbox.Width - 20, Math.Abs(verticalVelocity));
@@ -549,7 +573,15 @@ namespace Egg
         /// </summary>
         public override void Movement()
         {
-            
+
+            if (kb.IsKeyUp(Keys.A) && kb.IsKeyUp(Keys.D) && verticalVelocity == 0)
+            {
+                bool temp = isFacingRight;
+                isFacingRight = !isFacingRight;
+                Decelerate(horizontalVelocity, 1, 0, false);
+                isFacingRight = temp;
+            }
+
             //Idle
             if (playerState == PlayerState.IdleLeft || playerState == PlayerState.IdleRight)
             {
@@ -598,7 +630,6 @@ namespace Egg
                 //Gravity
                 Accelerate(verticalVelocity, 2, 30, true);
 
-
                 if (kb.IsKeyDown(Keys.A))
                 {
                     //temp used to return isFacingRight to original state
@@ -625,7 +656,7 @@ namespace Egg
                 delay -= miliseconds;
                 if (delay <= 0)
                 {
-                    Accelerate(verticalVelocity, 35, 50, true);
+                    Accelerate(verticalVelocity, 35, 60, true);
                 }
             }
 
