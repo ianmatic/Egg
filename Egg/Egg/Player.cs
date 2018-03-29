@@ -54,6 +54,8 @@ namespace Egg
         private bool isDebugging = false;
         private bool debugEnemyCollision = false; 
         private bool playerVisible = true;
+        Tile temp; //used to make sure player checks collision against only 
+                   //1 tile when necessary (as opposed to all of them each frame like usual)
 
         //for directionality and FSM
         private bool isFacingRight;
@@ -100,7 +102,6 @@ namespace Egg
         /// <param name="limit"></param>
         public void Accelerate(int velocityType, int rate, int limit, bool vertical)
         {
-
             if (vertical)
             {
                 if (velocityType < limit)
@@ -136,7 +137,6 @@ namespace Egg
         public bool CollisionCheck(Tile t)
         {
             bool output = false;
-            bottomIntersects = false;
 
             //wall collision (collision box next to player depending on direction facing)
             if (sideChecker.Intersects(t.Hitbox))
@@ -144,11 +144,11 @@ namespace Egg
                 horizontalVelocity = 0; //stop player from moving through wall
                 if (isFacingRight && t.X > hitbox.X) //player facing right and tile is to the right of player
                 {
-                    hitbox.X = t.X - hitbox.Width; //place player left of tile
+                    hitbox.X = t.X - hitbox.Width + 1; //place player left of tile
                 }
                 else if (t.X < hitbox.X) //player facing left and tile is to the left of player
                 {
-                    hitbox.X = t.X + t.Hitbox.Width; //place player right of tile
+                    hitbox.X = t.X + t.Hitbox.Width -1; //place player right of tile
                 }
                 output = true;
             }
@@ -202,10 +202,14 @@ namespace Egg
                 {
                     playerState = PlayerState.IdleLeft;
                 }
-
+                temp = t;
                 //everytime the player lands from a jump (or falls), the next time they jump they will hit the ceiling
                 topIntersects = true; 
                 output = true;
+            }
+            else if (t.Equals(temp))
+            {
+                bottomIntersects = false;
             }
             return output;
         }
@@ -346,10 +350,7 @@ namespace Egg
                     isFacingRight = false;
                     Movement();
 
-                    if(!bottomIntersects) //not touching ground
-                    {
-                         playerState = PlayerState.Fall;
-                    }
+
                     if (SingleKeyPress(Keys.Space))
                     {
                         playerState = PlayerState.JumpLeft;
@@ -366,6 +367,10 @@ namespace Egg
                     {
                         playerState = PlayerState.RollLeft;
                     }
+                    if (!bottomIntersects) //not touching ground
+                    {
+                        playerState = PlayerState.Fall;
+                    }
                     //Remember to implement HitStun here
                     break;
                 //Walk Right
@@ -373,10 +378,6 @@ namespace Egg
                     isFacingRight = true;
                     Movement();
 
-                    if (!bottomIntersects) //not touching ground
-                    {
-                        playerState = PlayerState.Fall;
-                    }
                     if (SingleKeyPress(Keys.Space))
                     {
                         playerState = PlayerState.JumpRight;
@@ -392,6 +393,10 @@ namespace Egg
                     else if (kb.IsKeyDown(Keys.LeftShift))
                     {
                         playerState = PlayerState.RollRight;
+                    }
+                    if (!bottomIntersects) //not touching ground
+                    {
+                        playerState = PlayerState.Fall;
                     }
 
                     //Remember to implement HitStun here

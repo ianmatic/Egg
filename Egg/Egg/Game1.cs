@@ -34,7 +34,7 @@ namespace Egg
         KeyboardState oldKB;
         Enemy enemy;
         Player player;
-
+        
         //animation fields
         int currentFrame;
         double frameRate;
