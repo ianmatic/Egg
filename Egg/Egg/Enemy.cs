@@ -142,7 +142,7 @@ namespace Egg
         {
             if (isActive && status != EnemyState.Hitstun)
             {
-                sb.Draw(defaultSprite, hitbox, Color.White);
+                sb.Draw(defaultSprite, hitbox, Color.Gray);
             }
             else if (isActive && status == EnemyState.Hitstun)
             {

@@ -43,7 +43,8 @@ namespace Egg
         private KeyboardState previousKb; //used to prevent jump spamming
 
         private double miliseconds; //used for float/downdash
-        private double delay; //used for float/downdash
+        private double downDashDelay; //used for downdash
+        private double floatDelay;
 
         //for collision
         private Rectangle bottomChecker;
@@ -64,6 +65,11 @@ namespace Egg
         //for movement
         private int verticalVelocity = 0;
         private int horizontalVelocity = 0;
+
+        //for float
+        private bool hasFloated;
+        private Vector2 previousPlayerPosition; //positions used to check if the player is going up or down
+        private Vector2 playerPosition;
 
         private Color color;
 
@@ -89,9 +95,11 @@ namespace Egg
 
             bottomIntersects = false;
             topIntersects = false;
+            hasFloated = false;
 
             gameTime = new GameTime();
-            delay = 13;
+            downDashDelay = 13;
+            floatDelay = 50;
             miliseconds = 2;
         }
         /// <summary>
@@ -273,6 +281,11 @@ namespace Egg
         /// </summary>
         public override void FiniteState()
         {
+            //previousPosition tracks player from previous frame
+            previousPlayerPosition = playerPosition;
+            playerPosition = new Vector2(X, Y); //player position of current frame
+
+
             //previousKb used to prevent jump spamming (holding down space) 
             previousKb = kb;
             kb = Keyboard.GetState();
@@ -316,6 +329,13 @@ namespace Egg
             if (verticalVelocity == 0 && !kb.IsKeyDown(Keys.Space))
             {
                 bottomChecker = new Rectangle(X + 10, Y + hitbox.Height, hitbox.Width - 20, 1);
+            }
+
+
+            //float gets reset to false whenever player touches ground
+            if (bottomIntersects)
+            {
+                hasFloated = false;
             }
 
             //FSM
@@ -484,11 +504,6 @@ namespace Egg
                 case PlayerState.JumpLeft:
                     isFacingRight = false;
                     Movement();
-
-                    if (kb.IsKeyDown(Keys.LeftAlt))
-                    {
-                        playerState = PlayerState.DownDash;
-                    }
                     //Float
 
                     //default to fall if no other condition is met (no hitstun here, use fall's hitstun)
@@ -499,11 +514,6 @@ namespace Egg
                 case PlayerState.JumpRight:
                     isFacingRight = true;
                     Movement();
-
-                    if (kb.IsKeyDown(Keys.LeftAlt))
-                    {
-                        playerState = PlayerState.DownDash;
-                    }
                     //Float
 
                     //default to fall if no other condition is met (no hitstun here, use fall's hitstun)
@@ -512,14 +522,30 @@ namespace Egg
 
                 //Float Left
                 case PlayerState.FloatLeft:
-                    //Need to fully implement
-                    Movement();
+                    //if the player lets go of space, player stops floating
+                    if (kb.IsKeyUp(Keys.Space))
+                    {
+                        playerState = PlayerState.Fall;
+                    }
+                    else
+                    {
+                        isFacingRight = false;
+                        Movement();
+                    }
                     break;
 
                 //Float Right
                 case PlayerState.FloatRight:
-                    //Need to fully implement
-                    Movement();
+                    //if the player lets go of space, player stops floating
+                    if (kb.IsKeyUp(Keys.Space))
+                    {
+                        playerState = PlayerState.Fall;
+                    }
+                    else
+                    {
+                        isFacingRight = true;
+                        Movement();
+                    }
                     break;
 
                 //Fall 
@@ -529,9 +555,34 @@ namespace Egg
                     {
                         playerState = PlayerState.DownDash;
                     }
+                    //previous is less than current since going down means y increasing
+                    if (!hasFloated && previousPlayerPosition.Y < playerPosition.Y)
+                    {
+                        if (kb.IsKeyDown(Keys.A) && kb.IsKeyUp(Keys.D) && kb.IsKeyDown(Keys.Space))
+                        {
+                            PlayerState = PlayerState.FloatLeft;
+                        }
+                        else if (kb.IsKeyDown(Keys.D) && kb.IsKeyUp(Keys.A) && kb.IsKeyDown(Keys.Space))
+                        {
+                            playerState = PlayerState.FloatRight;
+                        }
+                        else if (kb.IsKeyDown(Keys.Space))
+                        {
+                            if (isFacingRight)
+                            {
+                                playerState = PlayerState.FloatRight;
+                            }
+                            else
+                            {
+                                playerState = PlayerState.FloatLeft;
+                            }
+                        }
+                    }
 
-                    //adjust delay to determine how long delay is for downdash
-                    delay = 13;
+
+                    //adjust delays to determine how long delay is for downdash and float
+                    downDashDelay = 13;
+                    floatDelay = 50;
                     //HitStun
                     break;
 
@@ -543,25 +594,11 @@ namespace Egg
                 //Bounce Left
                 case PlayerState.BounceLeft:
                     //Adjusting this causes glitches, so leave alone for now
-                    isFacingRight = false;
-                    while (miliseconds > 0)
-                    {
-                        miliseconds--;
-                    }
-                    playerState = PlayerState.Fall;
-                    miliseconds = 2;
                     break;
 
                 //Bounce Right
                 case PlayerState.BounceRight:
                     //Adjusting this causes glitches, so leave alone for now
-                    isFacingRight = true;
-                    while (miliseconds > 0)
-                    {
-                        miliseconds--;
-                    }
-                    playerState = PlayerState.Fall;
-                    miliseconds = 2;
                     break;
 
                     //Remember to implement HitStun here
@@ -621,8 +658,16 @@ namespace Egg
             //Float
             else if (playerState == PlayerState.FloatLeft || playerState == PlayerState.FloatRight)
             {
-                //Need to finish implementing
+                //player stops falling
                 verticalVelocity = 0;
+                floatDelay -= miliseconds; //reduce delay (timer) until 0, then player starts falling againg
+                if (floatDelay <= 0)
+                {
+
+                    hasFloated = true;
+                    playerState = PlayerState.Fall;
+                    floatDelay = 50; //reset the delay
+                }
             }
             //Fall
             else if (playerState == PlayerState.Fall)
@@ -653,8 +698,8 @@ namespace Egg
                 horizontalVelocity = 0;
                 verticalVelocity = 0;
 
-                delay -= miliseconds;
-                if (delay <= 0)
+                downDashDelay -= miliseconds;
+                if (downDashDelay <= 0)
                 {
                     Accelerate(verticalVelocity, 35, 60, true);
                 }
