@@ -392,7 +392,7 @@ namespace Egg
             AddObjectToList(new Tile(13, sideRectangle, new Rectangle(1500, 400, 100, 200), Tile.TileType.Normal));
             AddObjectToList(new Tile(14, sideRectangle, new Rectangle(1600, 200, 100, 400), Tile.TileType.Normal));
             AddObjectToList(new Tile(15, topRectangle, new Rectangle(0, 200, 400, 100), Tile.TileType.Normal));
-            AddObjectToList(new Tile(16, topRectangle, new Rectangle(1000, 200, 400, 100), Tile.TileType.Normal));
+            //AddObjectToList(new Tile(16, topRectangle, new Rectangle(1000, 200, 400, 100), Tile.TileType.Normal)); commented out to test bounce
 
             /* BOX CODE
             AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(200, 1600, 1300, 100), Tile.TileType.Normal));
@@ -400,7 +400,7 @@ namespace Egg
             AddObjectToList(new Tile(8, sideRectangle, new Rectangle(100, 1000, 100, 800), Tile.TileType.Normal));
             AddObjectToList(new Tile(9, topRectangle, new Rectangle(100,  1000, 1000, 100), Tile.TileType.Normal));
             */
-            enemy = new Enemy(new Rectangle(350, 120, 75, 75), collisionTest, 16, 60);
+            enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 16, 60);
             AddObjectToList(enemy);
             player = new Player(17, collisionTest, new Rectangle(300, 300, 75, 75), Color.White, 50, 50);
             AddObjectToList(player);

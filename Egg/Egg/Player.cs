@@ -38,9 +38,11 @@ namespace Egg
 {
     class Player : GameObject
     {
-        //fields
+        //Fields
         private KeyboardState kb;
         private KeyboardState previousKb; //used to prevent jump spamming
+
+        private int hitpoints;
 
         private double miliseconds; //used for float/downdash
         private double downDashDelay; //used for downdash
@@ -75,11 +77,16 @@ namespace Egg
 
         GameTime gameTime;
 
-        //Property
+        //Properties
         public PlayerState PlayerState
         {
             get { return playerState; }
             set { playerState = value; }
+        }
+        public int Hitpoints
+        {
+            get { return hitpoints; }
+            set { hitpoints = value; }
         }
 
         //Constructor for player
@@ -89,6 +96,9 @@ namespace Egg
             this.defaultSprite = defaultSprite;
             this.hitbox = hitbox;
             this.color = color;
+
+            isActive = true;
+            hitpoints = 3;
 
             hasGravity = true; //no point other than it must be implement since it inherets GameObject
 
@@ -338,6 +348,15 @@ namespace Egg
                 hasFloated = false;
             }
 
+            if (hitpoints <= 0)
+            {
+                isActive = false;
+            }
+            else
+            {
+                isActive = true;
+            }
+
             //FSM
             switch (playerState)
             {
@@ -504,7 +523,6 @@ namespace Egg
                 case PlayerState.JumpLeft:
                     isFacingRight = false;
                     Movement();
-                    //Float
 
                     //default to fall if no other condition is met (no hitstun here, use fall's hitstun)
                     playerState = PlayerState.Fall;
@@ -514,7 +532,6 @@ namespace Egg
                 case PlayerState.JumpRight:
                     isFacingRight = true;
                     Movement();
-                    //Float
 
                     //default to fall if no other condition is met (no hitstun here, use fall's hitstun)
                     playerState = PlayerState.Fall;
@@ -551,7 +568,7 @@ namespace Egg
                 //Fall 
                 case PlayerState.Fall:
                     Movement();
-                    if (kb.IsKeyDown(Keys.LeftAlt))
+                    if (SingleKeyPress(Keys.LeftAlt))
                     {
                         playerState = PlayerState.DownDash;
                     }
@@ -588,17 +605,28 @@ namespace Egg
 
                 case PlayerState.DownDash:
                     Movement();
+                    if (debugEnemyCollision)
+                    {
+                        if (isFacingRight)
+                        {
+                            playerState = PlayerState.BounceRight;
+                        }
+                        else
+                        {
+                            playerState = PlayerState.BounceLeft;
+                        }
+                    }
                     //Implement interaction with enemy here
                     break;
 
                 //Bounce Left
                 case PlayerState.BounceLeft:
-                    //Adjusting this causes glitches, so leave alone for now
+                    Movement();
                     break;
 
                 //Bounce Right
                 case PlayerState.BounceRight:
-                    //Adjusting this causes glitches, so leave alone for now
+                    Movement();
                     break;
 
                     //Remember to implement HitStun here
@@ -610,7 +638,6 @@ namespace Egg
         /// </summary>
         public override void Movement()
         {
-
             if (kb.IsKeyUp(Keys.A) && kb.IsKeyUp(Keys.D) && verticalVelocity == 0)
             {
                 bool temp = isFacingRight;
@@ -703,6 +730,21 @@ namespace Egg
                 {
                     Accelerate(verticalVelocity, 35, 60, true);
                 }
+            }
+            //Bounce
+            else if (playerState == PlayerState.BounceLeft || playerState == PlayerState.BounceRight)
+            {
+                if (isFacingRight)
+                {
+                    horizontalVelocity = 20;
+                }
+                else
+                {
+                    horizontalVelocity = -20;
+                }
+
+                verticalVelocity = -30;
+                playerState = PlayerState.Fall;
             }
 
             X += horizontalVelocity;
