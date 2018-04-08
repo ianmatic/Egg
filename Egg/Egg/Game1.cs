@@ -34,12 +34,9 @@ namespace Egg
         KeyboardState oldKB;
         Enemy enemy;
         Player player;
-        
+
         //animation fields
-        int currentFrame;
-        double frameRate;
-        double secondsPerFrame;
-        double timeCounter;
+        Texture2D spriteSheet;
 
 
         //Tile Fields
@@ -123,11 +120,8 @@ namespace Egg
             PotatoDebugging();
 
             //animation Stuff
-            currentFrame = 1;
-            frameRate = 60.0; //assuming we are doing 60fps here, change if not
-            secondsPerFrame = 1.0f / frameRate;
-            timeCounter = 0;
-
+            spriteSheet = Content.Load<Texture2D>("sprites");
+                
             //loading Tiles
             LTopLeft = Content.Load<Texture2D>(@"tiles\LTopLeft");
             LTopMid = Content.Load<Texture2D>(@"tiles\LTopMid");
@@ -308,21 +302,7 @@ namespace Egg
 
         }
 
-        private void UpdateAnimation(GameTime time)
-        {
-            timeCounter += time.ElapsedGameTime.TotalSeconds;
-
-            if(timeCounter >= secondsPerFrame)
-            {
-                currentFrame++;
-                if(currentFrame >= 4)// 4 is a placeholder for how many frames of walk there are
-                {
-                    currentFrame = 1;
-                }
-            }
-
-            timeCounter -= secondsPerFrame;
-        }        
+            
 
         #region Sorting Logic
         //Adds object g to the list of game objects, sorted by draw level. DO NOT directly add to objectList, or the sorting will be off!
