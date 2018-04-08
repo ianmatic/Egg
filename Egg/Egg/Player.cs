@@ -47,6 +47,7 @@ namespace Egg
         private double miliseconds; //used for float/downdash
         private double downDashDelay; //used for downdash
         private double floatDelay;
+        private double rollDelay;
 
         //for collision
         private Rectangle bottomChecker;
@@ -65,6 +66,7 @@ namespace Egg
         private PlayerState playerState;
 
         //for movement
+        private bool isRolling;
         private int verticalVelocity = 0;
         private int horizontalVelocity = 0;
 
@@ -88,6 +90,22 @@ namespace Egg
             get { return hitpoints; }
             set { hitpoints = value; }
         }
+        public int VerticalVelocity
+        {
+            get { return verticalVelocity; }
+        }
+        public int HorizontalVelocity
+        {
+            get { return horizontalVelocity; }
+        }
+        public bool IsDebugging
+        {
+            get { return isDebugging; }
+        }
+        public bool IsFacingRight
+        {
+            get { return isFacingRight; }
+        }
 
         //Constructor for player
         public Player(int drawLevel, Texture2D defaultSprite, Rectangle hitbox, Color color, int x, int y)
@@ -106,10 +124,12 @@ namespace Egg
             bottomIntersects = false;
             topIntersects = false;
             hasFloated = false;
+            isRolling = false;
 
             gameTime = new GameTime();
             downDashDelay = 13;
             floatDelay = 50;
+            rollDelay = 30;
             miliseconds = 2;
         }
         /// <summary>
@@ -204,7 +224,7 @@ namespace Egg
                 //FSM states are changed here so that the player can move after touching the ground
 
                 //Roll Left
-                if (kb.IsKeyDown(Keys.A) && kb.IsKeyDown(Keys.LeftShift))
+                if ((SingleKeyPress(Keys.LeftShift) && !isFacingRight) || (isRolling && !isFacingRight))
                 {
                     playerState = PlayerState.RollLeft;
                 }
@@ -214,7 +234,7 @@ namespace Egg
                     playerState = PlayerState.WalkLeft;
                 }
                 //Roll Right
-                else if (kb.IsKeyDown(Keys.D) && kb.IsKeyDown(Keys.LeftShift))
+                else if ((SingleKeyPress(Keys.LeftShift) && isFacingRight) || (isRolling && isFacingRight))
                 {
                     playerState = PlayerState.RollRight;
                 }
@@ -257,8 +277,8 @@ namespace Egg
                 if (velocityType > limit)
                 {
                     velocityType -= rate; //reduce velocity normally
-                    
-                    if (!bottomIntersects)
+
+                    if (!bottomIntersects && !isRolling)
                     {
                         playerState = PlayerState.Fall;
                     }
@@ -270,7 +290,7 @@ namespace Egg
                 {
                     velocityType += rate; //increase velocity since moving left is negative
                     //needed to prevent player from hovering in air if they decelerate on an edge
-                    if (!bottomIntersects)
+                    if (!bottomIntersects && !isRolling)
                     {
                         playerState = PlayerState.Fall;
                     }
@@ -377,7 +397,7 @@ namespace Egg
                     {
                         playerState = PlayerState.WalkLeft;
                     }
-                    else if (kb.IsKeyDown(Keys.LeftShift))
+                    else if (SingleKeyPress(Keys.LeftShift))
                     {
                         playerState = PlayerState.RollLeft;
                     }
@@ -401,7 +421,7 @@ namespace Egg
                     {
                         playerState = PlayerState.WalkLeft;
                     }
-                    else if (kb.IsKeyDown(Keys.LeftShift))
+                    else if (SingleKeyPress(Keys.LeftShift))
                     {
                         playerState = PlayerState.RollRight;
                     }
@@ -426,7 +446,7 @@ namespace Egg
                     {
                         playerState = PlayerState.WalkRight;
                     }
-                    else if (kb.IsKeyDown(Keys.LeftShift))
+                    else if (SingleKeyPress(Keys.LeftShift))
                     {
                         playerState = PlayerState.RollLeft;
                     }
@@ -453,7 +473,7 @@ namespace Egg
                     {
                         playerState = PlayerState.WalkLeft;
                     }
-                    else if (kb.IsKeyDown(Keys.LeftShift))
+                    else if (SingleKeyPress(Keys.LeftShift))
                     {
                         playerState = PlayerState.RollRight;
                     }
@@ -470,23 +490,23 @@ namespace Egg
                     isFacingRight = false;
                     Movement();
 
-                    if (!bottomIntersects) //not touching ground
+                    if (!bottomIntersects && !isRolling) //not touching ground
                     {
                         playerState = PlayerState.Fall;
                     }
-                    if (kb.IsKeyUp(Keys.LeftShift) && kb.IsKeyDown(Keys.A)) //release shift to return to walking left
+                    if (!isRolling && kb.IsKeyDown(Keys.A))
                     {
                         playerState = PlayerState.WalkLeft;
                     }
-                    else if (kb.IsKeyUp(Keys.LeftShift) && kb.IsKeyDown(Keys.D)) //release shift and walk right
+                    else if (!isRolling && kb.IsKeyDown(Keys.D))
                     {
                         playerState = PlayerState.WalkRight;
                     }
-                    else if (kb.IsKeyUp(Keys.LeftShift))
+                    else if (!isRolling)
                     {
                         playerState = PlayerState.IdleLeft;
                     }
-                    else if (SingleKeyPress(Keys.Space))
+                    else if (SingleKeyPress(Keys.Space) && !isRolling)
                     {
                         playerState = PlayerState.JumpLeft;
                     }
@@ -497,23 +517,23 @@ namespace Egg
                     isFacingRight = true;
                     Movement();
 
-                    if (!bottomIntersects) //not touching ground
+                    if (!bottomIntersects && !isRolling) //not touching ground
                     {
                         playerState = PlayerState.Fall;
                     }
-                    if (SingleKeyPress(Keys.Space))
+                    if (SingleKeyPress(Keys.Space) && !isRolling)
                     {
                         playerState = PlayerState.JumpRight;
                     }
-                    else if (kb.IsKeyUp(Keys.LeftShift) && kb.IsKeyDown(Keys.A)) //release shift and walk left
+                    else if (!isRolling && kb.IsKeyDown(Keys.A))
                     {
                         playerState = PlayerState.WalkLeft;
                     }
-                    else if (kb.IsKeyUp(Keys.LeftShift) && kb.IsKeyDown(Keys.D)) //release shift and return to walking right
+                    else if (!isRolling && kb.IsKeyDown(Keys.D))
                     {
                         playerState = PlayerState.WalkRight;
                     }
-                    else if (kb.IsKeyUp(Keys.LeftShift))
+                    else if (!isRolling)
                     {
                         playerState = PlayerState.IdleRight;
                     }
@@ -540,6 +560,10 @@ namespace Egg
                 //Float Left
                 case PlayerState.FloatLeft:
                     //if the player lets go of space, player stops floating
+                    if (SingleKeyPress(Keys.S))
+                    {
+                        playerState = PlayerState.DownDash;
+                    }
                     if (kb.IsKeyUp(Keys.Space))
                     {
                         playerState = PlayerState.Fall;
@@ -554,6 +578,10 @@ namespace Egg
                 //Float Right
                 case PlayerState.FloatRight:
                     //if the player lets go of space, player stops floating
+                    if (SingleKeyPress(Keys.S))
+                    {
+                        playerState = PlayerState.DownDash;
+                    }
                     if (kb.IsKeyUp(Keys.Space))
                     {
                         playerState = PlayerState.Fall;
@@ -568,7 +596,7 @@ namespace Egg
                 //Fall 
                 case PlayerState.Fall:
                     Movement();
-                    if (SingleKeyPress(Keys.LeftAlt))
+                    if (SingleKeyPress(Keys.S))
                     {
                         playerState = PlayerState.DownDash;
                     }
@@ -673,7 +701,34 @@ namespace Egg
             //Roll
             else if (playerState == PlayerState.RollLeft || playerState == PlayerState.RollRight)
             {
-                Accelerate(horizontalVelocity, 7, 15, false);
+                isRolling = true;
+                Accelerate(horizontalVelocity, 5, 15, false);
+                if (!bottomIntersects)
+                {
+                    Accelerate(verticalVelocity, 2, 30, true);
+                }
+                rollDelay -= miliseconds;
+                if (rollDelay <= 0)
+                {
+                    isRolling = false;
+                    rollDelay = 30;
+                    if (kb.IsKeyDown(Keys.A))
+                    {
+                        playerState = PlayerState.WalkLeft;
+                    }
+                    else if (kb.IsKeyDown(Keys.D))
+                    {
+                        playerState = PlayerState.WalkRight;
+                    }
+                    else if (!isFacingRight)
+                    {
+                        playerState = PlayerState.IdleLeft;
+                    }
+                    else if (isFacingRight)
+                    {
+                        playerState = PlayerState.IdleRight;
+                    }
+                }
             }
             //Jump
             else if (playerState == PlayerState.JumpLeft || playerState == PlayerState.JumpRight)

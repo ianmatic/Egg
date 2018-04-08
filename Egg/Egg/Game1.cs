@@ -250,6 +250,13 @@ namespace Egg
                     {
                         g.Draw(spriteBatch);
                     }
+                    if (player.IsDebugging) //debugging text for player
+                    {
+                        spriteBatch.DrawString(menuText, "Horizontal Velocity: " + player.HorizontalVelocity, new Vector2(100, 25), Color.Cyan);
+                        spriteBatch.DrawString(menuText, "Vertical Velocity: " + player.VerticalVelocity, new Vector2(100, 55), Color.Cyan);
+                        spriteBatch.DrawString(menuText, "Player State: " + player.PlayerState, new Vector2(100, 85), Color.Cyan);
+                        spriteBatch.DrawString(menuText, "Facing right?: " + player.IsFacingRight, new Vector2(100, 115), Color.Cyan);
+                    }
                     break;
 
                 case GameState.GameOver:
