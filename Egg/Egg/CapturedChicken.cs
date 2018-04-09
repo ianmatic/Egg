@@ -44,7 +44,7 @@ namespace Egg
         //Enemies pass through chickens
         public override void CheckColliderAgainstEnemy(Enemy e)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
         //Chickens won't move, so left unimplemented.
         public override void Movement()

@@ -830,7 +830,7 @@ namespace Egg
         //Implement when working on enemy collision
         public override void CheckColliderAgainstEnemy(Enemy e)
         {
-            if (hitbox.Intersects(e.Hitbox))
+            if (hitbox.Intersects(e.Hitbox) && e.IsActive)
             {
                 debugEnemyCollision = true;
             }
