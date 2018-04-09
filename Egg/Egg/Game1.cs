@@ -220,6 +220,11 @@ namespace Egg
                 Builder.ShowDialog();
             }
 
+            if (SingleKeyPress(Keys.F8))
+            {
+                enemy.DebugCollision = !enemy.DebugCollision;
+            }
+
             base.Update(gameTime);
         }
 
@@ -304,6 +309,7 @@ namespace Egg
                     else
                     {
                         n.CheckColliderAgainstPlayer(player);
+                        n.CheckColliderAgainstEnemy(enemy);
                     }
 
                 //}
@@ -389,6 +395,8 @@ namespace Egg
             AddObjectToList(new Tile(8, sideRectangle, new Rectangle(100, 1000, 100, 800), Tile.TileType.Normal));
             AddObjectToList(new Tile(9, topRectangle, new Rectangle(100,  1000, 1000, 100), Tile.TileType.Normal));
             */
+            //enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 16, 60);
+            enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 16, 60, 5, 0, 100);
             enemy = new Enemy(new Rectangle(890, 460, 75, 75), collisionTest, 16, 60);
             enemy2 = new Enemy(new Rectangle(275, 350, 75, 75), collisionTest, 17, 60);
             enemy3 = new Enemy(new Rectangle(200, 100, 75, 75), collisionTest, 18, 60);
