@@ -225,6 +225,11 @@ namespace Egg
                 enemy.DebugCollision = !enemy.DebugCollision;
             }
 
+            if (SingleKeyPress(Keys.F9))
+            {
+                player.Hitbox = new Rectangle(300, 300, 75, 75);
+            }
+
             base.Update(gameTime);
         }
 
