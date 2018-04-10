@@ -33,6 +33,9 @@ namespace Egg
         KeyboardState kb;
         KeyboardState oldKB;
         Enemy enemy;
+        Enemy enemy2;
+        Enemy enemy3;
+
         Player player;
 
         //animation fields
@@ -257,9 +260,9 @@ namespace Egg
                     if (player.IsDebugging) //debugging text for player
                     {
                         spriteBatch.DrawString(menuText, "Horizontal Velocity: " + player.HorizontalVelocity, new Vector2(100, 25), Color.Cyan);
-                        spriteBatch.DrawString(menuText, "Vertical Velocity: " + player.VerticalVelocity, new Vector2(100, 55), Color.Cyan);
-                        spriteBatch.DrawString(menuText, "Player State: " + player.PlayerState, new Vector2(100, 85), Color.Cyan);
-                        spriteBatch.DrawString(menuText, "Facing right?: " + player.IsFacingRight, new Vector2(100, 115), Color.Cyan);
+                        spriteBatch.DrawString(menuText, "Vertical Velocity: " + player.VerticalVelocity, new Vector2(100, 60), Color.Cyan);
+                        spriteBatch.DrawString(menuText, "Player State: " + player.PlayerState, new Vector2(100, 95), Color.Cyan);
+                        spriteBatch.DrawString(menuText, "Facing right?: " + player.IsFacingRight, new Vector2(100, 130), Color.Cyan);
                     }
                     break;
 
@@ -380,10 +383,9 @@ namespace Egg
 
 
             //PLATFORM CODE
-            AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(900, 600, 300, 100), Tile.TileType.Normal));
+            AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(700, 600, 700, 100), Tile.TileType.Normal));
             AddObjectToList(new Tile(7, bottomRectangle, new Rectangle(0, 600, 500, 300), Tile.TileType.Normal));
             AddObjectToList(new Tile(8, bottomRectangle, new Rectangle(1300, 600, 500, 300), Tile.TileType.Normal));
-            AddObjectToList(new Tile(9, bottomRectangle, new Rectangle(1500, 600, 300, 100), Tile.TileType.Normal));
             AddObjectToList(new Tile(10, bottomRectangle, new Rectangle(1700, 200, 200, 100), Tile.TileType.Normal));
             AddObjectToList(new Tile(11, sideRectangle, new Rectangle(0, 0, 100, 900), Tile.TileType.Normal));
             AddObjectToList(new Tile(12, sideRectangle, new Rectangle(500, 400, 200, 400), Tile.TileType.Normal));
@@ -400,8 +402,13 @@ namespace Egg
             */
             //enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 16, 60);
             enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 16, 60, 5, 0, 100);
+            enemy = new Enemy(new Rectangle(890, 460, 75, 75), collisionTest, 16, 60);
+            enemy2 = new Enemy(new Rectangle(275, 350, 75, 75), collisionTest, 17, 60);
+            enemy3 = new Enemy(new Rectangle(200, 100, 75, 75), collisionTest, 18, 60);
             AddObjectToList(enemy);
-            player = new Player(17, collisionTest, new Rectangle(300, 300, 75, 75), Color.White, 50, 50);
+            AddObjectToList(enemy2);
+            AddObjectToList(enemy3);
+            player = new Player(19, collisionTest, new Rectangle(300, 300, 75, 75), Color.White, 50, 50);
             AddObjectToList(player);
 
         }

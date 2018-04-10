@@ -500,8 +500,13 @@ namespace Egg
                 //Roll Left
                 case PlayerState.RollLeft:
                     isFacingRight = false;
-                    Movement();
 
+
+                    if (debugEnemyCollision) //enemy collision
+                    {
+                        playerState = PlayerState.BounceLeft;
+                    }
+                    Movement();
                     if (!bottomIntersects && !isRolling) //not touching ground
                     {
                         playerState = PlayerState.Fall;
@@ -527,8 +532,11 @@ namespace Egg
                 //Roll Right
                 case PlayerState.RollRight:
                     isFacingRight = true;
+                    if (debugEnemyCollision) //enemy collision
+                    {
+                        playerState = PlayerState.BounceLeft;
+                    }
                     Movement();
-
                     if (!bottomIntersects && !isRolling) //not touching ground
                     {
                         playerState = PlayerState.Fall;
@@ -644,7 +652,6 @@ namespace Egg
                     break;
 
                 case PlayerState.DownDash:
-                    Movement();
                     if (debugEnemyCollision)
                     {
                         if (isFacingRight)
@@ -656,6 +663,8 @@ namespace Egg
                             playerState = PlayerState.BounceLeft;
                         }
                     }
+                    Movement(); //movement is after to prevent player from touching ground during downdash if they touch an enemy
+
                     //Implement interaction with enemy here
                     break;
 
@@ -714,8 +723,8 @@ namespace Egg
             else if (playerState == PlayerState.RollLeft || playerState == PlayerState.RollRight)
             {
                 isRolling = true;
-                Accelerate(horizontalVelocity, 5, 15, false);
-                if (!bottomIntersects)
+                Accelerate(horizontalVelocity, 6, 18, false);
+                if (!bottomIntersects) //mimic gravity while rolling
                 {
                     Accelerate(verticalVelocity, 2, 30, true);
                 }
@@ -801,13 +810,24 @@ namespace Egg
             //Bounce
             else if (playerState == PlayerState.BounceLeft || playerState == PlayerState.BounceRight)
             {
-                if (isFacingRight)
+
+                if (isFacingRight && verticalVelocity != 0) //in air
                 {
                     horizontalVelocity = 20;
                 }
-                else
+                else if (!isFacingRight && verticalVelocity != 0) //in air
                 {
                     horizontalVelocity = -20;
+                }
+                else if (isFacingRight)
+                {
+                    horizontalVelocity = -20;
+                    isFacingRight = !isFacingRight;
+                }
+                else
+                {
+                    horizontalVelocity = 20;
+                    isFacingRight = !isFacingRight;
                 }
 
                 verticalVelocity = -30;
