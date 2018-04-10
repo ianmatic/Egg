@@ -620,10 +620,12 @@ namespace Egg
                         if (kb.IsKeyDown(Keys.A) && kb.IsKeyUp(Keys.D) && kb.IsKeyDown(Keys.Space))
                         {
                             PlayerState = PlayerState.FloatLeft;
+                            hasFloated = true;
                         }
                         else if (kb.IsKeyDown(Keys.D) && kb.IsKeyUp(Keys.A) && kb.IsKeyDown(Keys.Space))
                         {
                             playerState = PlayerState.FloatRight;
+                            hasFloated = true;
                         }
                         else if (kb.IsKeyDown(Keys.Space))
                         {
@@ -635,6 +637,7 @@ namespace Egg
                             {
                                 playerState = PlayerState.FloatLeft;
                             }
+                            hasFloated = true;
                         }
                     }
 
