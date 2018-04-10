@@ -57,9 +57,10 @@ namespace Egg
         /// <summary>
         /// The rectangle of the GameObject
         /// </summary>
-        public Rectangle Hitbox
+        public virtual Rectangle Hitbox
         {
             get { return this.hitbox; }
+            set { }
         }
 
         /// <summary>

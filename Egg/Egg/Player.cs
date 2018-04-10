@@ -112,6 +112,12 @@ namespace Egg
         {
             get { return isFacingRight; }
         }
+        public override Rectangle Hitbox
+        {
+            get { return hitbox; }
+            set { hitbox = value; }
+        }
+
 
         //Constructor for player
         public Player(int drawLevel, Texture2D defaultSprite, Rectangle hitbox, Color color, int x, int y)
