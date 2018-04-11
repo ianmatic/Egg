@@ -19,6 +19,7 @@ namespace Egg
         }
 
         List<Texture2D> tileList;
+        List<Enemy> tempEnemyList;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SpriteFont menuText;
@@ -120,6 +121,8 @@ namespace Egg
 
             tileSpriteList = new List<Texture2D>();
             //Put tile loop here
+
+            tempEnemyList = new List<Enemy>();
 
             PotatoDebugging();
 
@@ -300,10 +303,18 @@ namespace Egg
                 //{
                     if (n is Player)
                     {
-                        n.FiniteState();
+                        Player p = (Player)n;
+                        p.FiniteState();
 
                         //This should work on any enemy (i.e. enemy list of a screen), fix this later!
-                        n.CheckColliderAgainstEnemy(enemy);
+                        foreach (Enemy e in tempEnemyList)
+                        {
+                            if (!p.InBounceLockout)
+                            {
+                                p.CheckColliderAgainstEnemy(e);
+                            }
+                        }
+                        
                     }
                     else if (n is Enemy)
                     {
@@ -330,6 +341,12 @@ namespace Egg
         //Adds object g to the list of game objects, sorted by draw level. DO NOT directly add to objectList, or the sorting will be off!
         private void AddObjectToList(GameObject g)
         {
+            if (g is Enemy)
+            {
+                Enemy e = (Enemy)g;
+                tempEnemyList.Add(e);
+            }
+
             if (objectList.Count == 0)
             {
                 objectList.Add(g);
@@ -408,7 +425,7 @@ namespace Egg
             //enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 16, 60);
             enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 4, 60, 5, 2, 100); //moving enemy
             //enemy = new Enemy(new Rectangle(890,500, 75, 75), collisionTest, 16, 60);
-            enemy2 = new Enemy(new Rectangle(275, 350, 75, 75), collisionTest, 4, 60);
+            enemy2 = new Enemy(new Rectangle(225, 350, 75, 75), collisionTest, 4, 60);
             enemy3 = new Enemy(new Rectangle(200, 100, 75, 75), collisionTest, 4, 60);
             AddObjectToList(enemy);
             AddObjectToList(enemy2);
