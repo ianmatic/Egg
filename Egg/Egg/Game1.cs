@@ -388,7 +388,7 @@ namespace Egg
             AddObjectToList(new Tile(8, bottomRectangle, new Rectangle(1300, 600, 500, 300), Tile.TileType.Normal));
             AddObjectToList(new Tile(10, bottomRectangle, new Rectangle(1700, 200, 200, 100), Tile.TileType.Normal));
             AddObjectToList(new Tile(11, sideRectangle, new Rectangle(0, 0, 100, 900), Tile.TileType.Normal));
-            AddObjectToList(new Tile(12, sideRectangle, new Rectangle(500, 400, 200, 400), Tile.TileType.Normal));
+            AddObjectToList(new Tile(12, sideRectangle, new Rectangle(500, 600, 200, 400), Tile.TileType.Normal));
             AddObjectToList(new Tile(13, sideRectangle, new Rectangle(1500, 400, 100, 200), Tile.TileType.Normal));
             AddObjectToList(new Tile(14, sideRectangle, new Rectangle(1600, 200, 100, 400), Tile.TileType.Normal));
             AddObjectToList(new Tile(15, topRectangle, new Rectangle(0, 200, 400, 100), Tile.TileType.Normal));
@@ -401,8 +401,8 @@ namespace Egg
             AddObjectToList(new Tile(9, topRectangle, new Rectangle(100,  1000, 1000, 100), Tile.TileType.Normal));
             */
             //enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 16, 60);
-            enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 16, 60, 5, 0, 100);
-            enemy = new Enemy(new Rectangle(890, 460, 75, 75), collisionTest, 16, 60);
+            //enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 16, 60, 5, 2, 100); moving enemy
+            enemy = new Enemy(new Rectangle(890,500, 75, 75), collisionTest, 16, 60);
             enemy2 = new Enemy(new Rectangle(275, 350, 75, 75), collisionTest, 17, 60);
             enemy3 = new Enemy(new Rectangle(200, 100, 75, 75), collisionTest, 18, 60);
             AddObjectToList(enemy);

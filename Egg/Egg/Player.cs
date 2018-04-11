@@ -72,6 +72,7 @@ namespace Egg
         private PlayerState playerState;
 
         //for movement
+        private bool rollInAir;
         private bool isRolling;
         private int verticalVelocity = 0;
         private int horizontalVelocity = 0;
@@ -137,6 +138,7 @@ namespace Egg
             topIntersects = false;
             hasFloated = false;
             isRolling = false;
+            rollInAir = false;
 
             gameTime = new GameTime();
             downDashDelay = 13;
@@ -500,8 +502,6 @@ namespace Egg
                 //Roll Left
                 case PlayerState.RollLeft:
                     isFacingRight = false;
-
-
                     if (debugEnemyCollision) //enemy collision
                     {
                         playerState = PlayerState.BounceLeft;
@@ -580,6 +580,11 @@ namespace Egg
                 //Float Left
                 case PlayerState.FloatLeft:
                     //if the player lets go of space, player stops floating
+                    if (SingleKeyPress(Keys.LeftShift))
+                    {
+                        rollInAir = true;
+                        playerState = PlayerState.RollLeft;
+                    }
                     if (SingleKeyPress(Keys.S))
                     {
                         playerState = PlayerState.DownDash;
@@ -598,6 +603,11 @@ namespace Egg
                 //Float Right
                 case PlayerState.FloatRight:
                     //if the player lets go of space, player stops floating
+                    if (SingleKeyPress(Keys.LeftShift))
+                    {
+                        rollInAir = true;
+                        playerState = PlayerState.RollRight;
+                    }
                     if (SingleKeyPress(Keys.S))
                     {
                         playerState = PlayerState.DownDash;
@@ -727,7 +737,7 @@ namespace Egg
             {
                 isRolling = true;
                 Accelerate(horizontalVelocity, 6, 18, false);
-                if (!bottomIntersects) //mimic gravity while rolling
+                if (!bottomIntersects && !rollInAir) //mimic gravity while rolling
                 {
                     Accelerate(verticalVelocity, 2, 30, true);
                 }
@@ -735,6 +745,11 @@ namespace Egg
                 if (rollDelay <= 0)
                 {
                     isRolling = false;
+                    if (rollInAir == true)
+                    {
+                        Decelerate(horizontalVelocity, 1, 10, false);
+                    }
+                    rollInAir = false;
                     rollDelay = 30;
                     if (kb.IsKeyDown(Keys.A))
                     {
@@ -766,7 +781,7 @@ namespace Egg
             {
                 //player stops falling
                 verticalVelocity = 0;
-                floatDelay -= miliseconds; //reduce delay (timer) until 0, then player starts falling againg
+                floatDelay -= miliseconds; //reduce delay (timer) until 0, then player starts falling again
                 if (floatDelay <= 0)
                 {
 
