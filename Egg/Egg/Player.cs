@@ -54,6 +54,8 @@ namespace Egg
         private double fps = 60.0;
         private double secondsPerFrame;
         private double timeCounter = 0;
+
+        private Rectangle lastCheckpoint;
         
         //for collision
         private Rectangle bottomChecker;
@@ -119,14 +121,20 @@ namespace Egg
             set { hitbox = value; }
         }
 
+        public Rectangle LastCheckpoint
+        {
+            get { return lastCheckpoint; }
+            set { this.lastCheckpoint = value; }
+        }
 
         //Constructor for player
-        public Player(int drawLevel, Texture2D defaultSprite, Rectangle hitbox, Color color, int x, int y)
+        public Player(int drawLevel, Texture2D defaultSprite, Rectangle hitbox, Color color)
         {
             this.drawLevel = drawLevel;
             this.defaultSprite = defaultSprite;
             this.hitbox = hitbox;
             this.color = color;
+            this.lastCheckpoint = hitbox;
 
             isActive = true;
             hitpoints = 3;
