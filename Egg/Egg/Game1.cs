@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Egg
 {
@@ -343,7 +344,7 @@ namespace Egg
                 {
                     for (int i = (objectList.Count - 1); i >= 0; i--)
                     {
-                        if (objectList[i].DrawLevel == g.DrawLevel)
+                        if (objectList[i].DrawLevel <= g.DrawLevel)
                         {
                             break;
                         }
@@ -375,11 +376,15 @@ namespace Egg
             topRectangle = Content.Load<Texture2D>("green");
             collisionTest = Content.Load<Texture2D>("white");
 
-            AddObjectToList(new CapturedChicken(1, testSprite, new Rectangle(0, 0, 30, 30), Color.Red));
-            AddObjectToList(new CapturedChicken(5, testSprite, new Rectangle(0, 15, 30, 30), Color.Blue));
-            AddObjectToList(new CapturedChicken(4, testSprite, new Rectangle(0, 30, 30, 30), Color.Green));
-            AddObjectToList(new CapturedChicken(3, testSprite, new Rectangle(0, 45, 30, 30), Color.Yellow));
-            AddObjectToList(new CapturedChicken(2, testSprite, new Rectangle(0, 60, 30, 30), Color.White));
+            AddObjectToList(new CapturedChicken(115, testSprite, new Rectangle(0, 0, 30, 30), Color.Red));
+            AddObjectToList(new CapturedChicken(111, testSprite, new Rectangle(0, 15, 30, 30), Color.Aqua));
+            AddObjectToList(new CapturedChicken(114, testSprite, new Rectangle(0, 30, 30, 30), Color.Green));
+            AddObjectToList(new CapturedChicken(113, testSprite, new Rectangle(0, 45, 30, 30), Color.Yellow));
+            AddObjectToList(new CapturedChicken(112, testSprite, new Rectangle(0, 60, 30, 30), Color.White));
+
+            //CHECKPOINTS
+            AddObjectToList(new Checkpoint(3, collisionTest, new Rectangle(400, 450, 75, 75)));
+            AddObjectToList(new Checkpoint(3, collisionTest, new Rectangle(1500, 250, 75, 75)));
 
 
             //PLATFORM CODE
@@ -401,15 +406,20 @@ namespace Egg
             AddObjectToList(new Tile(9, topRectangle, new Rectangle(100,  1000, 1000, 100), Tile.TileType.Normal));
             */
             //enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 16, 60);
-            //enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 16, 60, 5, 2, 100); moving enemy
-            enemy = new Enemy(new Rectangle(890,500, 75, 75), collisionTest, 16, 60);
-            enemy2 = new Enemy(new Rectangle(275, 350, 75, 75), collisionTest, 17, 60);
-            enemy3 = new Enemy(new Rectangle(200, 100, 75, 75), collisionTest, 18, 60);
+            enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 4, 60, 5, 2, 100); //moving enemy
+            //enemy = new Enemy(new Rectangle(890,500, 75, 75), collisionTest, 16, 60);
+            enemy2 = new Enemy(new Rectangle(275, 350, 75, 75), collisionTest, 4, 60);
+            enemy3 = new Enemy(new Rectangle(200, 100, 75, 75), collisionTest, 4, 60);
             AddObjectToList(enemy);
             AddObjectToList(enemy2);
             AddObjectToList(enemy3);
-            player = new Player(19, collisionTest, new Rectangle(300, 300, 75, 75), Color.White);
+            player = new Player(5, collisionTest, new Rectangle(300, 300, 75, 75), Color.White);
             AddObjectToList(player);
+
+            foreach (GameObject g in objectList)
+            {
+                Debug.WriteLine("Test");
+            }
 
         }
 
