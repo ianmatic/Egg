@@ -16,13 +16,13 @@ namespace Egg
             this.defaultSprite = defaultSprite;
             this.hitbox = hitbox;
             this.isActive = true;
-            this.hasGravity = false;
+            this.hasGravity = false;      
         }
         public override void Draw(SpriteBatch sb)
         {
             if (isActive)
             {
-                sb.Draw(defaultSprite, hitbox, Color.White);
+                sb.Draw(defaultSprite, hitbox, Color.Bisque);
             }
         }
         public override void CheckColliderAgainstPlayer(Player p)
@@ -36,7 +36,7 @@ namespace Egg
         //Enemies don't need a spawn point
         public override void CheckColliderAgainstEnemy(Enemy e)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
         //Doesn't change states
         public override void FiniteState()
