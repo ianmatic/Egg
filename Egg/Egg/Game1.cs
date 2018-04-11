@@ -227,7 +227,7 @@ namespace Egg
 
             if (SingleKeyPress(Keys.F9))
             {
-                player.Hitbox = new Rectangle(300, 300, 75, 75);
+                player.Hitbox = new Rectangle(player.LastCheckpoint.X, player.LastCheckpoint.Y, 75, 75);
             }
 
             base.Update(gameTime);
@@ -408,7 +408,7 @@ namespace Egg
             AddObjectToList(enemy);
             AddObjectToList(enemy2);
             AddObjectToList(enemy3);
-            player = new Player(19, collisionTest, new Rectangle(300, 300, 75, 75), Color.White, 50, 50);
+            player = new Player(19, collisionTest, new Rectangle(300, 300, 75, 75), Color.White);
             AddObjectToList(player);
 
         }

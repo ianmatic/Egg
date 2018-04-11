@@ -29,7 +29,7 @@ namespace Egg
         {
             if (hitbox.Intersects(p.Hitbox))
             {
-                //Update player's checkpoint
+                p.LastCheckpoint = this.hitbox;
             }
         }
 

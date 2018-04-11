@@ -168,7 +168,8 @@ namespace Egg
                     hitstunTimer += 1;
                     if (hitstunTimer > maxHitstunTime)
                     {
-                        isActive = false;
+                        isActive = true;
+                        hitstunTimer = 0;
                     }
                     break;
             }
