@@ -636,10 +636,10 @@ namespace Egg
 
         private void InitialMap()
         {
-            const int BASEX = 204;  // Top left corner of the container
-            const int BASEY = 18;   // Top right corner of the container
-            const int BASEW = 1190;  // The width of the container
-            const int BASEH = 660;  // The height of the container
+            const int BASEX = 300;  // Top left corner of the container
+            const int BASEY = 25;   // Top right corner of the container
+            const int BASEW = 1200;  // The width of the container
+            const int BASEH = 770;  // The height of the container
 
             int btnX;       // X Position field
             int btnY;       // Y Position field
