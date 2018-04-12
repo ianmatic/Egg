@@ -66,7 +66,6 @@ namespace Egg
         private bool isDebugging = false;
         private bool debugEnemyCollision = false; 
         private bool playerVisible = true;
-        private bool bounceLockout = false;
         Tile temp; //used to make sure player checks collision against only 
                    //1 tile when necessary (as opposed to all of them each frame like usual)
 
@@ -120,11 +119,6 @@ namespace Egg
         {
             get { return hitbox; }
             set { hitbox = value; }
-        }
-
-        public bool InBounceLockout
-        {
-            get { return bounceLockout; }
         }
 
         public Rectangle LastCheckpoint
@@ -771,7 +765,6 @@ namespace Egg
             //Roll
             else if (playerState == PlayerState.RollLeft || playerState == PlayerState.RollRight)
             {
-                bounceLockout = false;
                 isRolling = true;
                 Accelerate(horizontalVelocity, 6, 18, false);
                 if (SingleKeyPress(Keys.Space))
@@ -850,7 +843,6 @@ namespace Egg
             //Fall
             else if (playerState == PlayerState.Fall)
             {
-                bounceLockout = false;
                 //Gravity
                 Accelerate(verticalVelocity, 2, 30, true);
 
@@ -876,8 +868,6 @@ namespace Egg
                 //stop in midair (illusion of delay)
                 horizontalVelocity = 0;
                 verticalVelocity = 0;
-
-                bounceLockout = false;
 
                 downDashDelay -= miliseconds;
                 if (downDashDelay <= 0)
@@ -934,10 +924,9 @@ namespace Egg
         //Implement when working on enemy collision
         public override void CheckColliderAgainstEnemy(Enemy e)
         {
-            if (hitbox.Intersects(e.Hitbox) && e.IsActive && !bounceLockout)
+            if (hitbox.Intersects(e.Hitbox) && e.IsActive)
             {
                 debugEnemyCollision = true;
-                bounceLockout = true;
             }
             else
             {
