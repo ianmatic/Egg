@@ -13,96 +13,77 @@ namespace Egg
     //Represents a single screen within a level.
     class Screen
     {
-        //interpreter fields
+        //FIELDS
+        int HorizontalTileCount = 9;    //eventually set this to be fed in by the text file
+        int VerticalTileCount = 16;     //this one too
+        int screenLength = 1920;        //Set this up to get fed in by whatever the current screen size is
+        int screenHeight = 1080;        //same for this 
         string[,] level;
+
         StreamReader interpreter;
+        Tile[,] screenTiles;
 
-
-        Tile[,] screenTiles = new Tile[16, 9];
-
-
-        public Tile[,] LoadTiles(string[,] levelMap, List<Texture2D> textures)
+        /// <summary>
+        /// By default, populates screenTiles to be an X by Y array filled with empty tiles
+        /// </summary>
+        public Screen()
         {
-            for (int i = 0; i < 9; i++)
+            screenTiles = new Tile[9, 16];
+            for (int row = 0; row < 9; row++)
             {
-                for (int j = 0; j < 16; j++)
+                for (int column = 0; column < 16; column++)
                 {
-                    screenTiles[j, i].DefaultSprite = textures[0]; 
+                    screenTiles[row, column] = new Tile(0, null, new Rectangle(0, 0, 0, 0), Tile.TileType.Normal);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Public callable function to print all the tiles to the screen
+        /// </summary>
+        public Tile[,] DrawTilesFromMap(string s, List<Texture2D> textures, SpriteBatch sb)
+        {
+            string[,] baseLevelMap = LevelInterpreter(s);
+            Tile[,] tileMap = new Tile[9, 16];
+            tileMap = LoadTiles(baseLevelMap, textures);
+            DrawLevel(tileMap, sb);
+            return tileMap;
+        }
+
+        /// <summary>
+        /// Adds in the 2d textures to a 2d array of tiles then returns the array
+        /// </summary>
+        private Tile[,] LoadTiles(string[,] levelMap, List<Texture2D> textures)
+        {
+            for (int row = 0; row < 9; row++)
+            {
+                for (int column = 0; column < 16; column++)
+                {
+                    Tile temp = new Tile(0 , null, new Rectangle(0,0,0,0), Tile.TileType.Normal);
+                    temp = screenTiles[row, column];
+                    temp.DefaultSprite = textures[0]; //clear the array
+                    screenTiles[row, column] = temp;
                 }
             }
 
-            for (int h = 0; h < 9; h++)
+            for (int row = 0; row < 9; row++)
             {
-                for (int w = 0; w < 16; w++)
+                for (int column = 0; column < 16; column++)
                 {
-                    screenTiles[w, h].DefaultSprite = textures[GetTexture(levelMap[w, h])];
+                    Texture2D temp = textures[1];
+                    int textureNumber = GetTexture(levelMap[row, column]);
+                    temp = textures[textureNumber];
+                    screenTiles[row, column].DefaultSprite = temp;
                 }
             }
 
             return screenTiles;
         }
 
-
-
-        //Gets a texture based on the string (s) passed in
-        public int GetTexture(string s)
-        {
-            switch (s)
-            {
-                case "LTopLeft":
-                    return 0;
-                case "LTopMid":
-                    return 1;
-                case "LTopRight":
-                    return 2;
-                case "LMidLeft":
-                    return 3;
-                case "LMidRight":
-                    return 4;
-                case "LBotLeft":
-                    return 5;
-                case "LBotMid":
-                    return 6;
-                case "LBotRight":
-                    return 7;
-
-                case "dTopLeft":
-                    return 8;
-                case "dTopMid":
-                    return 9;
-                case "dTopRight":
-                    return 10;
-                case "dMidLeft":
-                    return 11;
-                case "dSolid":
-                    return 12;
-                case "dMidRight":
-                    return 13;
-                case "dBotLeft":
-                    return 14;
-                case "dBotMid":
-                    return 15;
-                case "dBotRight":
-                    return 16;
-
-                case "nLeftTop":
-                    return 17;
-                case "nLeftBot":
-                    return 18;
-                case "nRightTop":
-                    return 19;
-                case "nRightBot":
-                    return 20;
-
-                default:    //failsafe case
-                    return 0;
-            }
-        }
-
         /// <summary>
         /// Takes in the file in the parameter and returns it as a 2d array
         /// </summary>
-        public string[,] LevelInterpreter(string s)
+        private string[,] LevelInterpreter(string s)
         {
             //fields
             string line;
@@ -168,25 +149,100 @@ namespace Egg
         /// Draws the level to the screen using the level map array
         /// </summary>
         /// <param name="level">level map 2d array</param>
-        public void DrawLevel(Tile[,] level)
+        private void DrawLevel(Tile[,] level, SpriteBatch sb)
         {
-            int xPos = 0;
-            int yPos = 0;
-            int tileLength = 0; //Set up as screen length divided into segments
-            int tileHeight = 0;
-            int screenLength = 0;
-            int screenHeight = 0;
+            int tileWidth = screenLength / VerticalTileCount; //Set up as screen length divided into segments
+            int tileHeight = screenHeight / HorizontalTileCount;
 
-            for (int r = 0; r < 9; r++)
+            for (int row = 0; row < 9; row++)
             {
-                for (int c = 0; c < 16; c++)
+                for (int column = 0; column < 16; column++)
                 {
-                    xPos = ((screenLength / 16) * c) - ((1 / 2) * tileLength);
-                    yPos = ((screenHeight / 9) * r) - ((1 / 2) * tileHeight);
-                    level[c, r].X = xPos;
-                    level[c, r].Y = yPos;
+                    level[row, column].X = (column * tileWidth) - ((1 / 2) * tileWidth);
+                    level[row, column].Y = (row * tileHeight) - ((1 / 2) * tileHeight);
+                    level[row, column].Height = tileHeight;
+                    level[row, column].Width = tileWidth;
+                    Tile temp = level[row, column]; //create a temporary copy of the given tile 
+                    sb.Draw(temp.DefaultSprite, temp.Hitbox, Color.White);
                 }
             }
-        }       
+        }
+
+        /// <summary>
+        /// Takes in a string and bool (t is tile and f is tag) to return either the tag or string
+        /// from the text strings from the map
+        /// </summary>
+        private string TagTileSplit(string s, bool TagOrTile)
+        {
+            string temp;
+            char[] splitUp = s.ToCharArray();
+            if (TagOrTile == true)
+            {
+                temp = splitUp[0].ToString() + splitUp[1].ToString();
+            }
+            else
+            {
+                temp = splitUp[2].ToString() + splitUp[3].ToString();
+            }
+            return temp;
+        }
+
+        /// <summary>
+        /// Gets a texture based on the string (s) passed in
+        /// </summary>
+        private int GetTexture(string s)
+        {
+            s = TagTileSplit(s, true);
+            switch (s)
+            {
+                case "b1":
+                    return 1;
+                case "b2":
+                    return 2;
+                case "b3":
+                    return 3;
+                case "b4":
+                    return 4;
+                case "b6":
+                    return 6;
+                case "b7":
+                    return 7;
+                case "b8":
+                    return 8;
+                case "b9":
+                    return 9;
+
+                case "i1":
+                    return 10;
+                case "i2":
+                    return 11;
+                case "i3":
+                    return 12;
+                case "i4":
+                    return 13;
+                case "i5":
+                    return 14;
+                case "i6":
+                    return 15;
+                case "i7":
+                    return 16;
+                case "i8":
+                    return 17;
+                case "i9":
+                    return 18;
+
+                case "n1":
+                    return 19;
+                case "n3":
+                    return 20;
+                case "n2":
+                    return 21;
+                case "n4":
+                    return 22;
+
+                default:    //failsafe case
+                    return 0;
+            }
+        }
     }
 }

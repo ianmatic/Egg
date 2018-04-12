@@ -29,6 +29,7 @@ namespace Egg
         Texture2D topRectangle;
         Texture2D sideRectangle;
         Texture2D collisionTest;
+        Screen mainScreen = new Screen();
 
         GameState currentState;
         //GameState previousState;
@@ -45,6 +46,7 @@ namespace Egg
 
 
         //Tile Fields
+        public Texture2D blankTile;
         public Texture2D LTopLeft;
         public Texture2D LTopMid;
         public Texture2D LTopRight;
@@ -128,8 +130,9 @@ namespace Egg
 
             //animation Stuff
             spriteSheet = Content.Load<Texture2D>("sprites");
-                
+
             //loading Tiles
+            blankTile = Content.Load<Texture2D>(@"clearTile");
             LTopLeft = Content.Load<Texture2D>(@"tiles\LTopLeft");
             LTopMid = Content.Load<Texture2D>(@"tiles\LTopMid");
             LTopRight = Content.Load<Texture2D>(@"tiles\LTopRight");
@@ -152,6 +155,8 @@ namespace Egg
             nRightBot = Content.Load<Texture2D>(@"tiles\nRightBot");
             nRightTop = Content.Load<Texture2D>(@"tiles\nRightTop");
 
+            tileList.Add(blankTile);
+
             tileList.Add(LTopLeft);
             tileList.Add(LTopMid);
             tileList.Add(LTopRight);
@@ -160,19 +165,21 @@ namespace Egg
             tileList.Add(LBotLeft);
             tileList.Add(LBotRight);
             tileList.Add(LBotMid);
+
             tileList.Add(dBotLeft);
             tileList.Add(dBotMid);
             tileList.Add(dBotRight);
             tileList.Add(dMidLeft);
+            tileList.Add(dSolid);
             tileList.Add(dMidRight);
             tileList.Add(dTopLeft);
-            tileList.Add(dSolid);
+            tileList.Add(dTopMid);
             tileList.Add(dTopRight);
+
             tileList.Add(nLeftTop);
             tileList.Add(nLeftBot);
             tileList.Add(nRightBot);
             tileList.Add(nRightTop);
-
         }
 
         /// <summary>
@@ -245,7 +252,10 @@ namespace Egg
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin();
+            //modified spriteBatch begin so the images are scaled by nearest neighbor instead of getting antialiased
+            //this makes it so the pixel art keeps crisp lines
+            spriteBatch.Begin(SpriteSortMode.Immediate);
+            GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
             //Draws sprites & text based on FSM
             switch (currentState)
@@ -257,8 +267,11 @@ namespace Egg
 
                 case GameState.Game:
                     //Draws potatos to test DrawLevel
+                    mainScreen.DrawTilesFromMap(@"C:\Users\Beatrice\source\repos\egg\Egg\Egg" + 
+                        @"\Resources\levelExports\platformDemo", tileList, spriteBatch);
                     foreach (GameObject g in objectList)
                     {
+
                         g.Draw(spriteBatch);
                     }
                     if (player.IsDebugging) //debugging text for player
@@ -437,12 +450,6 @@ namespace Egg
             {
                 Debug.WriteLine("Test");
             }
-
         }
-
-
-
-        
-
     }
 }
