@@ -161,20 +161,21 @@ namespace Egg
             tileList.Add(LTopMid);
             tileList.Add(LTopRight);
             tileList.Add(LMidLeft);
+            tileList.Add(blankTile);
             tileList.Add(LMidRight);
             tileList.Add(LBotLeft);
-            tileList.Add(LBotRight);
             tileList.Add(LBotMid);
+            tileList.Add(LBotRight);
 
-            tileList.Add(dBotLeft);
-            tileList.Add(dBotMid);
-            tileList.Add(dBotRight);
-            tileList.Add(dMidLeft);
-            tileList.Add(dSolid);
-            tileList.Add(dMidRight);
             tileList.Add(dTopLeft);
             tileList.Add(dTopMid);
             tileList.Add(dTopRight);
+            tileList.Add(dMidLeft);
+            tileList.Add(dSolid);
+            tileList.Add(dMidRight);
+            tileList.Add(dBotLeft);
+            tileList.Add(dBotMid);
+            tileList.Add(dBotRight);
 
             tileList.Add(nLeftTop);
             tileList.Add(nLeftBot);
@@ -215,6 +216,7 @@ namespace Egg
                     break;
 
                 case GameState.Game:
+                    mainScreen.UpdateTiles(@"..\..\..\..\Resources\levelExports\platformDemo", tileList);
                     GameUpdateLoop();
                     //Transition to level end not yet implemented
                     break;
@@ -266,9 +268,9 @@ namespace Egg
                     break;
 
                 case GameState.Game:
+                    mainScreen.DrawTilesFromMap(spriteBatch, @"..\..\..\..\Resources\levelExports\platformDemo", tileList);
                     //Draws potatos to test DrawLevel
-                    mainScreen.DrawTilesFromMap(@"C:\Users\Beatrice\source\repos\egg\Egg\Egg" + 
-                        @"\Resources\levelExports\platformDemo", tileList, spriteBatch);
+                    
                     foreach (GameObject g in objectList)
                     {
 

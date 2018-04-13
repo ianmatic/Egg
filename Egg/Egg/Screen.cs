@@ -41,12 +41,22 @@ namespace Egg
         /// <summary>
         /// Public callable function to print all the tiles to the screen
         /// </summary>
-        public Tile[,] DrawTilesFromMap(string s, List<Texture2D> textures, SpriteBatch sb)
+        public void DrawTilesFromMap(SpriteBatch sb, string s, List<Texture2D> textures)
         {
-            string[,] baseLevelMap = LevelInterpreter(s);
-            Tile[,] tileMap = new Tile[9, 16];
-            tileMap = LoadTiles(baseLevelMap, textures);
-            DrawLevel(tileMap, sb);
+            UpdateTiles(s, textures);
+            DrawLevel(screenTiles, sb);                         //finally draw everything out
+        }
+
+        /// <summary>
+        /// Updates and returns tile map
+        /// </summary>
+        /// <returns></returns>
+        public Tile[,] UpdateTiles(string s, List<Texture2D> textures)
+        {
+            string[,] baseLevelMap = LevelInterpreter(s);   //turn the text file into a 2d array
+            Tile[,] tileMap = new Tile[9, 16];              //turn that 2d array into a 2d array of tiles
+            tileMap = LoadTiles(baseLevelMap, textures);    //populate those 2d arrays with 2d textures
+            screenTiles = tileMap;
             return tileMap;
         }
 
@@ -195,6 +205,9 @@ namespace Egg
             s = TagTileSplit(s, true);
             switch (s)
             {
+                case "00":
+                    return 0;
+
                 case "b1":
                     return 1;
                 case "b2":
