@@ -107,7 +107,7 @@ namespace Egg
             sortHolder = new Stack<GameObject>();
             tileList = new List<Texture2D>();
             currentState = GameState.Menu;
-
+            
             base.Initialize();
         }
 
@@ -131,7 +131,7 @@ namespace Egg
             //animation Stuff
             spriteSheet = Content.Load<Texture2D>("sprites");
 
-            //loading Tiles
+            #region loading Tiles
             blankTile = Content.Load<Texture2D>(@"clearTile");
             LTopLeft = Content.Load<Texture2D>(@"tiles\LTopLeft");
             LTopMid = Content.Load<Texture2D>(@"tiles\LTopMid");
@@ -181,6 +181,9 @@ namespace Egg
             tileList.Add(nLeftBot);
             tileList.Add(nRightBot);
             tileList.Add(nRightTop);
+            #endregion 
+
+            mainScreen.UpdateTiles(@"..\..\..\..\Resources\levelExports\platformDemo", tileList);
         }
 
         /// <summary>

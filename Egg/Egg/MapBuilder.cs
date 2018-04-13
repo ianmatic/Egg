@@ -18,7 +18,7 @@ namespace Egg
     {
         List<PictureBox> tabletButts = new List<PictureBox>();
 
-        #region Text Output
+        #region Text Output Test
 
         // for each item in along the text file, have some variable saved off invisibly
         // so that we can make a big loop and send all of those into a series of strings
@@ -251,6 +251,7 @@ namespace Egg
             button.Top = top;
             tabPage1.Controls.Add(button);
         }
+
         #region Tablet Setup on Text Change
          /// <summary>
          /// Updates Tablet Buttons as it's changed
@@ -367,7 +368,7 @@ namespace Egg
             if (rad1.Checked == true)
                 radioTag = "dm";            //damaging
             else if (rad2.Checked == true)
-                radioTag = "nd";            //non-damaging
+                radioTag = "nt";            //non-damaging
             else if (rad3.Checked == true)
                 radioTag = "nc";            //non-collision
             else if (rad4.Checked == true)

@@ -22,20 +22,43 @@ namespace Egg
 
         StreamReader interpreter;
         Tile[,] screenTiles;
+        Dictionary<string, Tile.TileType> tileTypeDict = new Dictionary<string, Tile.TileType>();
 
         /// <summary>
-        /// By default, populates screenTiles to be an X by Y array filled with empty tiles
+        /// By default, the screen is populated with screenTiles to be an X by Y array filled with empty tiles
         /// </summary>
         public Screen()
         {
-            screenTiles = new Tile[9, 16];
-            for (int row = 0; row < 9; row++)
+            #region initializing tile array
+            screenTiles = new Tile[HorizontalTileCount, VerticalTileCount];  //initializes screenTiles
+            for (int row = 0; row < HorizontalTileCount; row++)
             {
-                for (int column = 0; column < 16; column++)
+                for (int column = 0; column < VerticalTileCount; column++) //poplates every row and column with a placeholder tile
                 {
                     screenTiles[row, column] = new Tile(0, null, new Rectangle(0, 0, 0, 0), Tile.TileType.Normal);
                 }
             }
+            #endregion
+
+            #region Tile Type Dictionary element adding
+            tileTypeDict.Add("nt", Tile.TileType.Normal);
+            tileTypeDict.Add("dm", Tile.TileType.Damaging);
+            tileTypeDict.Add("mv", Tile.TileType.Moving);
+            tileTypeDict.Add("nc", Tile.TileType.NoCollision);
+            tileTypeDict.Add("00", Tile.TileType.NoCollision);
+            #endregion
+        }
+
+        /// <summary>
+        /// Updates and returns tile map
+        /// </summary>
+        public Tile[,] UpdateTiles(string s, List<Texture2D> textures)
+        {
+            string[,] baseLevelMap = LevelInterpreter(s);                           //turn the text file into a 2d array
+            Tile[,] tileMap = new Tile[VerticalTileCount, HorizontalTileCount];     //turn that 2d array into a 2d array of tiles
+            tileMap = LoadTiles(baseLevelMap, textures);                            //populate those 2d arrays with 2d textures
+            screenTiles = tileMap;
+            return tileMap;
         }
 
         /// <summary>
@@ -43,51 +66,7 @@ namespace Egg
         /// </summary>
         public void DrawTilesFromMap(SpriteBatch sb, string s, List<Texture2D> textures)
         {
-            UpdateTiles(s, textures);
-            DrawLevel(screenTiles, sb);                         //finally draw everything out
-        }
-
-        /// <summary>
-        /// Updates and returns tile map
-        /// </summary>
-        /// <returns></returns>
-        public Tile[,] UpdateTiles(string s, List<Texture2D> textures)
-        {
-            string[,] baseLevelMap = LevelInterpreter(s);   //turn the text file into a 2d array
-            Tile[,] tileMap = new Tile[9, 16];              //turn that 2d array into a 2d array of tiles
-            tileMap = LoadTiles(baseLevelMap, textures);    //populate those 2d arrays with 2d textures
-            screenTiles = tileMap;
-            return tileMap;
-        }
-
-        /// <summary>
-        /// Adds in the 2d textures to a 2d array of tiles then returns the array
-        /// </summary>
-        private Tile[,] LoadTiles(string[,] levelMap, List<Texture2D> textures)
-        {
-            for (int row = 0; row < 9; row++)
-            {
-                for (int column = 0; column < 16; column++)
-                {
-                    Tile temp = new Tile(0 , null, new Rectangle(0,0,0,0), Tile.TileType.Normal);
-                    temp = screenTiles[row, column];
-                    temp.DefaultSprite = textures[0]; //clear the array
-                    screenTiles[row, column] = temp;
-                }
-            }
-
-            for (int row = 0; row < 9; row++)
-            {
-                for (int column = 0; column < 16; column++)
-                {
-                    Texture2D temp = textures[1];
-                    int textureNumber = GetTexture(levelMap[row, column]);
-                    temp = textures[textureNumber];
-                    screenTiles[row, column].DefaultSprite = temp;
-                }
-            }
-
-            return screenTiles;
+            DrawLevel(screenTiles, sb); //draw everything tot he screen
         }
 
         /// <summary>
@@ -95,10 +74,10 @@ namespace Egg
         /// </summary>
         private string[,] LevelInterpreter(string s)
         {
-            //fields
+            //fields & initialization logic
             string line;
             int row;
-            int col;
+            int column;
             int c = 0;
             string tempString = "";
             string[] split;
@@ -109,13 +88,13 @@ namespace Egg
             line = interpreter.ReadLine(); //reads FIRST line only
             split = line.Split(','); //splits into array of 2
             row = int.Parse(split[0]); //reads rows of level array
-            col = int.Parse(split[1]); //reads collumns of level array
-            level = new string[row, col]; //creates level array with determined dimensions
+            column = int.Parse(split[1]); //reads collumns of level array
+            level = new string[row, column]; //creates level array with determined dimensions
 
             //Reading in the tiles from the file and placing them into the array
             string array = interpreter.ReadToEnd();
             split = array.Split(','); // for last one when drawing skip it
-            
+
             //getting rid of "\r\n"
             for (int i = 0; i <= split.Length - 2; i++)
             {
@@ -123,7 +102,7 @@ namespace Egg
                 char[] temp = split[i].ToCharArray(); //creates a char array
 
                 //cleaning tile names which contain '\r\n'
-                if (temp.Length > 4) 
+                if (temp.Length > 4)
                 {
                     tempString = ""; //clears tempString so we dont get \r\nb1nt b1nt
                     char space = ' ';
@@ -137,7 +116,7 @@ namespace Egg
                 }
                 split[i] = tempString;
             }
-            
+
             //actually sets all of the individual tiles into the 2d array
             for (int i = 0; i <= level.GetLength(0) - 1; i++)
             {
@@ -152,7 +131,35 @@ namespace Egg
 
             }
             interpreter.Close();
+
+            //update tile counts based on scraped information
+            HorizontalTileCount = column;
+            VerticalTileCount = row;
+
+            //returns 2d array filled with scraped info
             return level;
+        }
+
+        /// <summary>
+        /// Adds in the 2d textures to a 2d array of tiles then returns the array
+        /// </summary>
+        private Tile[,] LoadTiles(string[,] levelMap, List<Texture2D> textures)
+        {
+            //populate the array with whatever level map is being passed in
+            for (int row = 0; row < VerticalTileCount; row++)
+            {
+                for (int column = 0; column < HorizontalTileCount; column++)
+                {
+                    Texture2D tempTexture = textures[1];                    //create temp texture 
+                    int textureNumber = GetTexture(levelMap[row, column]);  //get told which texture to put in place from levelMap
+                    tempTexture = textures[textureNumber];                  //set texture into temp
+                    screenTiles[row, column].DefaultSprite = tempTexture;   //update the tile using temp
+
+                    string tagTemp = TagTileSplit(levelMap[row, column], false);    //pulls the tag for this tile
+                    screenTiles[row, column].Type = tileTypeDict[tagTemp];          //updates screenTiles with the tag
+                }
+            }
+            return screenTiles; //return screentiles so it can be added to the collision check group
         }
 
         /// <summary>
@@ -161,18 +168,18 @@ namespace Egg
         /// <param name="level">level map 2d array</param>
         private void DrawLevel(Tile[,] level, SpriteBatch sb)
         {
-            int tileWidth = screenLength / VerticalTileCount; //Set up as screen length divided into segments
-            int tileHeight = screenHeight / HorizontalTileCount;
+            int tileWidth = screenLength / HorizontalTileCount; //Set up as screen length divided into segments
+            int tileHeight = screenHeight / VerticalTileCount;
 
-            for (int row = 0; row < 9; row++)
+            for (int row = 0; row < VerticalTileCount; row++)
             {
-                for (int column = 0; column < 16; column++)
+                for (int column = 0; column < HorizontalTileCount; column++)
                 {
-                    level[row, column].X = (column * tileWidth) - ((1 / 2) * tileWidth);
-                    level[row, column].Y = (row * tileHeight) - ((1 / 2) * tileHeight);
+                    level[row, column].X = (column * tileWidth) - ((1 / 2) * tileWidth);    //determine placement then draw
+                    level[row, column].Y = (row * tileHeight) - ((1 / 2) * tileHeight);     //each tile accordingly
                     level[row, column].Height = tileHeight;
-                    level[row, column].Width = tileWidth;
-                    Tile temp = level[row, column]; //create a temporary copy of the given tile 
+                    level[row, column].Width = tileWidth;   
+                    Tile temp = level[row, column]; //create a temporary copy of the given tile (for readability)
                     sb.Draw(temp.DefaultSprite, temp.Hitbox, Color.White);
                 }
             }
@@ -185,13 +192,13 @@ namespace Egg
         private string TagTileSplit(string s, bool TagOrTile)
         {
             string temp;
-            char[] splitUp = s.ToCharArray();
-            if (TagOrTile == true)
+            char[] splitUp = s.ToCharArray();   //split passed in string (4 characters) into a character array
+            if (TagOrTile == true)              //if it's true, return the first two characters (the tile)
             {
                 temp = splitUp[0].ToString() + splitUp[1].ToString();
-            }
-            else
-            {
+            }       
+            else                                //otherwise, return the third and fourth characters (the tag)
+            {   
                 temp = splitUp[2].ToString() + splitUp[3].ToString();
             }
             return temp;
@@ -199,15 +206,18 @@ namespace Egg
 
         /// <summary>
         /// Gets a texture based on the string (s) passed in
+        /// In retrospect, this should probably be a dictionary but it's already done and it works
         /// </summary>
         private int GetTexture(string s)
         {
             s = TagTileSplit(s, true);
             switch (s)
             {
-                case "00":
+                //empty tile
+                case "00": 
                     return 0;
 
+                //light tiles
                 case "b1":
                     return 1;
                 case "b2":
@@ -225,6 +235,7 @@ namespace Egg
                 case "b9":
                     return 9;
 
+                //dark tiles
                 case "i1":
                     return 10;
                 case "i2":
@@ -244,6 +255,7 @@ namespace Egg
                 case "i9":
                     return 18;
 
+                //interior corner tiles
                 case "n1":
                     return 19;
                 case "n3":
