@@ -19,6 +19,7 @@ namespace Egg
         public TileType Type
         {
             get { return type; }
+            set { type = value; }
         }
         public enum TileType
         {

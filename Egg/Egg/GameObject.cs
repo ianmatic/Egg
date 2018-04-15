@@ -35,10 +35,20 @@ namespace Egg
             set { hitbox.Y = value; }
         }
 
+        public int Width
+        {
+            get { return hitbox.Width; }
+            set { hitbox.Width = value; }
+        }
+
+        public int Height
+        {
+            get { return hitbox.Height; }
+            set { hitbox.Height = value; }
+        }
         /// <summary>
         /// The order/layer the sprite should be drawn on screen. The larger the DrawLevel, the closer the object is to the front of the screen 
         /// </summary>
-
         public int DrawLevel
         {
             get { return this.drawLevel; }
@@ -51,7 +61,7 @@ namespace Egg
         public Texture2D DefaultSprite
         {
             get { return this.defaultSprite; }
-            set { DefaultSprite = value; }
+            set { defaultSprite = value; }
         }
 
         /// <summary>
@@ -60,7 +70,7 @@ namespace Egg
         public virtual Rectangle Hitbox
         {
             get { return this.hitbox; }
-            set { }
+            set { this.hitbox = value; }
         }
 
         /// <summary>

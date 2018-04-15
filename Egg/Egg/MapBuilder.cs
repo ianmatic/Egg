@@ -18,7 +18,7 @@ namespace Egg
     {
         List<PictureBox> tabletButts = new List<PictureBox>();
 
-        #region Text Output
+        #region Text Output Test
 
         // for each item in along the text file, have some variable saved off invisibly
         // so that we can make a big loop and send all of those into a series of strings
@@ -251,6 +251,7 @@ namespace Egg
             button.Top = top;
             tabPage1.Controls.Add(button);
         }
+
         #region Tablet Setup on Text Change
          /// <summary>
          /// Updates Tablet Buttons as it's changed
@@ -367,7 +368,7 @@ namespace Egg
             if (rad1.Checked == true)
                 radioTag = "dm";            //damaging
             else if (rad2.Checked == true)
-                radioTag = "nd";            //non-damaging
+                radioTag = "nt";            //non-damaging
             else if (rad3.Checked == true)
                 radioTag = "nc";            //non-collision
             else if (rad4.Checked == true)
@@ -636,10 +637,10 @@ namespace Egg
 
         private void InitialMap()
         {
-            const int BASEX = 204;  // Top left corner of the container
-            const int BASEY = 18;   // Top right corner of the container
-            const int BASEW = 1190;  // The width of the container
-            const int BASEH = 660;  // The height of the container
+            const int BASEX = 300;  // Top left corner of the container
+            const int BASEY = 25;   // Top right corner of the container
+            const int BASEW = 1200;  // The width of the container
+            const int BASEH = 770;  // The height of the container
 
             int btnX;       // X Position field
             int btnY;       // Y Position field

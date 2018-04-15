@@ -1007,6 +1007,8 @@ namespace Egg
                 {
                     Decelerate(horizontalVelocity, 2, 0, false);
                 }
+
+                bounceLockout = false;
             }
             //Walk
             else if (playerState == PlayerState.WalkLeft || playerState == PlayerState.WalkRight)
