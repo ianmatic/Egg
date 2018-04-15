@@ -267,6 +267,7 @@ namespace Egg
                         spriteBatch.DrawString(menuText, "Vertical Velocity: " + player.VerticalVelocity, new Vector2(100, 60), Color.Cyan);
                         spriteBatch.DrawString(menuText, "Player State: " + player.PlayerState, new Vector2(100, 95), Color.Cyan);
                         spriteBatch.DrawString(menuText, "Facing right?: " + player.IsFacingRight, new Vector2(100, 130), Color.Cyan);
+                        spriteBatch.DrawString(menuText, "hitpoints: " + player.Hitpoints, new Vector2(100, 165), Color.Cyan);
                     }
                     break;
 
@@ -423,9 +424,9 @@ namespace Egg
             AddObjectToList(new Tile(9, topRectangle, new Rectangle(100,  1000, 1000, 100), Tile.TileType.Normal));
             */
             //enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 16, 60);
-            enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 4, 60, 5, 2, 100); //moving enemy
-            //enemy = new Enemy(new Rectangle(890,500, 75, 75), collisionTest, 16, 60);
-            enemy2 = new Enemy(new Rectangle(225, 350, 75, 75), collisionTest, 4, 60);
+            //enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 4, 60, 5, 2, 100); //moving enemy
+            enemy = new Enemy(new Rectangle(890,500, 75, 75), collisionTest, 16, 60);
+            enemy2 = new Enemy(new Rectangle(225, 150, 75, 75), collisionTest, 4, 60);
             enemy3 = new Enemy(new Rectangle(200, 100, 75, 75), collisionTest, 4, 60);
             AddObjectToList(enemy);
             AddObjectToList(enemy2);

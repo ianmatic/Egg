@@ -38,16 +38,19 @@ namespace Egg
 {
     class Player : GameObject
     {
+        //################
+        #region FIELDS
         //Fields
         private KeyboardState kb;
         private KeyboardState previousKb; //used to prevent jump spamming
 
         private int hitpoints;
 
-        private double miliseconds; //used for float/downdash
+        private double miliseconds; //used for float/downdash/roll/hitstun
         private double downDashDelay; //used for downdash
         private double floatDelay;
         private double rollDelay;
+        private double hitStunDelay;
 
         //animation fields 
         private int currentFrame = 1;
@@ -79,6 +82,9 @@ namespace Egg
         private bool isRolling;
         private int verticalVelocity = 0;
         private int horizontalVelocity = 0;
+        private bool inHitStun;
+        private bool rollEnd;
+        private bool hasRolledInAir;
 
         //for float
         private bool hasFloated;
@@ -88,7 +94,11 @@ namespace Egg
         private Color color;
 
         GameTime gameTime;
+        #endregion
+        //################
 
+        //################
+        #region PROPERTIES
         //Properties
         public PlayerState PlayerState
         {
@@ -121,7 +131,6 @@ namespace Egg
             get { return hitbox; }
             set { hitbox = value; }
         }
-
         public bool InBounceLockout
         {
             get { return bounceLockout; }
@@ -132,7 +141,11 @@ namespace Egg
             get { return lastCheckpoint; }
             set { this.lastCheckpoint = value; }
         }
+        #endregion
+        //################
 
+        //################
+        #region CONSTRUCTOR
         //Constructor for player
         public Player(int drawLevel, Texture2D defaultSprite, Rectangle hitbox, Color color)
         {
@@ -153,13 +166,19 @@ namespace Egg
             hasFloated = false;
             isRolling = false;
             rollInAir = false;
+            rollEnd = false;
+            hasRolledInAir = false;
 
             gameTime = new GameTime();
             downDashDelay = 13;
             floatDelay = 50;
             rollDelay = 30;
+            hitStunDelay = 20;
             miliseconds = 2;
         }
+        #endregion
+        //################
+
         /// <summary>
         /// speed up the object by the rate until the limit velocity is reached
         /// </summary>
@@ -195,6 +214,62 @@ namespace Egg
                     }
                 }
                 horizontalVelocity = velocityType;
+            }
+        }
+        /// <summary>
+        /// Checks if enemies are touching player
+        /// </summary>
+        /// <param name="e"></param>
+        public override void CheckColliderAgainstEnemy(Enemy e)
+        {
+            if (hitbox.Intersects(e.Hitbox) && e.IsActive && !bounceLockout && !inHitStun)
+            {
+                debugEnemyCollision = true;
+                if (playerState == PlayerState.RollRight)
+                {
+                    X = e.X - hitbox.Width - 1;
+                    playerState = PlayerState.BounceLeft;
+                    debugEnemyCollision = false;
+                    rollEnd = true;
+                }
+                else if (playerState == PlayerState.RollLeft)
+                {
+                    X = e.X + (hitbox.Width * 2) + 1;
+                    playerState = PlayerState.BounceRight;
+                    debugEnemyCollision = false;
+                    rollEnd = true;
+                }
+                else if (playerState == PlayerState.DownDash)
+                {
+                    Y = e.Y - hitbox.Height - 1;
+                    if (IsFacingRight)
+                    {
+                        playerState = PlayerState.BounceRight;
+                    }
+                    else
+                    {
+                        playerState = PlayerState.BounceLeft;
+                    }
+                    debugEnemyCollision = false;
+                    rollEnd = false;
+                }
+                else
+                {
+                    rollEnd = false;
+                }
+                //player takes damage if not rolling, bouncing, downdashing, or in hitstun
+                if (playerState != PlayerState.RollLeft && playerState != PlayerState.RollRight && playerState != PlayerState.DownDash &&
+                    playerState != PlayerState.BounceLeft && playerState != PlayerState.BounceRight && playerState != PlayerState.HitStunLeft 
+                    && playerState != PlayerState.HitStunRight)
+                {
+                    hitpoints--;
+                }
+
+                bounceLockout = true;
+            }
+            else
+            {
+                debugEnemyCollision = false;
             }
         }
         /// <summary>
@@ -245,45 +320,57 @@ namespace Egg
             //floor collision (collision box below player)
             else if (bottomChecker.Intersects(t.Hitbox))
             {
-                verticalVelocity = 0; //stop the player from falling
-                hitbox.Y = t.Y - hitbox.Height; //place the player on top of tile
+                if (!(playerState == PlayerState.BounceLeft || playerState == PlayerState.BounceRight) && !inHitStun)
+                {
+                    verticalVelocity = 0; //stop the player from falling
+                    hitbox.Y = t.Y - hitbox.Height; //place the player on top of tile
+                }
+                else
+                {
+                    hitbox.Y = t.Y - hitbox.Height - 1; //place the player on top of tile
+                }
 
+
+                hasRolledInAir = false;
                 bottomIntersects = true;
                 //FSM states are changed here so that the player can move after touching the ground
 
-                //Roll Left
-                if ((SingleKeyPress(Keys.LeftShift) && !isFacingRight) || (isRolling && !isFacingRight))
+                if (!inHitStun)
                 {
-                    playerState = PlayerState.RollLeft;
-                }
-                //Walk Left
-                else if (kb.IsKeyDown(Keys.A) && !kb.IsKeyDown(Keys.D))
-                {
-                    playerState = PlayerState.WalkLeft;
-                }
-                //Roll Right
-                else if ((SingleKeyPress(Keys.LeftShift) && isFacingRight) || (isRolling && isFacingRight))
-                {
-                    playerState = PlayerState.RollRight;
-                }
-                //Walk Right
-                else if (kb.IsKeyDown(Keys.D))
-                {
-                    playerState = PlayerState.WalkRight;
-                }
-                //Idle Right
-                else if (isFacingRight && !kb.IsKeyDown(Keys.D))
-                {
-                    playerState = PlayerState.IdleRight;
-                }
-                //Idle Left
-                else if (!isFacingRight && !kb.IsKeyDown(Keys.A))
-                {
-                    playerState = PlayerState.IdleLeft;
+                    //Roll Left
+                    if ((SingleKeyPress(Keys.LeftShift) && !isFacingRight) || ((isRolling && !isFacingRight) && !rollEnd))
+                    {
+                        playerState = PlayerState.RollLeft;
+                    }
+                    //Walk Left
+                    else if (kb.IsKeyDown(Keys.A) && !kb.IsKeyDown(Keys.D))
+                    {
+                        playerState = PlayerState.WalkLeft;
+                    }
+                    //Roll Right
+                    else if ((SingleKeyPress(Keys.LeftShift) && isFacingRight) || ((isRolling && isFacingRight) && !rollEnd))
+                    {
+                        playerState = PlayerState.RollRight;
+                    }
+                    //Walk Right
+                    else if (kb.IsKeyDown(Keys.D))
+                    {
+                        playerState = PlayerState.WalkRight;
+                    }
+                    //Idle Right
+                    else if (isFacingRight && !kb.IsKeyDown(Keys.D) && playerState != PlayerState.BounceLeft && playerState != PlayerState.RollRight)
+                    {
+                        playerState = PlayerState.IdleRight;
+                    }
+                    //Idle Left
+                    else if (!isFacingRight && !kb.IsKeyDown(Keys.A) && playerState != PlayerState.BounceRight && playerState != PlayerState.RollLeft)
+                    {
+                        playerState = PlayerState.IdleLeft;
+                    }
                 }
                 temp = t;
                 //everytime the player lands from a jump (or falls), the next time they jump they will hit the ceiling
-                topIntersects = true; 
+                topIntersects = true;
                 output = true;
             }
             else if (t.Equals(temp))
@@ -306,7 +393,7 @@ namespace Egg
                 {
                     velocityType -= rate; //reduce velocity normally
 
-                    if (!bottomIntersects && !isRolling)
+                    if (!bottomIntersects && !isRolling && !inHitStun)
                     {
                         playerState = PlayerState.Fall;
                     }
@@ -318,7 +405,7 @@ namespace Egg
                 {
                     velocityType += rate; //increase velocity since moving left is negative
                     //needed to prevent player from hovering in air if they decelerate on an edge
-                    if (!bottomIntersects && !isRolling)
+                    if (!bottomIntersects && !isRolling && !inHitStun)
                     {
                         playerState = PlayerState.Fall;
                     }
@@ -335,6 +422,69 @@ namespace Egg
             }
         }
         /// <summary>
+        /// draws the player for normal game and debugging
+        /// </summary>
+        /// <param name="sb"></param>
+        public override void Draw(SpriteBatch sb)
+        {
+            if (isDebugging)
+            {
+                //press C to toggle player transparency
+                if (SingleKeyPress(Keys.C))
+                {
+                    playerVisible = !playerVisible;
+                }
+                if (playerVisible)
+                {
+                    sb.Draw(defaultSprite, hitbox, Color.Black);
+                    sb.Draw(defaultSprite, bottomChecker, Color.Black);
+                    sb.Draw(defaultSprite, sideChecker, Color.Red);
+                    sb.Draw(defaultSprite, topChecker, Color.Cyan);
+                    if (inHitStun && hitStunDelay % 5 == 0)
+                    {
+                        sb.Draw(defaultSprite, hitbox, Color.Orange);
+                    }
+                    else if (inHitStun && hitStunDelay % 5 != 0)
+                    {
+                        sb.Draw(defaultSprite, hitbox, Color.Purple);
+                    }
+                }
+                else
+                {
+                    sb.Draw(defaultSprite, hitbox, Color.Transparent);
+                    sb.Draw(defaultSprite, bottomChecker, Color.Black);
+                    sb.Draw(defaultSprite, sideChecker, Color.Red);
+                    sb.Draw(defaultSprite, topChecker, Color.Cyan);
+                    if (inHitStun && hitStunDelay % 5 == 0)
+                    {
+                        sb.Draw(defaultSprite, hitbox, Color.Orange);
+                    }
+                    else if (inHitStun && hitStunDelay % 5 != 0)
+                    {
+                        sb.Draw(defaultSprite, hitbox, Color.Purple);
+                    }
+                }
+
+            }
+            else
+            {
+                if (inHitStun && hitStunDelay % 5 == 0)
+                {
+                    sb.Draw(defaultSprite, hitbox, Color.Orange);
+                }
+                else if (inHitStun && hitStunDelay % 5 != 0)
+                {
+                    sb.Draw(defaultSprite, hitbox, Color.Purple);
+                }
+                else
+                {
+                    sb.Draw(defaultSprite, hitbox, color);
+                }
+
+            }
+
+        }
+        /// <summary>
         /// determines player state based on input and collision with enemies/platforms
         /// </summary>
         public override void FiniteState()
@@ -347,9 +497,7 @@ namespace Egg
             //previousKb used to prevent jump spamming (holding down space) 
             previousKb = kb;
             kb = Keyboard.GetState();
-            //################
-            #region DEBUGGING
-            //################
+
             //Debugging code
             if (SingleKeyPress(Keys.F8))
             {
@@ -357,7 +505,8 @@ namespace Egg
                 isDebugging = !isDebugging;
             }
 
-            
+            //################
+            #region COLLISIONBOXES
             if (horizontalVelocity > 0)
             {
                 //X is right of player, Y is the same as player, width depends on horizontalVelocity, height is same as player
@@ -392,7 +541,7 @@ namespace Egg
                 bottomChecker = new Rectangle(X + 10, Y + hitbox.Height, hitbox.Width - 20, 1);
             }
             #endregion
-
+            //################
 
             //float gets reset to false whenever player touches ground
             if (bottomIntersects)
@@ -409,6 +558,26 @@ namespace Egg
                 isActive = true;
             }
 
+            if (inHitStun)
+            {
+                if (isFacingRight)
+                {
+                    playerState = PlayerState.HitStunLeft;
+                }
+                else
+                {
+                    playerState = PlayerState.HitStunRight;
+                }
+                hitStunDelay -= miliseconds;
+                if (hitStunDelay <= 0)
+                {
+                    inHitStun = false;
+                    hitStunDelay = 20;
+                    playerState = PlayerState.Fall;
+                }
+            }
+            //################
+            #region FINITESTATE
             //FSM
             switch (playerState)
             {
@@ -418,23 +587,30 @@ namespace Egg
                 //Idle Left
                 case PlayerState.IdleLeft:
                     isFacingRight = false;
+                    if (debugEnemyCollision)
+                    {
+                        playerState = PlayerState.HitStunRight;
+                    }
                     Movement();
 
-                    if (SingleKeyPress(Keys.Space))
+                    if (!debugEnemyCollision)
                     {
-                        playerState = PlayerState.JumpLeft;
-                    }
-                    else if (kb.IsKeyDown(Keys.D))
-                    {
-                        playerState = PlayerState.WalkRight;
-                    }
-                    else if (kb.IsKeyDown(Keys.A))
-                    {
-                        playerState = PlayerState.WalkLeft;
-                    }
-                    else if (SingleKeyPress(Keys.LeftShift))
-                    {
-                        playerState = PlayerState.RollLeft;
+                        if (SingleKeyPress(Keys.Space))
+                        {
+                            playerState = PlayerState.JumpLeft;
+                        }
+                        else if (kb.IsKeyDown(Keys.D))
+                        {
+                            playerState = PlayerState.WalkRight;
+                        }
+                        else if (kb.IsKeyDown(Keys.A))
+                        {
+                            playerState = PlayerState.WalkLeft;
+                        }
+                        else if (SingleKeyPress(Keys.LeftShift))
+                        {
+                            playerState = PlayerState.RollLeft;
+                        }
                     }
                     //Remember to implement HitStun here
                     break;
@@ -442,93 +618,117 @@ namespace Egg
                 //Idle Right
                 case PlayerState.IdleRight:
                     isFacingRight = true;
+                    if (debugEnemyCollision)
+                    {
+                        playerState = PlayerState.HitStunLeft;
+                    }
                     Movement();
 
-                    if (SingleKeyPress(Keys.Space))
+                    if (!debugEnemyCollision)
                     {
-                        playerState = PlayerState.JumpRight;
+                        if (SingleKeyPress(Keys.Space))
+                        {
+                            playerState = PlayerState.JumpRight;
+                        }
+                        else if (kb.IsKeyDown(Keys.D))
+                        {
+                            playerState = PlayerState.WalkRight;
+                        }
+                        else if (kb.IsKeyDown(Keys.A))
+                        {
+                            playerState = PlayerState.WalkLeft;
+                        }
+                        else if (SingleKeyPress(Keys.LeftShift))
+                        {
+                            playerState = PlayerState.RollRight;
+                        }
                     }
-                    else if (kb.IsKeyDown(Keys.D))
-                    {
-                        playerState = PlayerState.WalkRight;
-                    }
-                    else if (kb.IsKeyDown(Keys.A))
-                    {
-                        playerState = PlayerState.WalkLeft;
-                    }
-                    else if (SingleKeyPress(Keys.LeftShift))
-                    {
-                        playerState = PlayerState.RollRight;
-                    }
-                    //Remember to implement HitStun here
                     break;
 
                 #endregion
+                //################
 
+                //################
+                #region WALK STATES
                 //Walk Left
                 case PlayerState.WalkLeft:
                     isFacingRight = false;
+                    if (debugEnemyCollision)
+                    {
+                        playerState = PlayerState.HitStunRight;
+                    }
                     Movement();
 
-
-                    if (SingleKeyPress(Keys.Space))
+                    if (!debugEnemyCollision)
                     {
-                        playerState = PlayerState.JumpLeft;
+                        if (SingleKeyPress(Keys.Space))
+                        {
+                            playerState = PlayerState.JumpLeft;
+                        }
+                        else if (kb.IsKeyUp(Keys.A)) //stop moving left
+                        {
+                            playerState = PlayerState.IdleLeft;
+                        }
+                        else if (kb.IsKeyDown(Keys.D))
+                        {
+                            playerState = PlayerState.WalkRight;
+                        }
+                        else if (SingleKeyPress(Keys.LeftShift))
+                        {
+                            playerState = PlayerState.RollLeft;
+                        }
+                        if (!bottomIntersects) //not touching ground
+                        {
+                            playerState = PlayerState.Fall;
+                        }
                     }
-                    else if (kb.IsKeyUp(Keys.A)) //stop moving left
-                    {
-                        playerState = PlayerState.IdleLeft;
-                    }
-                    else if (kb.IsKeyDown(Keys.D))
-                    {
-                        playerState = PlayerState.WalkRight;
-                    }
-                    else if (SingleKeyPress(Keys.LeftShift))
-                    {
-                        playerState = PlayerState.RollLeft;
-                    }
-                    if (!bottomIntersects) //not touching ground
-                    {
-                        playerState = PlayerState.Fall;
-                    }
+                    
                     //Remember to implement HitStun here
                     break;
                 //Walk Right
                 case PlayerState.WalkRight:
                     isFacingRight = true;
+                    if (debugEnemyCollision)
+                    {
+                        playerState = PlayerState.HitStunLeft;
+                    }
                     Movement();
 
-                    if (SingleKeyPress(Keys.Space))
-                    {
-                        playerState = PlayerState.JumpRight;
-                    }
-                    else if (kb.IsKeyUp(Keys.D)) //stop moving right
-                    {
-                        playerState = PlayerState.IdleRight;
-                    }
-                    else if (kb.IsKeyDown(Keys.A)) //moving left
-                    {
-                        playerState = PlayerState.WalkLeft;
-                    }
-                    else if (SingleKeyPress(Keys.LeftShift))
-                    {
-                        playerState = PlayerState.RollRight;
-                    }
-                    if (!bottomIntersects) //not touching ground
-                    {
-                        playerState = PlayerState.Fall;
-                    }
 
+                    if (!debugEnemyCollision)
+                    {
+                        if (SingleKeyPress(Keys.Space))
+                        {
+                            playerState = PlayerState.JumpRight;
+                        }
+                        else if (kb.IsKeyUp(Keys.D)) //stop moving right
+                        {
+                            playerState = PlayerState.IdleRight;
+                        }
+                        else if (kb.IsKeyDown(Keys.A)) //moving left
+                        {
+                            playerState = PlayerState.WalkLeft;
+                        }
+                        else if (SingleKeyPress(Keys.LeftShift))
+                        {
+                            playerState = PlayerState.RollRight;
+                        }
+                        if (!bottomIntersects) //not touching ground
+                        {
+                            playerState = PlayerState.Fall;
+                        }
+                    }
+                    
                     //Remember to implement HitStun here
                     break;
+                #endregion
+                //################
 
+                //################
+                #region ROLL STATES
                 //Roll Left
                 case PlayerState.RollLeft:
                     isFacingRight = false;
-                    if (debugEnemyCollision) //enemy collision
-                    {
-                        playerState = PlayerState.BounceLeft;
-                    }
                     Movement();
                     if (!bottomIntersects && !isRolling) //not touching ground
                     {
@@ -556,10 +756,6 @@ namespace Egg
                 //Roll Right
                 case PlayerState.RollRight:
                     isFacingRight = true;
-                    if (debugEnemyCollision) //enemy collision
-                    {
-                        playerState = PlayerState.BounceLeft;
-                    }
                     Movement();
                     if (!bottomIntersects && !isRolling) //not touching ground
                     {
@@ -582,7 +778,11 @@ namespace Egg
                         playerState = PlayerState.IdleRight;
                     }
                     break;
+                #endregion
+                //################
 
+                //################
+                #region JUMP STATES
                 //Jump Left
                 case PlayerState.JumpLeft:
                     isFacingRight = false;
@@ -600,106 +800,143 @@ namespace Egg
                     //default to fall if no other condition is met (no hitstun here, use fall's hitstun)
                     playerState = PlayerState.Fall;
                     break;
+                #endregion
+                //################
 
+                //################
+                #region FLOAT STATES
                 //Float Left
                 case PlayerState.FloatLeft:
-                    //if the player lets go of space, player stops floating
-                    if (SingleKeyPress(Keys.LeftShift))
+                    if (debugEnemyCollision)
                     {
-                        rollInAir = true;
-                        playerState = PlayerState.RollLeft;
-                    }
-                    if (SingleKeyPress(Keys.S))
-                    {
-                        playerState = PlayerState.DownDash;
-                    }
-                    if (kb.IsKeyUp(Keys.Space))
-                    {
-                        playerState = PlayerState.Fall;
+                        playerState = PlayerState.HitStunRight;
                     }
                     else
                     {
-                        isFacingRight = false;
-                        Movement();
+                        //if the player lets go of space, player stops floating
+                        if (SingleKeyPress(Keys.LeftShift))
+                        {
+                            rollInAir = true;
+                            playerState = PlayerState.RollLeft;
+                        }
+                        if (SingleKeyPress(Keys.S))
+                        {
+                            playerState = PlayerState.DownDash;
+                        }
+                        if (kb.IsKeyUp(Keys.Space))
+                        {
+                            playerState = PlayerState.Fall;
+                        }
+                        else
+                        {
+                            isFacingRight = false;
+                            Movement();
+                        }
                     }
+                   
                     break;
 
                 //Float Right
                 case PlayerState.FloatRight:
-                    //if the player lets go of space, player stops floating
-                    if (SingleKeyPress(Keys.LeftShift))
+                    if (debugEnemyCollision)
                     {
-                        rollInAir = true;
-                        playerState = PlayerState.RollRight;
-                    }
-                    if (SingleKeyPress(Keys.S))
-                    {
-                        playerState = PlayerState.DownDash;
-                    }
-                    if (kb.IsKeyUp(Keys.Space))
-                    {
-                        playerState = PlayerState.Fall;
+                        playerState = PlayerState.HitStunLeft;
                     }
                     else
                     {
-                        isFacingRight = true;
-                        Movement();
-                    }
-                    break;
-
-                //Fall 
-                case PlayerState.Fall:
-                    Movement();
-                    if (SingleKeyPress(Keys.LeftShift))
-                    {
-                        rollInAir = true;
-                        if (isFacingRight)
+                        //if the player lets go of space, player stops floating
+                        if (SingleKeyPress(Keys.LeftShift))
                         {
+                            rollInAir = true;
                             playerState = PlayerState.RollRight;
+                        }
+                        if (SingleKeyPress(Keys.S))
+                        {
+                            playerState = PlayerState.DownDash;
+                        }
+                        if (kb.IsKeyUp(Keys.Space))
+                        {
+                            playerState = PlayerState.Fall;
                         }
                         else
                         {
-                            playerState = PlayerState.RollLeft;
+                            isFacingRight = true;
+                            Movement();
                         }
                     }
-                    if (SingleKeyPress(Keys.S))
+                    break;
+                #endregion
+                //################
+
+                //################
+                #region FALL STATE
+                //Fall 
+                case PlayerState.Fall:
+                    Movement();
+                    if (debugEnemyCollision && isFacingRight)
                     {
-                        playerState = PlayerState.DownDash;
+                        playerState = PlayerState.HitStunLeft;
                     }
-                    //previous is less than current since going down means y increasing
-                    if (!hasFloated && previousPlayerPosition.Y < playerPosition.Y)
+                    else if (debugEnemyCollision && !isFacingRight)
                     {
-                        if (kb.IsKeyDown(Keys.A) && kb.IsKeyUp(Keys.D) && kb.IsKeyDown(Keys.Space))
+                        playerState = PlayerState.HitStunRight;
+                    }
+                    else
+                    {
+                        if (SingleKeyPress(Keys.LeftShift) && !hasRolledInAir)
                         {
-                            PlayerState = PlayerState.FloatLeft;
-                            hasFloated = true;
-                        }
-                        else if (kb.IsKeyDown(Keys.D) && kb.IsKeyUp(Keys.A) && kb.IsKeyDown(Keys.Space))
-                        {
-                            playerState = PlayerState.FloatRight;
-                            hasFloated = true;
-                        }
-                        else if (kb.IsKeyDown(Keys.Space))
-                        {
+                            rollInAir = true;
                             if (isFacingRight)
                             {
-                                playerState = PlayerState.FloatRight;
+                                playerState = PlayerState.RollRight;
                             }
                             else
                             {
-                                playerState = PlayerState.FloatLeft;
+                                playerState = PlayerState.RollLeft;
                             }
-                            hasFloated = true;
+                        }
+                        if (SingleKeyPress(Keys.S))
+                        {
+                            playerState = PlayerState.DownDash;
+                        }
+                        //previous is less than current since going down means y increasing
+                        if (!hasFloated && previousPlayerPosition.Y < playerPosition.Y)
+                        {
+                            if (kb.IsKeyDown(Keys.A) && kb.IsKeyUp(Keys.D) && kb.IsKeyDown(Keys.Space))
+                            {
+                                PlayerState = PlayerState.FloatLeft;
+                                hasFloated = true;
+                            }
+                            else if (kb.IsKeyDown(Keys.D) && kb.IsKeyUp(Keys.A) && kb.IsKeyDown(Keys.Space))
+                            {
+                                playerState = PlayerState.FloatRight;
+                                hasFloated = true;
+                            }
+                            else if (kb.IsKeyDown(Keys.Space))
+                            {
+                                if (isFacingRight)
+                                {
+                                    playerState = PlayerState.FloatRight;
+                                }
+                                else
+                                {
+                                    playerState = PlayerState.FloatLeft;
+                                }
+                                hasFloated = true;
+                            }
                         }
                     }
-
-
+                    
                     //adjust delays to determine how long delay is for downdash and float
                     downDashDelay = 13;
                     floatDelay = 50;
                     //HitStun
                     break;
+                #endregion
+                //################
 
+                //################
+                #region DOWNDASH
                 case PlayerState.DownDash:
                     if (debugEnemyCollision)
                     {
@@ -716,7 +953,11 @@ namespace Egg
 
                     //Implement interaction with enemy here
                     break;
+                #endregion
+                //################
 
+                //################
+                #region BOUNCE STATES
                 //Bounce Left
                 case PlayerState.BounceLeft:
                     Movement();
@@ -727,9 +968,18 @@ namespace Egg
                     Movement();
                     break;
 
-                    //Remember to implement HitStun here
-
+                //Remember to implement HitStun here
+                #endregion
+                //################
+                case PlayerState.HitStunLeft:
+                    Movement();
+                    break;
+                case PlayerState.HitStunRight:
+                    Movement();
+                    break;
             }
+            #endregion
+            //################
         }
         /// <summary>
         /// Calls accelerate/decelerate methods based on FSM state, the direction is accounted for in the methods
@@ -790,6 +1040,11 @@ namespace Egg
                 rollDelay -= miliseconds;
                 if (rollDelay <= 0)
                 {
+                    if (!bottomIntersects)
+                    {
+                        hasRolledInAir = true;
+                    }
+
                     isRolling = false;
                     if (rollInAir == true)
                     {
@@ -888,7 +1143,6 @@ namespace Egg
             //Bounce
             else if (playerState == PlayerState.BounceLeft || playerState == PlayerState.BounceRight)
             {
-
                 if (isFacingRight && verticalVelocity != 0) //in air
                 {
                     horizontalVelocity = 20;
@@ -900,16 +1154,35 @@ namespace Egg
                 else if (isFacingRight)
                 {
                     horizontalVelocity = -20;
-                    isFacingRight = !isFacingRight;
                 }
                 else
                 {
                     horizontalVelocity = 20;
-                    isFacingRight = !isFacingRight;
                 }
 
                 verticalVelocity = -30;
                 playerState = PlayerState.Fall;
+            }
+            else if (playerState == PlayerState.HitStunLeft || playerState == PlayerState.HitStunRight)
+            {
+                verticalVelocity = 0;
+                inHitStun = true;
+                if (isFacingRight && verticalVelocity != 0) //in air
+                {
+                    horizontalVelocity = 10;
+                }
+                else if (!isFacingRight && verticalVelocity != 0) //in air
+                {
+                    horizontalVelocity = -10;
+                }
+                else if (isFacingRight)
+                {
+                    horizontalVelocity = -10;
+                }
+                else
+                {
+                    horizontalVelocity = 10;
+                }
             }
 
             X += horizontalVelocity;
@@ -932,62 +1205,13 @@ namespace Egg
             }
         }
         //Implement when working on enemy collision
-        public override void CheckColliderAgainstEnemy(Enemy e)
-        {
-            if (hitbox.Intersects(e.Hitbox) && e.IsActive && !bounceLockout)
-            {
-                debugEnemyCollision = true;
-                bounceLockout = true;
-            }
-            else
-            {
-                debugEnemyCollision = false;
-            }
-        }
+       
         //not applicable
         public override void CheckColliderAgainstPlayer(Player p)
         {
             //do nothing
         }
-        public override void Draw(SpriteBatch sb)
-        {
-            if (isDebugging)
-            {
-                //press C to toggle player transparency
-                if (SingleKeyPress(Keys.C))
-                {
-                    playerVisible = !playerVisible;
-                }
-                if (playerVisible)
-                {
-                    sb.Draw(defaultSprite, hitbox, Color.Black);
-                    sb.Draw(defaultSprite, bottomChecker, Color.Black);
-                    sb.Draw(defaultSprite, sideChecker, Color.Red);
-                    sb.Draw(defaultSprite, topChecker, Color.Cyan);
-                }
-                else
-                {
-                    sb.Draw(defaultSprite, hitbox, Color.Transparent);
-                    sb.Draw(defaultSprite, bottomChecker, Color.Black);
-                    sb.Draw(defaultSprite, sideChecker, Color.Red);
-                    sb.Draw(defaultSprite, topChecker, Color.Cyan);
-                }
-
-            }
-            else
-            {
-                if (debugEnemyCollision)
-                {
-                    sb.Draw(defaultSprite, hitbox, Color.Orange);
-                }
-                else
-                {
-                    sb.Draw(defaultSprite, hitbox, this.color);
-                }
-                
-            }
- 
-        }
+       
 
 
         //animation fields
