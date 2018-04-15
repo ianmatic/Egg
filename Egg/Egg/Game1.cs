@@ -218,8 +218,7 @@ namespace Egg
                     }                   
                     break;
 
-                case GameState.Game:
-                    mainScreen.UpdateTiles(@"..\..\..\..\Resources\levelExports\platformDemo", tileList);
+                case GameState.Game:                    
                     GameUpdateLoop();
                     //Transition to level end not yet implemented
                     break;
@@ -315,6 +314,7 @@ namespace Egg
         //Any logic during the game loop (minus drawing) goes here, as the Update loop is intended to hold logic involving the FSM between menus
         private void GameUpdateLoop()
         {
+            Tile[,] tileSet = mainScreen.UpdateTiles(@"..\..\..\..\Resources\levelExports\platformDemo", tileList);
             foreach (GameObject n in objectList)
             {
                 //if (n.IsActive)
@@ -344,13 +344,29 @@ namespace Egg
                     else
                     {
                         n.CheckColliderAgainstPlayer(player);
-                        n.CheckColliderAgainstEnemy(enemy);
+                        foreach (Enemy e in tempEnemyList)
+                        {
+                            n.CheckColliderAgainstEnemy(enemy);
+                        }
+
                     }
 
                 //}
 
             } // end foreach
 
+            foreach (Tile t in tileSet)
+            {
+                if (t.DefaultSprite != null)
+                {
+                    t.CheckColliderAgainstPlayer(player);
+
+                    foreach (Enemy e in tempEnemyList)
+                    {
+                        t.CheckColliderAgainstEnemy(enemy);
+                    }
+                }
+            }
         }
 
             
@@ -411,18 +427,23 @@ namespace Egg
             topRectangle = Content.Load<Texture2D>("green");
             collisionTest = Content.Load<Texture2D>("white");
 
+
+            #region CapturedChickens
+
             AddObjectToList(new CapturedChicken(115, testSprite, new Rectangle(0, 0, 30, 30), Color.Red));
             AddObjectToList(new CapturedChicken(111, testSprite, new Rectangle(0, 15, 30, 30), Color.Aqua));
             AddObjectToList(new CapturedChicken(114, testSprite, new Rectangle(0, 30, 30, 30), Color.Green));
             AddObjectToList(new CapturedChicken(113, testSprite, new Rectangle(0, 45, 30, 30), Color.Yellow));
             AddObjectToList(new CapturedChicken(112, testSprite, new Rectangle(0, 60, 30, 30), Color.White));
 
-            //CHECKPOINTS
+            #endregion
+
+            #region Checkpoints
             AddObjectToList(new Checkpoint(3, collisionTest, new Rectangle(400, 450, 75, 75)));
             AddObjectToList(new Checkpoint(3, collisionTest, new Rectangle(1500, 250, 75, 75)));
+            #endregion
 
-
-            //PLATFORM CODE
+            #region Platform Code            
             AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(700, 600, 700, 100), Tile.TileType.Normal));
             AddObjectToList(new Tile(7, bottomRectangle, new Rectangle(0, 600, 500, 300), Tile.TileType.Normal));
             AddObjectToList(new Tile(8, bottomRectangle, new Rectangle(1300, 600, 500, 300), Tile.TileType.Normal));
@@ -433,6 +454,7 @@ namespace Egg
             AddObjectToList(new Tile(14, sideRectangle, new Rectangle(1600, 200, 100, 400), Tile.TileType.Normal));
             AddObjectToList(new Tile(15, topRectangle, new Rectangle(0, 200, 400, 100), Tile.TileType.Normal));
             //AddObjectToList(new Tile(16, topRectangle, new Rectangle(1000, 200, 400, 100), Tile.TileType.Normal)); commented out to test bounce
+            #endregion
 
             /* BOX CODE
             AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(200, 1600, 1300, 100), Tile.TileType.Normal));
