@@ -143,9 +143,8 @@ namespace Egg
 
             //animation Stuff
             spriteSheet = Content.Load<Texture2D>("sprites");
-            int x = spriteSheet.Width;
-            player = new Player(5, collisionTest, new Rectangle(300, 300, 75, 75), Color.White);
-            AddObjectToList(player);
+           
+            
 
 
 
