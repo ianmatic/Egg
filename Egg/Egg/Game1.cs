@@ -42,7 +42,16 @@ namespace Egg
         Player player;
 
         //animation fields
-        Texture2D spriteSheet;
+        public Texture2D spriteSheet;
+        int currentFrame = 1;
+        double fps = 60.0;
+        double secondsPerFrame;
+        double timeCounter = 0;
+        int numSpritesPerSheet = 4;
+        int widthOfASingleSprite = 795 / 4;
+        
+        
+        GameTime gameTime = new GameTime();
 
 
         //Tile Fields
@@ -108,6 +117,7 @@ namespace Egg
             tileList = new List<Texture2D>();
             currentState = GameState.Menu;
             
+            
             base.Initialize();
         }
 
@@ -130,6 +140,11 @@ namespace Egg
 
             //animation Stuff
             spriteSheet = Content.Load<Texture2D>("sprites");
+            int x = spriteSheet.Width;
+            player = new Player(5, collisionTest, new Rectangle(300, 300, 75, 75), Color.White);
+            AddObjectToList(player);
+
+
 
             #region loading Tiles
             blankTile = Content.Load<Texture2D>(@"clearTile");
@@ -182,7 +197,7 @@ namespace Egg
             tileList.Add(nRightBot);
             tileList.Add(nRightTop);
             #endregion 
-
+            
             mainScreen.UpdateTiles(@"..\..\..\..\Resources\levelExports\platformDemo", tileList);
         }
 
@@ -202,6 +217,7 @@ namespace Egg
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -245,6 +261,7 @@ namespace Egg
                 player.Hitbox = new Rectangle(player.LastCheckpoint.X, player.LastCheckpoint.Y, 75, 75);
             }
 
+            
             base.Update(gameTime);
         }
 
@@ -255,7 +272,7 @@ namespace Egg
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
+            UpdateAnimation(gameTime);
             //modified spriteBatch begin so the images are scaled by nearest neighbor instead of getting antialiased
             //this makes it so the pixel art keeps crisp lines
             spriteBatch.Begin(SpriteSortMode.Immediate);
@@ -275,8 +292,43 @@ namespace Egg
                     
                     foreach (GameObject g in objectList)
                     {
-
+                       
                         g.Draw(spriteBatch);
+
+                        if(g is Player)
+                        {
+                            Player p = (Player)g;
+
+                            if(p.PlayerState == PlayerState.IdleLeft)
+                            {
+                                DrawIdle(SpriteEffects.FlipHorizontally);
+                            }
+                            else if(p.PlayerState == PlayerState.IdleRight)
+                            {
+                                DrawIdle(SpriteEffects.None);
+                            }
+                            else if (p.PlayerState == PlayerState.WalkLeft)
+                            {
+                                DrawWalking(SpriteEffects.FlipHorizontally); 
+                            }
+                            else if (p.PlayerState == PlayerState.WalkRight)
+                            {
+                                DrawWalking(SpriteEffects.None);
+                            }
+                            else if (p.PlayerState == PlayerState.JumpLeft)
+                            {
+                                DrawIdle(SpriteEffects.FlipHorizontally);
+                            }
+                            else if (p.PlayerState == PlayerState.JumpRight)
+                            {
+                                DrawIdle(SpriteEffects.None);
+                            }
+                            else if(p.PlayerState == PlayerState.Fall)
+                            {
+                                DrawIdle(SpriteEffects.None);
+                            }
+                        }
+                       
                     }
                     if (player.IsDebugging) //debugging text for player
                     {
@@ -316,6 +368,8 @@ namespace Egg
         private void GameUpdateLoop()
         {
             Tile[,] tileSet = mainScreen.UpdateTiles(@"..\..\..\..\Resources\levelExports\platformDemo", tileList);
+
+           
             foreach (GameObject n in objectList)
             {
                 //if (n.IsActive)
@@ -324,9 +378,10 @@ namespace Egg
                     {
                         Player p = (Player)n;
                         p.FiniteState();
+                    
 
-                        //This should work on any enemy (i.e. enemy list of a screen), fix this later!
-                        foreach (Enemy e in tempEnemyList)
+                    //This should work on any enemy (i.e. enemy list of a screen), fix this later!
+                    foreach (Enemy e in tempEnemyList)
                         {
                             if (!p.InBounceLockout)
                             {
@@ -465,19 +520,65 @@ namespace Egg
             */
             //enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 16, 60);
             //enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 4, 60, 5, 2, 100); //moving enemy
-            enemy = new Enemy(new Rectangle(890,500, 75, 75), collisionTest, 16, 60);
+            enemy = new Enemy(new Rectangle(890, 500, 75, 75), collisionTest, 16, 60);
             enemy2 = new Enemy(new Rectangle(225, 150, 75, 75), collisionTest, 4, 60);
             enemy3 = new Enemy(new Rectangle(200, 100, 75, 75), collisionTest, 4, 60);
             AddObjectToList(enemy);
             AddObjectToList(enemy2);
             AddObjectToList(enemy3);
-            player = new Player(5, collisionTest, new Rectangle(300, 300, 75, 75), Color.White);
-            AddObjectToList(player);
+            
+           
 
             foreach (GameObject g in objectList)
             {
                 Debug.WriteLine("Test");
             }
         }
+        private void UpdateAnimation(GameTime time)
+        {
+           
+            secondsPerFrame = 1.0f / fps;
+            timeCounter += time.ElapsedGameTime.TotalSeconds;
+
+            if (timeCounter >= secondsPerFrame)
+            {
+                currentFrame++;
+                if (currentFrame >= 4) currentFrame = 1;
+               
+            }
+
+            timeCounter -= secondsPerFrame;
+        }
+        public void DrawWalking( SpriteEffects flip)
+        {
+            
+            spriteBatch.Draw(
+                spriteSheet,
+                new Vector2(player.Hitbox.X ,player.Hitbox.Y-200),
+                new Rectangle(widthOfASingleSprite * currentFrame, 0, widthOfASingleSprite, spriteSheet.Height),
+                Color.White,
+                0.0f,
+                Vector2.Zero,
+                1.0f,
+                flip,
+                0.0f);
+
+        }
+        public void DrawIdle( SpriteEffects flip)
+        {
+                spriteBatch.Draw(
+                spriteSheet,
+                 new Vector2(player.Hitbox.X , player.Hitbox.Y- 200),
+                new Rectangle(0, 0, widthOfASingleSprite, spriteSheet.Height),
+                Color.White,
+                0.0f,
+                Vector2.Zero,
+                1.0f,
+                flip,
+                0.0f);
+
+        }
+
+
     }
 }

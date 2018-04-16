@@ -50,13 +50,7 @@ namespace Egg
         private double downDashDelay; //used for downdash
         private double floatDelay;
         private double rollDelay;
-        private double hitStunDelay;
-
-        //animation fields 
-        private int currentFrame = 1;
-        private double fps = 60.0;
-        private double secondsPerFrame;
-        private double timeCounter = 0;
+        private double hitStunDelay;    
 
         private Rectangle lastCheckpoint;
         
@@ -1218,34 +1212,11 @@ namespace Egg
 
         //animation fields
       
-        private void UpdateAnimation(GameTime time)
-        {
-            secondsPerFrame = 1.0f / fps;
-            timeCounter += time.ElapsedGameTime.TotalSeconds;
+      
 
-            if (timeCounter >= secondsPerFrame)
-            {
-                currentFrame++;
-                if (currentFrame >= 4)  // 4 is a placeholder for how many frames of walk there are
-                {
-                    currentFrame = 1;
-                }
-            }
+        
 
-            timeCounter -= secondsPerFrame;
-        }
-
-        public void DrawWalking(Texture2D spritesheet ,SpriteEffects flip)
-        {
-            
-            
-        }
-
-        public void DrawIdle(Texture2D spritesheet ,SpriteEffects flip)
-        {
-
-
-        }
+       
 
     }
 }
