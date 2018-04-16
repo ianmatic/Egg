@@ -14,6 +14,7 @@ namespace Egg
         enum GameState
         {
             Menu,
+            Options,
             Game,
             GameOver
         }
@@ -38,6 +39,8 @@ namespace Egg
         Enemy enemy;
         Enemy enemy2;
         Enemy enemy3;
+
+        bool paused = false;
 
         Player player;
 
@@ -223,43 +226,90 @@ namespace Egg
 
             oldKB = kb;
             kb = Keyboard.GetState();
-
-            //FSM for switching between main menu, game, and level transition screens
-            switch (currentState)
+            if (!paused)
             {
-                case GameState.Menu:
-                    if (kb.IsKeyDown(Keys.Enter))
-                    {
-                        currentState = GameState.Game;
-                    }                   
-                    break;
-
-                case GameState.Game:                    
-                    GameUpdateLoop();
-                    //Transition to level end not yet implemented
-                    break;
+                if (SingleKeyPress(Keys.P))
+                {
+                    paused = true;
+                }
+                //FSM for switching between main menu, game, and level transition screens
+                switch (currentState)
+                {
+                    case GameState.Menu:
+                        if (SingleKeyPress(Keys.Enter))
+                        {
+                            currentState = GameState.Game;
+                        }
+                        else if (SingleKeyPress(Keys.Tab))
+                        {
+                            currentState = GameState.Options;
+                        }
+                        break;
+                    case GameState.Options:
+                        if (SingleKeyPress(Keys.Tab))
+                        {
+                            if (paused)
+                            {
+                                currentState = GameState.Game;
+                            }
+                            else
+                            {
+                                currentState = GameState.Menu;
+                            }
+                        }
+                        break;
+                    case GameState.Game:
+                        GameUpdateLoop();
+                        //Transition to level end not yet implemented
+                        break;
 
                     //Not yet implemented due to being a polish feature
-                case GameState.GameOver:
-                    break;
-            }            
+                    case GameState.GameOver:
+                        break;
+                }
 
-            //Must hold down P, O, and G at the same time to activate level editor
-            if (kb.IsKeyDown(Keys.P) && kb.IsKeyDown(Keys.O) && kb.IsKeyDown(Keys.G))
-            {
-                //Show dialog goes here.
-                Builder.ShowDialog();
-            }
+                //Must hold down P, O, and G at the same time to activate level editor
+                if (kb.IsKeyDown(Keys.P) && kb.IsKeyDown(Keys.O) && kb.IsKeyDown(Keys.G))
+                {
+                    //Show dialog goes here.
+                    Builder.ShowDialog();
+                }
 
-            if (SingleKeyPress(Keys.F8))
-            {
-                enemy.DebugCollision = !enemy.DebugCollision;
-            }
+                if (SingleKeyPress(Keys.F8))
+                {
+                    enemy.DebugCollision = !enemy.DebugCollision;
+                }
 
-            if (SingleKeyPress(Keys.F9))
-            {
-                player.Hitbox = new Rectangle(player.LastCheckpoint.X, player.LastCheckpoint.Y, 75, 75);
+                if (SingleKeyPress(Keys.F9) || player.Hitpoints <= 0)
+                {
+                    player.Hitbox = new Rectangle(player.LastCheckpoint.X, player.LastCheckpoint.Y, 75, 75);
+                    player.PlayerState = PlayerState.IdleRight;
+                    player.HorizontalVelocity = 0;
+                    player.VerticalVelocity = 0;
+                    player.Hitpoints = 5;
+                    player.InHitStun = false;
+                }
             }
+            else
+            {
+                if (SingleKeyPress(Keys.Tab))
+                {
+                    if (currentState == GameState.Game)
+                    {
+                        currentState = GameState.Options;
+                    }
+                    else if (currentState == GameState.Options)
+                    {
+                        currentState = GameState.Game;
+                    }
+
+                }
+                if (SingleKeyPress(Keys.P))
+                {
+                    paused = false;
+                }
+            }
+            
 
             
             base.Update(gameTime);
@@ -284,8 +334,22 @@ namespace Egg
                 case GameState.Menu:
                     spriteBatch.DrawString(menuText, "Egg", new Vector2(350, 200), Color.White);
                     spriteBatch.DrawString(menuText, "Press Enter", new Vector2(300, 300), Color.White);
+                    spriteBatch.DrawString(menuText, "Or", new Vector2(365, 400), Color.White);
+                    spriteBatch.DrawString(menuText, "Press Tab for Options", new Vector2(240, 500), Color.White);
                     break;
-
+                case GameState.Options:
+                    spriteBatch.DrawString(menuText, "Options (Stretch Goal)", new Vector2(350, 200), Color.White);
+                    spriteBatch.DrawString(menuText, "Rebind keys: ", new Vector2(150, 400), Color.White);
+                    spriteBatch.DrawString(menuText, "Toggle fullscreen: ", new Vector2(650, 400), Color.White);
+                    if (paused)
+                    {
+                        spriteBatch.DrawString(menuText, "Press tab to return to game", new Vector2(50, 50), Color.White);
+                    }
+                    else
+                    {
+                        spriteBatch.DrawString(menuText, "Press tab to return to menu", new Vector2(50, 50), Color.White);
+                    }
+                    break;
                 case GameState.Game:
                     mainScreen.DrawTilesFromMap(spriteBatch, @"..\..\..\..\Resources\levelExports\platformDemo", tileList);
                     //Draws potatos to test DrawLevel
@@ -344,7 +408,11 @@ namespace Egg
                     spriteBatch.DrawString(menuText, "You beat a level, but you shouldn't see this yet.", new Vector2(350, 200), Color.White);
                     break;
             }
-                       
+            if (paused && currentState == GameState.Game)
+            {
+                spriteBatch.DrawString(menuText, "Paused", new Vector2(900, 400), Color.White);
+                spriteBatch.DrawString(menuText, "Press Tab for Options", new Vector2(800, 500), Color.White);
+            }          
             spriteBatch.End();
 
             base.Draw(gameTime);
@@ -495,20 +563,20 @@ namespace Egg
             #endregion
 
             #region Checkpoints
-            AddObjectToList(new Checkpoint(3, collisionTest, new Rectangle(400, 450, 75, 75)));
+            AddObjectToList(new Checkpoint(3, collisionTest, new Rectangle(400, 350, 75, 75)));
             AddObjectToList(new Checkpoint(3, collisionTest, new Rectangle(1500, 250, 75, 75)));
             #endregion
 
             #region Platform Code            
-            AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(700, 600, 700, 100), Tile.TileType.Normal));
-            AddObjectToList(new Tile(7, bottomRectangle, new Rectangle(0, 600, 500, 300), Tile.TileType.Normal));
-            AddObjectToList(new Tile(8, bottomRectangle, new Rectangle(1300, 600, 500, 300), Tile.TileType.Normal));
+            AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(700, 500, 700, 100), Tile.TileType.Normal));
+            AddObjectToList(new Tile(7, bottomRectangle, new Rectangle(0, 500, 500, 300), Tile.TileType.Normal));
+            AddObjectToList(new Tile(8, bottomRectangle, new Rectangle(1300, 500, 500, 300), Tile.TileType.Normal));
             AddObjectToList(new Tile(10, bottomRectangle, new Rectangle(1700, 200, 200, 100), Tile.TileType.Normal));
             AddObjectToList(new Tile(11, sideRectangle, new Rectangle(0, 0, 100, 900), Tile.TileType.Normal));
-            AddObjectToList(new Tile(12, sideRectangle, new Rectangle(500, 600, 200, 400), Tile.TileType.Normal));
-            AddObjectToList(new Tile(13, sideRectangle, new Rectangle(1500, 400, 100, 200), Tile.TileType.Normal));
+            AddObjectToList(new Tile(12, sideRectangle, new Rectangle(500, 500, 200, 400), Tile.TileType.Normal));
+            AddObjectToList(new Tile(13, sideRectangle, new Rectangle(1100, 400, 100, 200), Tile.TileType.Normal));
             AddObjectToList(new Tile(14, sideRectangle, new Rectangle(1600, 200, 100, 400), Tile.TileType.Normal));
-            AddObjectToList(new Tile(15, topRectangle, new Rectangle(0, 200, 400, 100), Tile.TileType.Normal));
+            AddObjectToList(new Tile(15, topRectangle, new Rectangle(0, 300, 400, 100), Tile.TileType.Normal));
             //AddObjectToList(new Tile(16, topRectangle, new Rectangle(1000, 200, 400, 100), Tile.TileType.Normal)); commented out to test bounce
             #endregion
 
@@ -526,8 +594,8 @@ namespace Egg
             AddObjectToList(enemy);
             AddObjectToList(enemy2);
             AddObjectToList(enemy3);
-            
-           
+            player = new Player(5, collisionTest, new Rectangle(450, 350, 75, 75), Color.White);
+            AddObjectToList(player);
 
             foreach (GameObject g in objectList)
             {
