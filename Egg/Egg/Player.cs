@@ -85,7 +85,7 @@ namespace Egg
         private bool inHitStun;
         private bool rollEnd;
         private bool hasRolledInAir;
-
+        
         //for float
         private bool hasFloated;
         private Vector2 previousPlayerPosition; //positions used to check if the player is going up or down
@@ -113,10 +113,12 @@ namespace Egg
         public int VerticalVelocity
         {
             get { return verticalVelocity; }
+            set { verticalVelocity = value; }
         }
         public int HorizontalVelocity
         {
             get { return horizontalVelocity; }
+            set { verticalVelocity = value; }
         }
         public bool IsDebugging
         {
@@ -141,6 +143,11 @@ namespace Egg
             get { return lastCheckpoint; }
             set { this.lastCheckpoint = value; }
         }
+        public bool InHitStun
+        {
+            get { return inHitStun; }
+            set { inHitStun = value; }
+        }
         #endregion
         //################
 
@@ -156,7 +163,7 @@ namespace Egg
             this.lastCheckpoint = hitbox;
 
             isActive = true;
-            hitpoints = 3;
+            hitpoints = 5;
 
             hasGravity = true; //no point other than it must be implement since it inherets GameObject
 
@@ -231,6 +238,8 @@ namespace Egg
                     playerState = PlayerState.BounceLeft;
                     debugEnemyCollision = false;
                     rollEnd = true;
+                    isRolling = false;
+                    rollDelay = 30;
                 }
                 else if (playerState == PlayerState.RollLeft)
                 {
@@ -238,6 +247,8 @@ namespace Egg
                     playerState = PlayerState.BounceRight;
                     debugEnemyCollision = false;
                     rollEnd = true;
+                    isRolling = false;
+                    rollDelay = 30;
                 }
                 else if (playerState == PlayerState.DownDash)
                 {
@@ -547,15 +558,6 @@ namespace Egg
             if (bottomIntersects)
             {
                 hasFloated = false;
-            }
-
-            if (hitpoints <= 0)
-            {
-                isActive = false;
-            }
-            else
-            {
-                isActive = true;
             }
 
             if (inHitStun)
@@ -1163,27 +1165,46 @@ namespace Egg
                 }
 
                 verticalVelocity = -30;
+                if (playerState == PlayerState.BounceLeft)
+                {
+                    isFacingRight = false;
+                }
+                else
+                {
+                    isFacingRight = true;
+                }
                 playerState = PlayerState.Fall;
             }
             else if (playerState == PlayerState.HitStunLeft || playerState == PlayerState.HitStunRight)
             {
-                verticalVelocity = 0;
+                if (!inHitStun)
+                {
+                    verticalVelocity = 0;
+                    if (isFacingRight && verticalVelocity != 0) //in air
+                    {
+                        horizontalVelocity = 10;
+                    }
+                    else if (!isFacingRight && verticalVelocity != 0) //in air
+                    {
+                        horizontalVelocity = -10;
+                    }
+                    else if (isFacingRight)
+                    {
+                        horizontalVelocity = -10;
+                    }
+                    else
+                    {
+                        horizontalVelocity = 10;
+                    }
+                }
+
                 inHitStun = true;
-                if (isFacingRight && verticalVelocity != 0) //in air
+                if (inHitStun)
                 {
-                    horizontalVelocity = 10;
-                }
-                else if (!isFacingRight && verticalVelocity != 0) //in air
-                {
-                    horizontalVelocity = -10;
-                }
-                else if (isFacingRight)
-                {
-                    horizontalVelocity = -10;
-                }
-                else
-                {
-                    horizontalVelocity = 10;
+                    Accelerate(verticalVelocity, 2, 30, true);
+                    isFacingRight = !isFacingRight;
+                    Decelerate(horizontalVelocity, 1, 0, false);
+                    isFacingRight = !isFacingRight;
                 }
             }
 
