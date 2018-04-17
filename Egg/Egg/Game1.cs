@@ -288,7 +288,12 @@ namespace Egg
                     player.VerticalVelocity = 0;
                     player.Hitpoints = 5;
                     player.InHitStun = false;
+                  
                     
+                }
+                if (SingleKeyPress(Keys.F11))
+                {
+                    animationOn = false;
                 }
             }
             else
