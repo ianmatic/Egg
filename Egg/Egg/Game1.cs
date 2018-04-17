@@ -257,15 +257,7 @@ namespace Egg
                             }
                         }
                         break;
-                    case GameState.Game:
-                        if (SingleKeyPress(Keys.D1))
-                        {
-                            mainScreen.ChangeLevel("mapDemo");
-                        }
-                        else if (SingleKeyPress(Keys.D2))
-                        {
-                            mainScreen.ChangeLevel("variableSizeDemo");
-                        }
+                    case GameState.Game:                       
                         GameUpdateLoop();
                         //Transition to level end not yet implemented
                         break;
@@ -432,6 +424,11 @@ namespace Egg
                     {
                         Player p = (Player)n;
                         p.FiniteState();
+
+                    //Add extra buffer to dimensions? Different way of doing this?
+                    Rectangle screenSize = new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+
+                    //Start here to call for whether or not the player is fully on screen
                     
 
                     //This should work on any enemy (i.e. enemy list of a screen), fix this later!
