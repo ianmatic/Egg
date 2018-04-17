@@ -219,7 +219,7 @@ namespace Egg
                     break;
 
                 case GameState.Game:
-                    mainScreen.UpdateTiles(@"..\..\..\..\Resources\levelExports\platformDemo", tileList);
+                    mainScreen.UpdateTiles(@"..\..\..\..\Resources\levelExports\planetButtulon", tileList);
                     GameUpdateLoop();
                     //Transition to level end not yet implemented
                     break;
