@@ -64,6 +64,7 @@ namespace Egg
         private bool debugEnemyCollision = false; 
         private bool playerVisible = true;
         private bool bounceLockout = false;
+        private bool shouldBounce = false;
         Tile temp; //used to make sure player checks collision against only 
                    //1 tile when necessary (as opposed to all of them each frame like usual)
 
@@ -223,6 +224,14 @@ namespace Egg
         /// <param name="e"></param>
         public override void CheckColliderAgainstEnemy(Enemy e)
         {
+            if (bottomChecker.Intersects(e.Hitbox))
+            {
+                shouldBounce = true;
+            }
+            else
+            {
+                shouldBounce = false;
+            }
             if (hitbox.Intersects(e.Hitbox) && e.IsActive && !bounceLockout && !inHitStun)
             {
                 debugEnemyCollision = true;
@@ -244,7 +253,7 @@ namespace Egg
                     isRolling = false;
                     rollDelay = 30;
                 }
-                else if (playerState == PlayerState.DownDash)
+                else if (playerState == PlayerState.DownDash && shouldBounce)
                 {
                     Y = e.Y - hitbox.Height - 1;
                     if (IsFacingRight)
@@ -536,7 +545,15 @@ namespace Egg
                 }
             }
             //height is player height with vertical velocity added on (subtracting makes the height go "up" aka toward the ceiling)
-            topChecker = new Rectangle(X + 10, Y - Math.Abs(verticalVelocity), hitbox.Width - 20, Math.Abs(verticalVelocity));
+            if (verticalVelocity <= 0)
+            {
+                topChecker = new Rectangle(X + 10, Y - Math.Abs(verticalVelocity), hitbox.Width - 20, Math.Abs(verticalVelocity));
+            }
+            else
+            {
+                topChecker = new Rectangle(X + 10, Y, hitbox.Width - 20, 0);
+            }
+
 
 
             bottomChecker = new Rectangle(X + 10, Y + hitbox.Height, hitbox.Width - 20, Math.Abs(verticalVelocity));
@@ -934,7 +951,7 @@ namespace Egg
                 //################
                 #region DOWNDASH
                 case PlayerState.DownDash:
-                    if (debugEnemyCollision)
+                    if (debugEnemyCollision && shouldBounce)
                     {
                         if (isFacingRight)
                         {
