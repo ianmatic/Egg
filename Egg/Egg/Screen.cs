@@ -18,17 +18,21 @@ namespace Egg
         int VerticalTileCount = 16;     //this one too
         int screenLength = 1920;        //Set this up to get fed in by whatever the current screen size is
         int screenHeight = 1080;        //same for this 
+        string currentLevel;
         string[,] level;
 
         StreamReader interpreter;
         Tile[,] screenTiles;
         Dictionary<string, Tile.TileType> tileTypeDict = new Dictionary<string, Tile.TileType>();
+        Dictionary<string, string> mapFileLocations = new Dictionary<string, string>();
 
         /// <summary>
         /// By default, the screen is populated with screenTiles to be an X by Y array filled with empty tiles
         /// </summary>
-        public Screen()
+        public Screen(string map)
         {
+            currentLevel = map;
+
             #region initializing tile array
             screenTiles = new Tile[HorizontalTileCount, VerticalTileCount];  //initializes screenTiles
             for (int row = 0; row < HorizontalTileCount; row++)
@@ -47,14 +51,19 @@ namespace Egg
             tileTypeDict.Add("nc", Tile.TileType.NoCollision);
             tileTypeDict.Add("00", Tile.TileType.NoCollision);
             #endregion
+
+            #region Map Location Dictionary element adding
+            mapFileLocations.Add("mapDemo", @"..\..\..\..\Resources\levelExports\platformDemo");
+            mapFileLocations.Add("demoTwo", @"..\..\..\..\Resources\levelExports\demoTwo");
+            #endregion
         }
 
         /// <summary>
         /// Updates and returns tile map
         /// </summary>
-        public Tile[,] UpdateTiles(string s, List<Texture2D> textures)
+        public Tile[,] UpdateTiles(List<Texture2D> textures)
         {
-            string[,] baseLevelMap = LevelInterpreter(s);                           //turn the text file into a 2d array
+            string[,] baseLevelMap = LevelInterpreter(mapFileLocations[currentLevel]);      //turn the text file into a 2d array
             Tile[,] tileMap = new Tile[VerticalTileCount, HorizontalTileCount];     //turn that 2d array into a 2d array of tiles
             tileMap = LoadTiles(baseLevelMap, textures);                            //populate those 2d arrays with 2d textures
             screenTiles = tileMap;

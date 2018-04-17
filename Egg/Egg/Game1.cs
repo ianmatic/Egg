@@ -30,7 +30,7 @@ namespace Egg
         Texture2D topRectangle;
         Texture2D sideRectangle;
         Texture2D collisionTest;
-        Screen mainScreen = new Screen();
+        Screen mainScreen = new Screen("mapDemo");
 
         GameState currentState;
         //GameState previousState;
@@ -200,7 +200,7 @@ namespace Egg
             tileList.Add(nRightTop);
             #endregion 
             
-            mainScreen.UpdateTiles(@"..\..\..\..\Resources\levelExports\platformDemo", tileList);
+            mainScreen.UpdateTiles(tileList);
         }
 
         /// <summary>
@@ -434,9 +434,8 @@ namespace Egg
         //Any logic during the game loop (minus drawing) goes here, as the Update loop is intended to hold logic involving the FSM between menus
         private void GameUpdateLoop()
         {
-            Tile[,] tileSet = mainScreen.UpdateTiles(@"..\..\..\..\Resources\levelExports\platformDemo", tileList);
-
-           
+            Tile[,] tileSet = mainScreen.UpdateTiles(tileList);
+                      
             foreach (GameObject n in objectList)
             {
                 //if (n.IsActive)
