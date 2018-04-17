@@ -30,7 +30,7 @@ namespace Egg
         Texture2D topRectangle;
         Texture2D sideRectangle;
         Texture2D collisionTest;
-        Screen mainScreen = new Screen("mapDemo");
+        Screen mainScreen = new Screen("variableSizeDemo");
 
         GameState currentState;
         //GameState previousState;

@@ -53,8 +53,10 @@ namespace Egg
             #endregion
 
             #region Map Location Dictionary element adding
+            //Add in an external trigger in tiles to send players to different maps.
             mapFileLocations.Add("mapDemo", @"..\..\..\..\Resources\levelExports\platformDemo");
             mapFileLocations.Add("demoTwo", @"..\..\..\..\Resources\levelExports\demoTwo");
+            mapFileLocations.Add("variableSizeDemo", @"..\..\..\..\Resources\levelExports\nineByFifteen");
             #endregion
         }
 
