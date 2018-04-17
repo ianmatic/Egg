@@ -227,7 +227,7 @@ namespace Egg
             kb = Keyboard.GetState();
             if (!paused)
             {
-                if (SingleKeyPress(Keys.P))
+                if (SingleKeyPress(Keys.P) && currentState != GameState.Options)
                 {
                     paused = true;
                 }
@@ -303,7 +303,7 @@ namespace Egg
                     }
 
                 }
-                if (SingleKeyPress(Keys.P))
+                if (SingleKeyPress(Keys.P) && currentState != GameState.Options)
                 {
                     paused = false;
                 }
@@ -589,7 +589,7 @@ namespace Egg
             //enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 4, 60, 5, 2, 100); //moving enemy
             enemy = new Enemy(new Rectangle(890, 500, 75, 75), collisionTest, 16, 60);
             enemy2 = new Enemy(new Rectangle(225, 150, 75, 75), collisionTest, 4, 60);
-            enemy3 = new Enemy(new Rectangle(200, 100, 75, 75), collisionTest, 4, 60);
+            enemy3 = new Enemy(new Rectangle(500, 150, 75, 75), collisionTest, 4, 60, 5, 2 , 100);
             AddObjectToList(enemy);
             AddObjectToList(enemy2);
             AddObjectToList(enemy3);
