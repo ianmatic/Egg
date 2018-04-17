@@ -17,209 +17,21 @@ namespace Egg
     public partial class Mappy : Form
     {
         List<PictureBox> tabletButts = new List<PictureBox>();
-
-        #region Text Output Test
-
-        // for each item in along the text file, have some variable saved off invisibly
-        // so that we can make a big loop and send all of those into a series of strings
-        // which we can then combine into the output and print to a text file.
-
-        string output = "" + Environment.NewLine;
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            StreamWriter writer = new StreamWriter("eggTest.txt");
-            writer.Write(output);
-            writer.Close();
-        }
-        #endregion
+        ImageBox chosenTile;
 
         public Mappy()
         {
             InitializeComponent();
 
-            //bugtesting
-            string desperation = boxSelect.Text.ToString();
+            this.Height = 860;
+            this.Width = 1550;
 
-            #region Adding all the buttons to tabletBtns
-            /*
-            for (int i = 1; i <= 135; i++)
-            {
-                string tempBtn = "button";
-                tempBtn += i.ToString();
-                tabletBtns.Add((Button)tempBtn);
-            }
+            InitializeTileBox();
             
-
-            // Attempt 2
-            for (int i = 0; i >= 150; i++)
-            {
-                var buttonName = string.Format("btnCalc{0}", i);
-                var button = Controls.Find(buttonName, true);
-
-                if (button != null)
-                {
-                    tabletBtns.Add(button);
-                }
-            }
-            */
+            #region Initializing Tablet
             List<PictureBox> tabletBtns = new List<PictureBox>();
 
-            #region grossly hand-inputting all the buttons
-            /*
-            tabletBtns.Add(button1);
-            tabletBtns.Add(button2);
-            tabletBtns.Add(button3);
-            tabletBtns.Add(button4);
-            tabletBtns.Add(button5);
-            tabletBtns.Add(button6);
-            tabletBtns.Add(button7);
-            tabletBtns.Add(button8);
-            tabletBtns.Add(button9);
-            tabletBtns.Add(button10);
-            tabletBtns.Add(button11);
-            tabletBtns.Add(button12);
-            tabletBtns.Add(button13);
-            tabletBtns.Add(button14);
-            tabletBtns.Add(button15);
-            tabletBtns.Add(button16);
-            tabletBtns.Add(button17);
-            tabletBtns.Add(button18);
-            tabletBtns.Add(button19);
-            tabletBtns.Add(button20);
-            tabletBtns.Add(button21);
-            tabletBtns.Add(button22);
-            tabletBtns.Add(button23);
-            tabletBtns.Add(button24);
-            tabletBtns.Add(button25);
-            tabletBtns.Add(button26);
-            tabletBtns.Add(button27);
-            tabletBtns.Add(button28);
-            tabletBtns.Add(button29);
-            tabletBtns.Add(button30);
-            tabletBtns.Add(button31);
-            tabletBtns.Add(button32);
-            tabletBtns.Add(button33);
-            tabletBtns.Add(button34);
-            tabletBtns.Add(button35);
-            tabletBtns.Add(button36);
-            tabletBtns.Add(button37);
-            tabletBtns.Add(button38);
-            tabletBtns.Add(button39);
-            tabletBtns.Add(button40);
-            tabletBtns.Add(button41);
-            tabletBtns.Add(button42);
-            tabletBtns.Add(button43);
-            tabletBtns.Add(button44);
-            tabletBtns.Add(button45);
-            tabletBtns.Add(button46);
-            tabletBtns.Add(button47);
-            tabletBtns.Add(button48);
-            tabletBtns.Add(button49);
-            tabletBtns.Add(button50);
-            tabletBtns.Add(button51);
-            tabletBtns.Add(button52);
-            tabletBtns.Add(button53);
-            tabletBtns.Add(button54);
-            tabletBtns.Add(button55);
-            tabletBtns.Add(button56);
-            tabletBtns.Add(button57);
-            tabletBtns.Add(button58);
-            tabletBtns.Add(button59);
-            tabletBtns.Add(button60);
-            tabletBtns.Add(button61);
-            tabletBtns.Add(button62);
-            tabletBtns.Add(button63);
-            tabletBtns.Add(button64);
-            tabletBtns.Add(button65);
-            tabletBtns.Add(button66);
-            tabletBtns.Add(button67);
-            tabletBtns.Add(button68);
-            tabletBtns.Add(button69);
-            tabletBtns.Add(button70);
-            tabletBtns.Add(button71);
-            tabletBtns.Add(button72);
-            tabletBtns.Add(button73);
-            tabletBtns.Add(button74);
-            tabletBtns.Add(button75);
-            tabletBtns.Add(button76);
-            tabletBtns.Add(button77);
-            tabletBtns.Add(button78);
-            tabletBtns.Add(button79);
-            tabletBtns.Add(button80);
-            tabletBtns.Add(button81);
-            tabletBtns.Add(button82);
-            tabletBtns.Add(button83);
-            tabletBtns.Add(button84);
-            tabletBtns.Add(button85);
-            tabletBtns.Add(button86);
-            tabletBtns.Add(button87);
-            tabletBtns.Add(button88);
-            tabletBtns.Add(button89);
-            tabletBtns.Add(button90);
-            tabletBtns.Add(button91);
-            tabletBtns.Add(button92);
-            tabletBtns.Add(button93);
-            tabletBtns.Add(button94);
-            tabletBtns.Add(button95);
-            tabletBtns.Add(button96);
-            tabletBtns.Add(button97);
-            tabletBtns.Add(button98);
-            tabletBtns.Add(button99);
-            tabletBtns.Add(button100);
-            tabletBtns.Add(button101);
-            tabletBtns.Add(button102);
-            tabletBtns.Add(button103);
-            tabletBtns.Add(button104);
-            tabletBtns.Add(button105);
-            tabletBtns.Add(button106);
-            tabletBtns.Add(button107);
-            tabletBtns.Add(button108);
-            tabletBtns.Add(button109);
-            tabletBtns.Add(button110);
-            tabletBtns.Add(button111);
-            tabletBtns.Add(button112);
-            tabletBtns.Add(button113);
-            tabletBtns.Add(button114);
-            tabletBtns.Add(button115);
-            tabletBtns.Add(button116);
-            tabletBtns.Add(button117);
-            tabletBtns.Add(button118);
-            tabletBtns.Add(button119);
-            tabletBtns.Add(button120);
-            tabletBtns.Add(button121);
-            tabletBtns.Add(button122);
-            tabletBtns.Add(button123);
-            tabletBtns.Add(button124);
-            tabletBtns.Add(button125);
-            tabletBtns.Add(button126);
-            tabletBtns.Add(button127);
-            tabletBtns.Add(button128);
-            tabletBtns.Add(button129);
-            tabletBtns.Add(button130);
-            tabletBtns.Add(button131);
-            tabletBtns.Add(button132);
-            tabletBtns.Add(button133);
-            tabletBtns.Add(button134);
-            tabletBtns.Add(button135);
-            tabletBtns.Add(button136);
-            tabletBtns.Add(button137);
-            tabletBtns.Add(button138);
-            tabletBtns.Add(button139);
-            tabletBtns.Add(button140);
-            tabletBtns.Add(button141);
-            tabletBtns.Add(button142);
-            tabletBtns.Add(button143);
-            tabletBtns.Add(button144);
-            tabletBtns.Add(button145);
-            tabletBtns.Add(button146);
-            tabletBtns.Add(button147);
-            tabletBtns.Add(button148);
-            tabletBtns.Add(button149);
-            tabletBtns.Add(button150);
-            */
-            #endregion
-
+            
             int xInc = 0;   //x incrementer
             int yInc = 1;   //y incrementer
             foreach (var btn in tabletBtns)
@@ -236,20 +48,6 @@ namespace Egg
 
             tabletButts = tabletBtns;
             #endregion
-        }
-
-        /// <summary>
-        /// Function to test button creation, no longer in use
-        /// </summary>
-        private void ButtonTest(object sender, EventArgs e)
-        {
-            int top = 100;
-            int left = 400;
-
-            PictureBox button = new PictureBox();
-            button.Left = left;
-            button.Top = top;
-            tabPage1.Controls.Add(button);
         }
 
         #region Tablet Setup on Text Change
@@ -282,7 +80,7 @@ namespace Egg
                 // First, clear all currently existing buttons in tabletButts
                 foreach (var button in tabletButts)
                 {
-                    tabPage1.Controls.Remove(button);
+                    Controls.Remove(button);
                 }
                 for (int buttonNumber = tabletButts.Count-1; buttonNumber >= 0; buttonNumber--)
                 {
@@ -311,7 +109,7 @@ namespace Egg
                         temp.Click += TabletClick;
 
                         tabletButts.Add(temp);
-                        tabPage1.Controls.Add(temp);
+                        Controls.Add(temp);
                     }
                 }
             }
@@ -329,8 +127,8 @@ namespace Egg
         /// </summary>
         private void BoxIndexChanged(object sender, EventArgs e)
         {
-            currentTile = boxSelect.Text.ToString();
-            tileView.Image = ImageSelect(currentTile);
+            //currentTile = boxSelect.Text.ToString();
+            chosenTile.Image = ImageSelect(currentTile);
         }
 
         /// <summary>
@@ -357,7 +155,6 @@ namespace Egg
             return test;
         }
 
-
         /// <summary>
         /// The base function called every time a tablet button
         /// is clicked by the user
@@ -377,30 +174,34 @@ namespace Egg
                 radioTag = "nt";            //neutral/normal
 
             PictureBox tempCopy = (PictureBox)sender;
+
+            
             // Drop the an image equal to the current drop 
-            if (chkDeleter.Checked == false)    
-            {
-                tempCopy.Image = ImageSelect(currentTile);
-                tempCopy.Tag = currentTile + radioTag;
-            }
+
             // Clear the button if the delete is checked
-            else if (chkDeleter.Checked == true) 
+            //else if (chkDeleter.Checked == true) 
+            if (currentTile == "blank")
             {
                 tempCopy.Image = null;
                 tempCopy.Tag = null;
             }
+            else
+            {
+                tempCopy.Image = ImageSelect(currentTile);
+                tempCopy.Tag = currentTile + radioTag;
+            }
             sender = tempCopy;
+            
         }
 
-
-        int incrementer = 0;
-        string outputTest = "";
         /// <summary>
         /// The function called to export the current tile positions
         /// that exist on the tablet to a text file.
         /// </summary>
         private void Export(object sender, EventArgs e)
         {
+            int incrementer = 0;
+            string output = "";
             int width;
             int.TryParse(tabletWidth.Text, out width);
             width -= 1;
@@ -427,17 +228,17 @@ namespace Egg
                 if (incrementer >= width)  //Check if a new line is needed and add if it is
                 {
                     if (btn.Tag != null)  //Make sure the button has a tag
-                        outputTest += Translator(btnTag.ToString()) + btnRad + "," + Environment.NewLine;
+                        output += Translator(btnTag.ToString()) + btnRad + "," + Environment.NewLine;
                     else  //If there's no tag, add 00
-                        outputTest += "0000" + "," + Environment.NewLine;
+                        output += "0000" + "," + Environment.NewLine;
                     incrementer = 0;
                 }
                 else if (0 <= incrementer && incrementer <= width) //If a new line isn't needed, run regularly
                 {
                     if (btn.Tag != null)  //Still make sure the button has a tag
-                        outputTest += Translator(btnTag.ToString()) + btnRad + ",";
+                        output += Translator(btnTag.ToString()) + btnRad + ",";
                     else  //If there's no tag, add 00
-                        outputTest += "0000" + ",";
+                        output += "0000" + ",";
                     incrementer++;
                 }
             }
@@ -458,76 +259,12 @@ namespace Egg
             }
             StreamWriter writer = new StreamWriter(@"..\..\..\..\Resources\levelExports\" + fileName + ".txt");
             writer.Write(height + ", " + width + ", " + Environment.NewLine);
-            writer.Write(outputTest);         // Overwrites with new text
+            writer.Write(output);         // Overwrites with new text
             writer.Close();
-            outputTest = "";
+            output = "";
 
             MessageBox.Show("Successfully Exported");
             
-        }
-
-        /// <summary>
-        /// Takes in a string parameter "s" which is then run through a switch
-        /// statement to convert and return it in it's encoded form for the exporter
-        /// </summary>
-        private string Translator(string s)
-        {
-            switch (s)
-            {
-                    // Light grass tiles
-                case "LTopLeft":
-                    return "b1";
-                case "LTopMid":
-                    return "b2";
-                case "LTopRight":
-                    return "b3";
-                case "LMidRight":
-                    return "b4";
-                    // b5 doesn't exist as there's no middle tile for the 
-                    // exterior/light wrapping tiles
-                case "LMidLeft":
-                    return "b6";
-                case "LBotLeft":
-                    return "b7";
-                case "LBotMid":
-                    return "b8";
-                case "LBotRight":
-                    return "b9";
-
-                // Light interior tiles
-                case "nLeftTop":
-                    return "n1";
-                case "nRightTop":
-                    return "n2";
-                case "nLeftBot":
-                    return "n3";
-                case "nRightBot":
-                    return "n4";
-
-                    // Dark grass tiles
-                case "dTopLeft":
-                    return "i1";
-                case "dTopMid":
-                    return "i2";
-                case "dTopRight":
-                    return "i3";
-                case "dMidLeft":
-                    return "i4";
-                case "dSolid":
-                    return "i5";
-                case "dMidRight":
-                    return "i6";
-                case "dBotLeft":
-                    return "i7";
-                case "dBotMid":
-                    return "i8";
-                case "dBotRight":
-                    return "i9";
-
-
-                default:
-                    return "#### TRANSLATOR BROKEN #####";
-            }
         }
 
         /// <summary>
@@ -567,7 +304,71 @@ namespace Egg
         }
         #endregion
 
-        #region Translator
+        #region Translators
+
+        /// <summary>
+        /// Takes in a string parameter "s" which is then run through a switch
+        /// statement to convert and return it in it's encoded form for the exporter
+        /// </summary>
+        private string Translator(string s)
+        {
+            switch (s)
+            {
+                // Light grass tiles
+                case "LTopLeft":
+                    return "b1";
+                case "LTopMid":
+                    return "b2";
+                case "LTopRight":
+                    return "b3";
+                case "LMidRight":
+                    return "b4";
+                // b5 doesn't exist as there's no middle tile for the 
+                // exterior/light wrapping tiles
+                case "LMidLeft":
+                    return "b6";
+                case "LBotLeft":
+                    return "b7";
+                case "LBotMid":
+                    return "b8";
+                case "LBotRight":
+                    return "b9";
+
+                // Light interior tiles
+                case "nLeftTop":
+                    return "n1";
+                case "nRightTop":
+                    return "n2";
+                case "nLeftBot":
+                    return "n3";
+                case "nRightBot":
+                    return "n4";
+
+                // Dark grass tiles
+                case "dTopLeft":
+                    return "i1";
+                case "dTopMid":
+                    return "i2";
+                case "dTopRight":
+                    return "i3";
+                case "dMidLeft":
+                    return "i4";
+                case "dSolid":
+                    return "i5";
+                case "dMidRight":
+                    return "i6";
+                case "dBotLeft":
+                    return "i7";
+                case "dBotMid":
+                    return "i8";
+                case "dBotRight":
+                    return "i9";
+
+
+                default:
+                    return "#### TRANSLATOR BROKEN #####";
+            }
+        }
         /// <summary>
         /// Translates text file names for tiles back to tiles names
         /// </summary>
@@ -661,7 +462,7 @@ namespace Egg
                 // First, clear all currently existing buttons in tabletButts
                 foreach (var button in tabletButts)
                 {
-                    tabPage1.Controls.Remove(button);
+                    Controls.Remove(button);
                 }
                 for (int buttonNumber = tabletButts.Count - 1; buttonNumber >= 0; buttonNumber--)
                 {
@@ -690,10 +491,152 @@ namespace Egg
                         temp.Click += TabletClick;
 
                         tabletButts.Add(temp);
-                        tabPage1.Controls.Add(temp);
+                        Controls.Add(temp);
                     }
                 }
             }
         }
+
+        #region Visual Tile Selector
+
+
+
+        private void InitializeTileBox()
+        {
+            //fields for tile setup
+            int tileTop = 10;
+            int tileLeft = 0;
+            int tileWidth = (boxTiles.Width - 24) / 3;
+            int tileHeight = tileWidth;
+            int tileBuffer = 2;
+            int topBuffer = 15;
+
+            string[,] LTiles = new string[,]
+            {
+                {"LTopLeft", "LTopMid",   "LTopRight" },
+                {"LMidLeft", "blankTile", "LMidRight" },
+                {"LBotLeft", "LBotMid",   "LBotRight" }
+            };
+
+            string[,] dTiles = new string[,]
+            {
+                {"dTopLeft", "dTopMid",  "dTopRight" },
+                {"dMidLeft", "dSolid",   "dMidRight" },
+                {"dBotLeft", "dBotMid",  "dBotRight" }
+            };
+
+            string[,] nTiles = new string[,]
+            {
+                {"nLeftTop", "nRightTop" },
+                {"nLeftBot", "nRightBot" }
+            };
+
+            #region Adding 3x3 Tile Sets
+            //loop that populates boxTiles container with first set of clickable tiles
+            for (int column = 0; column < 3; column++)
+            {
+                for (int row = 0; row < 3; row++)
+                {
+                    ImageBox tempTile = new ImageBox();
+                    tempTile.Height = tileHeight;
+                    tempTile.Width = tileWidth;
+                    tempTile.Top = (row * tileHeight) + (row * tileBuffer) + topBuffer;
+                    tempTile.Left = (column * tileWidth) + (column * tileBuffer) + 4;
+
+                    tempTile.Visible = true;
+                    tempTile.Image = ImageSelect(LTiles[row, column]);
+                    tempTile.TileName = LTiles[row, column];
+
+
+                    tempTile.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                    tempTile.SizeMode = PictureBoxSizeMode.Zoom;
+                    tempTile.Click += TileClicked;
+
+                    boxTiles.Controls.Add(tempTile);
+                }
+            }
+
+            //loop that populates boxTiles container with second set of clickable tiles
+            for (int column = 0; column < 3; column++)
+            {
+                for (int row = 0; row < 3; row++)
+                {
+                    ImageBox tempTile = new ImageBox();
+                    tempTile.Height = tileHeight;
+                    tempTile.Width = tileWidth;
+                    tempTile.Top = (row * tileHeight) + (row * tileBuffer) + (topBuffer * 2) + (3 * tileHeight);
+                    tempTile.Left = (column * tileWidth) + (column * tileBuffer) + 4;
+
+                    tempTile.Visible = true;
+                    tempTile.Image = ImageSelect(dTiles[row, column]);
+                    tempTile.TileName = dTiles[row, column];
+
+
+                    tempTile.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                    tempTile.SizeMode = PictureBoxSizeMode.Zoom;
+                    tempTile.Click += TileClicked;
+
+                    boxTiles.Controls.Add(tempTile);
+                }
+            }
+            #endregion
+
+            #region Adding 2x2 Tile Sets
+
+            //loop that populates boxTiles container with third set of clickable tiles
+            for (int column = 0; column < 2; column++)
+            {
+                for (int row = 0; row < 2; row++)
+                {
+                    ImageBox tempTile = new ImageBox();
+                    tempTile.Height = tileHeight;
+                    tempTile.Width = tileWidth;
+                    tempTile.Top = (row * tileHeight) + (row * tileBuffer) + (topBuffer * 6) + (6 * tileHeight);
+                    tempTile.Left = (column * tileWidth) + (column * tileBuffer) + 4 + (boxTiles.Width / 6);
+
+                    tempTile.Visible = true;
+                    tempTile.Image = ImageSelect(nTiles[row, column]);
+                    tempTile.TileName = nTiles[row, column];
+
+
+                    tempTile.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                    tempTile.SizeMode = PictureBoxSizeMode.Zoom;
+                    tempTile.Click += TileClicked;
+
+                    boxTiles.Controls.Add(tempTile);
+                }
+            }
+            #endregion
+
+            #region Indicator Box
+
+            ImageBox indicator = new ImageBox();
+            
+            indicator.Height = tileHeight;
+            indicator.Width = tileWidth;
+            indicator.Top = (0 * tileHeight) + (0 * tileBuffer) + (topBuffer * 6) + (6 * tileHeight);
+            indicator.Left = (0 * tileWidth) + (0 * tileBuffer) + 4 + (boxTiles.Width / 6);
+
+            indicator.Visible = true;
+            indicator.Image = ImageSelect("indicator");
+            indicator.Name = "indicator";
+
+            indicator.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            indicator.SizeMode = PictureBoxSizeMode.Zoom;
+            indicator.Click += TileClicked;
+            
+            boxTiles.Controls.Add(indicator);
+            
+            #endregion
+        }
+
+        private void TileClicked(object sender, EventArgs e)
+        {
+            ImageBox temp = (ImageBox)sender;
+            currentTile = temp.TileName;
+        }
+
+
+        #endregion
     }
 }
