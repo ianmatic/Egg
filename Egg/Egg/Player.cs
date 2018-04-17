@@ -742,7 +742,7 @@ namespace Egg
                     {
                         playerState = PlayerState.JumpLeft;
                     }
-                    else if (!isRolling)
+                    else if (!isRolling && bottomIntersects)
                     {
                         playerState = PlayerState.IdleLeft;
                     }
@@ -769,7 +769,7 @@ namespace Egg
                     {
                         playerState = PlayerState.WalkRight;
                     }
-                    else if (!isRolling)
+                    else if (!isRolling && bottomIntersects)
                     {
                         playerState = PlayerState.IdleRight;
                     }
