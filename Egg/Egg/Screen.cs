@@ -149,14 +149,23 @@ namespace Egg
             for (int row = 0; row < VerticalTileCount; row++)
             {
                 for (int column = 0; column < HorizontalTileCount; column++)
-                {
+                {                    
                     Texture2D tempTexture = textures[1];                    //create temp texture 
                     int textureNumber = GetTexture(levelMap[row, column]);  //get told which texture to put in place from levelMap
-                    tempTexture = textures[textureNumber];                  //set texture into temp
-                    screenTiles[row, column].DefaultSprite = tempTexture;   //update the tile using temp
 
-                    string tagTemp = TagTileSplit(levelMap[row, column], false);    //pulls the tag for this tile
-                    screenTiles[row, column].Type = tileTypeDict[tagTemp];          //updates screenTiles with the tag
+                    if (textureNumber == 0)
+                    {
+                        levelMap[row, column] = null;
+                    }
+                    else
+                    {
+                        tempTexture = textures[textureNumber];                  //set texture into temp
+                        screenTiles[row, column].DefaultSprite = tempTexture;   //update the tile using temp
+
+                        string tagTemp = TagTileSplit(levelMap[row, column], false);    //pulls the tag for this tile
+                        screenTiles[row, column].Type = tileTypeDict[tagTemp];          //updates screenTiles with the tag
+                    }
+                    
                 }
             }
             return screenTiles; //return screentiles so it can be added to the collision check group
@@ -180,7 +189,12 @@ namespace Egg
                     level[row, column].Height = tileHeight;
                     level[row, column].Width = tileWidth;   
                     Tile temp = level[row, column]; //create a temporary copy of the given tile (for readability)
-                    sb.Draw(temp.DefaultSprite, temp.Hitbox, Color.White);
+
+                    if (level[row, column].DefaultSprite != null)
+                    {
+                        sb.Draw(temp.DefaultSprite, temp.Hitbox, Color.White);
+                    }
+                    
                 }
             }
         }
