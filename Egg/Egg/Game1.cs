@@ -52,7 +52,7 @@ namespace Egg
         double timeCounter = 0;
         int numSpritesPerSheet = 4;
         int widthOfASingleSprite = 795 / 4;
-        
+        bool animationOn= false;
         
         GameTime gameTime = new GameTime();
 
@@ -277,6 +277,7 @@ namespace Egg
                 if (SingleKeyPress(Keys.F8))
                 {
                     enemy.DebugCollision = !enemy.DebugCollision;
+                    animationOn = true;
                 }
 
                 if (SingleKeyPress(Keys.F9) || player.Hitpoints <= 0)
@@ -287,6 +288,7 @@ namespace Egg
                     player.VerticalVelocity = 0;
                     player.Hitpoints = 5;
                     player.InHitStun = false;
+                    
                 }
             }
             else
@@ -352,46 +354,48 @@ namespace Egg
                 case GameState.Game:
                     mainScreen.DrawTilesFromMap(spriteBatch, @"..\..\..\..\Resources\levelExports\platformDemo", tileList);
                     //Draws potatos to test DrawLevel
-                    
+
                     foreach (GameObject g in objectList)
                     {
-                       
+
                         g.Draw(spriteBatch);
-
-                        if(g is Player)
+                        if (animationOn == true)
                         {
-                            Player p = (Player)g;
+                            if (g is Player)
+                            {
+                                Player p = (Player)g;
 
-                            if(p.PlayerState == PlayerState.IdleLeft)
-                            {
-                                DrawIdle(SpriteEffects.FlipHorizontally);
+                                if (p.PlayerState == PlayerState.IdleLeft)
+                                {
+                                    DrawIdle(SpriteEffects.FlipHorizontally);
+                                }
+                                else if (p.PlayerState == PlayerState.IdleRight)
+                                {
+                                    DrawIdle(SpriteEffects.None);
+                                }
+                                else if (p.PlayerState == PlayerState.WalkLeft)
+                                {
+                                    DrawWalking(SpriteEffects.FlipHorizontally);
+                                }
+                                else if (p.PlayerState == PlayerState.WalkRight)
+                                {
+                                    DrawWalking(SpriteEffects.None);
+                                }
+                                else if (p.PlayerState == PlayerState.JumpLeft)
+                                {
+                                    DrawIdle(SpriteEffects.FlipHorizontally);
+                                }
+                                else if (p.PlayerState == PlayerState.JumpRight)
+                                {
+                                    DrawIdle(SpriteEffects.None);
+                                }
+                                else if (p.PlayerState == PlayerState.Fall)
+                                {
+                                    DrawIdle(SpriteEffects.None);
+                                }
                             }
-                            else if(p.PlayerState == PlayerState.IdleRight)
-                            {
-                                DrawIdle(SpriteEffects.None);
-                            }
-                            else if (p.PlayerState == PlayerState.WalkLeft)
-                            {
-                                DrawWalking(SpriteEffects.FlipHorizontally); 
-                            }
-                            else if (p.PlayerState == PlayerState.WalkRight)
-                            {
-                                DrawWalking(SpriteEffects.None);
-                            }
-                            else if (p.PlayerState == PlayerState.JumpLeft)
-                            {
-                                DrawIdle(SpriteEffects.FlipHorizontally);
-                            }
-                            else if (p.PlayerState == PlayerState.JumpRight)
-                            {
-                                DrawIdle(SpriteEffects.None);
-                            }
-                            else if(p.PlayerState == PlayerState.Fall)
-                            {
-                                DrawIdle(SpriteEffects.None);
-                            }
+
                         }
-                       
                     }
                     if (player.IsDebugging) //debugging text for player
                     {
