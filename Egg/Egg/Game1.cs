@@ -24,7 +24,10 @@ namespace Egg
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SpriteFont menuText;
+        SpriteFont titleText;
         Texture2D testSprite;
+        Texture2D menu;
+        Texture2D options;
         //test textures
         Texture2D bottomRectangle;
         Texture2D topRectangle;
@@ -133,6 +136,9 @@ namespace Egg
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             menuText= Content.Load<SpriteFont>("menutext");
+            titleText = Content.Load<SpriteFont>("titletext");
+            menu = Content.Load<Texture2D>("menuTexture");
+            options = Content.Load<Texture2D>("optionsTexture");
 
             tileSpriteList = new List<Texture2D>();
             //Put tile loop here
@@ -280,7 +286,7 @@ namespace Egg
                     animationOn = true;
                 }
 
-                if (SingleKeyPress(Keys.F9) || player.Hitpoints <= 0)
+                if (SingleKeyPress(Keys.F9) || player.Hitpoints <= 0 || player.Y >= 1000)
                 {
                     player.Hitbox = new Rectangle(player.LastCheckpoint.X, player.LastCheckpoint.Y, 75, 75);
                     player.PlayerState = PlayerState.IdleRight;
@@ -338,22 +344,24 @@ namespace Egg
             switch (currentState)
             {
                 case GameState.Menu:
-                    spriteBatch.DrawString(menuText, "Egg", new Vector2(350, 200), Color.White);
-                    spriteBatch.DrawString(menuText, "Press Enter", new Vector2(300, 300), Color.White);
-                    spriteBatch.DrawString(menuText, "Or", new Vector2(365, 400), Color.White);
-                    spriteBatch.DrawString(menuText, "Press Tab for Options", new Vector2(240, 500), Color.White);
+                    spriteBatch.Draw(menu, new Rectangle(0, 0, 1920, 1080), Color.White);
+                    spriteBatch.DrawString(titleText, "Egg", new Vector2(880, 320), Color.White);
+                    spriteBatch.DrawString(menuText, "Press Enter", new Vector2(800, 470), Color.White);
+                    spriteBatch.DrawString(menuText, "- Or -", new Vector2(860, 570), Color.White);
+                    spriteBatch.DrawString(menuText, "Press Tab for Options", new Vector2(680, 670), Color.White);
                     break;
                 case GameState.Options:
-                    spriteBatch.DrawString(menuText, "Options (Stretch Goal)", new Vector2(350, 200), Color.White);
-                    spriteBatch.DrawString(menuText, "Rebind keys: ", new Vector2(150, 400), Color.White);
-                    spriteBatch.DrawString(menuText, "Toggle fullscreen: ", new Vector2(650, 400), Color.White);
+                    spriteBatch.Draw(options, new Rectangle(0, 0, 1920, 1080), Color.White);
+                    spriteBatch.DrawString(menuText, "Options", new Vector2(850, 300), Color.White);
+                    spriteBatch.DrawString(menuText, "Rebind keys: ", new Vector2(450, 450), Color.White);
+                    spriteBatch.DrawString(menuText, "Toggle fullscreen: ", new Vector2(1000, 450), Color.White);
                     if (paused)
                     {
-                        spriteBatch.DrawString(menuText, "Press tab to return to game", new Vector2(50, 50), Color.White);
+                        spriteBatch.DrawString(menuText, "Press tab to return to game", new Vector2(50, 65), Color.White);
                     }
                     else
                     {
-                        spriteBatch.DrawString(menuText, "Press tab to return to menu", new Vector2(50, 50), Color.White);
+                        spriteBatch.DrawString(menuText, "Press tab to return to menu", new Vector2(50, 65), Color.White);
                     }
                     break;
                 case GameState.Game:
@@ -577,8 +585,6 @@ namespace Egg
             #region Platform Code            
             AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(700, 500, 700, 100), Tile.TileType.Normal));
             AddObjectToList(new Tile(7, bottomRectangle, new Rectangle(0, 500, 500, 300), Tile.TileType.Normal));
-            AddObjectToList(new Tile(8, bottomRectangle, new Rectangle(1300, 500, 500, 300), Tile.TileType.Normal));
-            AddObjectToList(new Tile(10, bottomRectangle, new Rectangle(1700, 200, 200, 100), Tile.TileType.Normal));
             AddObjectToList(new Tile(11, sideRectangle, new Rectangle(0, 0, 100, 900), Tile.TileType.Normal));
             AddObjectToList(new Tile(12, sideRectangle, new Rectangle(500, 500, 200, 400), Tile.TileType.Normal));
             AddObjectToList(new Tile(13, sideRectangle, new Rectangle(1100, 400, 100, 200), Tile.TileType.Normal));
