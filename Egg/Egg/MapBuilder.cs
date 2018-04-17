@@ -545,7 +545,7 @@ namespace Egg
 
                     tempTile.Visible = true;
                     tempTile.Image = ImageSelect(LTiles[row, column]);
-                    tempTile.Name = LTiles[row, column];
+                    tempTile.TileName = LTiles[row, column];
 
 
                     tempTile.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
@@ -569,7 +569,7 @@ namespace Egg
 
                     tempTile.Visible = true;
                     tempTile.Image = ImageSelect(dTiles[row, column]);
-                    tempTile.Name = dTiles[row, column];
+                    tempTile.TileName = dTiles[row, column];
 
 
                     tempTile.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
@@ -596,7 +596,7 @@ namespace Egg
 
                     tempTile.Visible = true;
                     tempTile.Image = ImageSelect(nTiles[row, column]);
-                    tempTile.Name = nTiles[row, column];
+                    tempTile.TileName = nTiles[row, column];
 
 
                     tempTile.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
@@ -621,13 +621,12 @@ namespace Egg
             indicator.Image = ImageSelect("indicator");
             indicator.Name = "indicator";
 
-
             indicator.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             indicator.SizeMode = PictureBoxSizeMode.Zoom;
             indicator.Click += TileClicked;
-
+            
             boxTiles.Controls.Add(indicator);
-
+            
             #endregion
         }
 

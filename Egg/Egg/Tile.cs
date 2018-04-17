@@ -45,6 +45,11 @@ namespace Egg
             this.isActive = true;
             this.hasGravity = false;
             this.type = type;
+
+            Rectangle tempRect = hitbox;
+            tempRect.Y -= tempRect.Height / 8;
+            tempRect.Height -= tempRect.Height / 8;
+            secondaryRect = tempRect;
         }
 
         public override void CheckColliderAgainstPlayer(Player p)
@@ -69,6 +74,13 @@ namespace Egg
         public override void Movement()
         {
             throw new NotImplementedException();
+        }
+
+        Rectangle secondaryRect = new Rectangle(0, 0, 0, 0);
+
+        public Rectangle SecondaryRect
+        {
+            get { return secondaryRect; }
         }
 
     }
