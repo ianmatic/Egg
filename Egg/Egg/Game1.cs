@@ -384,6 +384,23 @@ namespace Egg
                                 {
                                     DrawIdle(SpriteEffects.None);
                                 }
+                                else if( p.PlayerState == PlayerState.RollLeft)
+                                {
+                                    DrawWalking(SpriteEffects.FlipHorizontally);
+                                }
+                                else if (p.PlayerState == PlayerState.RollRight)
+                                {
+                                    DrawWalking(SpriteEffects.None);
+                                }
+                                else if (p.PlayerState == PlayerState.HitStunLeft)
+                                {
+                                    DrawIdle(SpriteEffects.FlipHorizontally);
+                                }
+                                else if (p.PlayerState == PlayerState.HitStunRight)
+                                {
+                                    DrawIdle(SpriteEffects.None);
+                                }
+
                             }
 
                         }
@@ -651,7 +668,7 @@ namespace Egg
             //Add more inputs here
         }
 
-        public void DrawWalking( SpriteEffects flip)
+        public void DrawWalking( SpriteEffects flip) //this is for test will edit when we have actual animation assets
         {
             
             spriteBatch.Draw(
@@ -666,7 +683,7 @@ namespace Egg
                 0.0f);
 
         }
-        public void DrawIdle( SpriteEffects flip)
+        public void DrawIdle( SpriteEffects flip) //this is for test will edit when we have actual animation assets
         {
                 spriteBatch.Draw(
                 spriteSheet,
