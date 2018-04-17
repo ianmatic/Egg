@@ -558,15 +558,15 @@ namespace Egg
             #endregion
 
             #region Platform Code            
-            AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(700, 500, 700, 100), Tile.TileType.Normal));
-            AddObjectToList(new Tile(7, bottomRectangle, new Rectangle(0, 500, 500, 300), Tile.TileType.Normal));
-            AddObjectToList(new Tile(8, bottomRectangle, new Rectangle(1300, 500, 500, 300), Tile.TileType.Normal));
-            AddObjectToList(new Tile(10, bottomRectangle, new Rectangle(1700, 200, 200, 100), Tile.TileType.Normal));
-            AddObjectToList(new Tile(11, sideRectangle, new Rectangle(0, 0, 100, 900), Tile.TileType.Normal));
-            AddObjectToList(new Tile(12, sideRectangle, new Rectangle(500, 500, 200, 400), Tile.TileType.Normal));
-            AddObjectToList(new Tile(13, sideRectangle, new Rectangle(1100, 400, 100, 200), Tile.TileType.Normal));
-            AddObjectToList(new Tile(14, sideRectangle, new Rectangle(1600, 200, 100, 400), Tile.TileType.Normal));
-            AddObjectToList(new Tile(15, topRectangle, new Rectangle(0, 300, 400, 100), Tile.TileType.Normal));
+            //AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(700, 500, 700, 100), Tile.TileType.Normal));
+            //AddObjectToList(new Tile(7, bottomRectangle, new Rectangle(0, 500, 500, 300), Tile.TileType.Normal));
+            //AddObjectToList(new Tile(8, bottomRectangle, new Rectangle(1300, 500, 500, 300), Tile.TileType.Normal));
+            //AddObjectToList(new Tile(10, bottomRectangle, new Rectangle(1700, 200, 200, 100), Tile.TileType.Normal));
+            //AddObjectToList(new Tile(11, sideRectangle, new Rectangle(0, 0, 100, 900), Tile.TileType.Normal));
+            //AddObjectToList(new Tile(12, sideRectangle, new Rectangle(500, 500, 200, 400), Tile.TileType.Normal));
+            //AddObjectToList(new Tile(13, sideRectangle, new Rectangle(1100, 400, 100, 200), Tile.TileType.Normal));
+            //AddObjectToList(new Tile(14, sideRectangle, new Rectangle(1600, 200, 100, 400), Tile.TileType.Normal));
+            //AddObjectToList(new Tile(15, topRectangle, new Rectangle(0, 300, 400, 100), Tile.TileType.Normal));
             //AddObjectToList(new Tile(16, topRectangle, new Rectangle(1000, 200, 400, 100), Tile.TileType.Normal)); commented out to test bounce
             #endregion
 
@@ -621,7 +621,7 @@ namespace Egg
             if (SingleKeyPress(Keys.F8))
             {
                 enemy.DebugCollision = !enemy.DebugCollision;
-                animationOn = true;
+             
             }
 
             if (SingleKeyPress(Keys.F9) || player.Hitpoints <= 0)
@@ -637,7 +637,15 @@ namespace Egg
             }
             if (SingleKeyPress(Keys.F11))
             {
-                animationOn = false;
+                if(animationOn == true)
+                {
+                    animationOn = false;
+                }
+                else
+                {
+                    animationOn = true;
+                }
+      
             }
 
             //Add more inputs here
