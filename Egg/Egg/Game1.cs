@@ -258,6 +258,14 @@ namespace Egg
                         }
                         break;
                     case GameState.Game:
+                        if (SingleKeyPress(Keys.D1))
+                        {
+                            mainScreen.ChangeLevel("mapDemo");
+                        }
+                        else if (SingleKeyPress(Keys.D2))
+                        {
+                            mainScreen.ChangeLevel("variableSizeDemo");
+                        }
                         GameUpdateLoop();
                         //Transition to level end not yet implemented
                         break;
