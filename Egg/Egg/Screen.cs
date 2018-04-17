@@ -26,6 +26,8 @@ namespace Egg
         Dictionary<string, Tile.TileType> tileTypeDict = new Dictionary<string, Tile.TileType>();
         Dictionary<string, string> mapFileLocations = new Dictionary<string, string>();
 
+        string[,] tempScreenArray;
+
         /// <summary>
         /// By default, the screen is populated with screenTiles to be an X by Y array filled with empty tiles
         /// </summary>
@@ -59,6 +61,17 @@ namespace Egg
             mapFileLocations.Add("variableSizeDemo", @"..\..\..\..\Resources\levelExports\nineByFifteen");
                           //.Add("key", @"..\..\..\..\Resources\levelExports\(exported file in levelExports)
             #endregion
+
+            tempScreenArray = new string[,]           
+            {
+                {null, "mapDemo", "demoTwo", "variableSizeDemo"},
+                {null, null, null, null},
+                { null, null, null, null},
+                { null, null, null, null},
+                { null, null, null, null}
+            };
+
+            
         }
 
         /// <summary>

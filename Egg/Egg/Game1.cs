@@ -39,6 +39,7 @@ namespace Egg
         Enemy enemy;
         Enemy enemy2;
         Enemy enemy3;
+       
 
         bool paused = false;
 
@@ -53,7 +54,7 @@ namespace Egg
         int numSpritesPerSheet = 4;
         int widthOfASingleSprite = 795 / 4;
         bool animationOn= false;
-        
+        double timeCounter2;
         GameTime gameTime = new GameTime();
 
 
@@ -257,15 +258,7 @@ namespace Egg
                             }
                         }
                         break;
-                    case GameState.Game:
-                        if (SingleKeyPress(Keys.D1))
-                        {
-                            mainScreen.ChangeLevel("mapDemo");
-                        }
-                        else if (SingleKeyPress(Keys.D2))
-                        {
-                            mainScreen.ChangeLevel("variableSizeDemo");
-                        }
+                    case GameState.Game:                       
                         GameUpdateLoop();
                         //Transition to level end not yet implemented
                         break;
@@ -296,9 +289,8 @@ namespace Egg
                     paused = false;
                 }
             }
-            
 
-            
+
             base.Update(gameTime);
         }
 
@@ -309,7 +301,12 @@ namespace Egg
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+
+
+           //update the animation
             UpdateAnimation(gameTime);
+
+
             //modified spriteBatch begin so the images are scaled by nearest neighbor instead of getting antialiased
             //this makes it so the pixel art keeps crisp lines
             spriteBatch.Begin(SpriteSortMode.Immediate);
@@ -361,11 +358,11 @@ namespace Egg
                                 }
                                 else if (p.PlayerState == PlayerState.WalkLeft)
                                 {
-                                    DrawWalking(SpriteEffects.FlipHorizontally);
+                                     DrawWalking(SpriteEffects.FlipHorizontally);
                                 }
                                 else if (p.PlayerState == PlayerState.WalkRight)
                                 {
-                                    DrawWalking(SpriteEffects.None);
+                                     DrawWalking(SpriteEffects.None);
                                 }
                                 else if (p.PlayerState == PlayerState.JumpLeft)
                                 {
@@ -379,6 +376,23 @@ namespace Egg
                                 {
                                     DrawIdle(SpriteEffects.None);
                                 }
+                                else if( p.PlayerState == PlayerState.RollLeft)
+                                {
+                                    DrawWalking(SpriteEffects.FlipHorizontally);
+                                }
+                                else if (p.PlayerState == PlayerState.RollRight)
+                                {
+                                    DrawWalking(SpriteEffects.None);
+                                }
+                                else if (p.PlayerState == PlayerState.HitStunLeft)
+                                {
+                                    DrawIdle(SpriteEffects.FlipHorizontally);
+                                }
+                                else if (p.PlayerState == PlayerState.HitStunRight)
+                                {
+                                    DrawIdle(SpriteEffects.None);
+                                }
+
                             }
 
                         }
@@ -432,6 +446,11 @@ namespace Egg
                     {
                         Player p = (Player)n;
                         p.FiniteState();
+
+                    //Add extra buffer to dimensions? Different way of doing this?
+                    Rectangle screenSize = new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+
+                    //Start here to call for whether or not the player is fully on screen
                     
 
                     //This should work on any enemy (i.e. enemy list of a screen), fix this later!
@@ -534,6 +553,7 @@ namespace Egg
             sideRectangle = Content.Load<Texture2D>("blue");
             topRectangle = Content.Load<Texture2D>("green");
             collisionTest = Content.Load<Texture2D>("white");
+            
 
 
             #region CapturedChickens
@@ -588,18 +608,20 @@ namespace Egg
         }
         private void UpdateAnimation(GameTime time)
         {
-           
-            secondsPerFrame = 1.0f / fps;
+            
+            secondsPerFrame = 1.0f / fps; 
             timeCounter += time.ElapsedGameTime.TotalSeconds;
 
-            if (timeCounter >= secondsPerFrame)
+            if (timeCounter >=  5*secondsPerFrame) //if 3 frames have passed
             {
-                currentFrame++;
-                if (currentFrame >= 4) currentFrame = 1;
-               
+                 currentFrame++; //move to next frame 
+                    if (currentFrame >= 4) currentFrame = 1; //if it reaches the end of the spritesheet, go back to the beginning
+
+
+                timeCounter -= 5*secondsPerFrame; //reduce timeCounter so it can restart process
             }
 
-            timeCounter -= secondsPerFrame;
+            
         }
         public void DebugKeyboardInputs()
         {
@@ -613,7 +635,7 @@ namespace Egg
             if (SingleKeyPress(Keys.F8))
             {
                 enemy.DebugCollision = !enemy.DebugCollision;
-                animationOn = true;
+             
             }
 
             if (SingleKeyPress(Keys.F9) || player.Hitpoints <= 0)
@@ -629,13 +651,21 @@ namespace Egg
             }
             if (SingleKeyPress(Keys.F11))
             {
-                animationOn = false;
+                if(animationOn == true)
+                {
+                    animationOn = false;
+                }
+                else
+                {
+                    animationOn = true;
+                }
+      
             }
 
             //Add more inputs here
         }
 
-        public void DrawWalking( SpriteEffects flip)
+        public void DrawWalking( SpriteEffects flip) //this is for test will edit when we have actual animation assets
         {
             
             spriteBatch.Draw(
@@ -650,7 +680,7 @@ namespace Egg
                 0.0f);
 
         }
-        public void DrawIdle( SpriteEffects flip)
+        public void DrawIdle( SpriteEffects flip) //this is for test will edit when we have actual animation assets
         {
                 spriteBatch.Draw(
                 spriteSheet,
