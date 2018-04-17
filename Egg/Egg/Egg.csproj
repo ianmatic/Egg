@@ -84,6 +84,7 @@
     <Content Include="Resources\dTopLeft.png" />
     <Content Include="Resources\dTopMid.png" />
     <Content Include="Resources\dTopRight.png" />
+    <Content Include="Resources\indicator.png" />
     <Content Include="Resources\LBotLeft.png" />
     <Content Include="Resources\LBotMid.png" />
     <Content Include="Resources\LBotRight.png" />

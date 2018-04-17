@@ -28,14 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.tabHolder = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.txtFile = new System.Windows.Forms.TextBox();
             this.rad5 = new System.Windows.Forms.RadioButton();
-            this.chkDeleter = new System.Windows.Forms.CheckBox();
             this.rad4 = new System.Windows.Forms.RadioButton();
             this.button151 = new System.Windows.Forms.Button();
-            this.tileView = new System.Windows.Forms.PictureBox();
             this.rad3 = new System.Windows.Forms.RadioButton();
             this.label3 = new System.Windows.Forms.Label();
             this.tabletWidth = new System.Windows.Forms.TextBox();
@@ -43,299 +39,159 @@
             this.tabletHeight = new System.Windows.Forms.TextBox();
             this.rad2 = new System.Windows.Forms.RadioButton();
             this.rad1 = new System.Windows.Forms.RadioButton();
-            this.label1 = new System.Windows.Forms.Label();
-            this.boxSelect = new System.Windows.Forms.ComboBox();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.tabHolder.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tileView)).BeginInit();
+            this.boxTiles = new System.Windows.Forms.Panel();
             this.SuspendLayout();
-            // 
-            // tabHolder
-            // 
-            this.tabHolder.Controls.Add(this.tabPage1);
-            this.tabHolder.Controls.Add(this.tabPage2);
-            this.tabHolder.Controls.Add(this.tabPage3);
-            this.tabHolder.Location = new System.Drawing.Point(15, 14);
-            this.tabHolder.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tabHolder.Name = "tabHolder";
-            this.tabHolder.SelectedIndex = 0;
-            this.tabHolder.Size = new System.Drawing.Size(1876, 884);
-            this.tabHolder.TabIndex = 0;
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.Controls.Add(this.txtFile);
-            this.tabPage1.Controls.Add(this.rad5);
-            this.tabPage1.Controls.Add(this.chkDeleter);
-            this.tabPage1.Controls.Add(this.rad4);
-            this.tabPage1.Controls.Add(this.button151);
-            this.tabPage1.Controls.Add(this.tileView);
-            this.tabPage1.Controls.Add(this.rad3);
-            this.tabPage1.Controls.Add(this.label3);
-            this.tabPage1.Controls.Add(this.tabletWidth);
-            this.tabPage1.Controls.Add(this.label2);
-            this.tabPage1.Controls.Add(this.tabletHeight);
-            this.tabPage1.Controls.Add(this.rad2);
-            this.tabPage1.Controls.Add(this.rad1);
-            this.tabPage1.Controls.Add(this.label1);
-            this.tabPage1.Controls.Add(this.boxSelect);
-            this.tabPage1.Location = new System.Drawing.Point(4, 25);
-            this.tabPage1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tabPage1.Size = new System.Drawing.Size(1868, 855);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "tabPage1";
-            this.tabPage1.UseVisualStyleBackColor = true;
-            this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
             // 
             // txtFile
             // 
-            this.txtFile.Location = new System.Drawing.Point(41, 581);
-            this.txtFile.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtFile.Location = new System.Drawing.Point(40, 571);
             this.txtFile.Name = "txtFile";
-            this.txtFile.Size = new System.Drawing.Size(207, 22);
-            this.txtFile.TabIndex = 16;
+            this.txtFile.Size = new System.Drawing.Size(156, 20);
+            this.txtFile.TabIndex = 31;
             this.txtFile.Text = "<text file name>";
             // 
             // rad5
             // 
             this.rad5.AutoSize = true;
             this.rad5.Checked = true;
-            this.rad5.Location = new System.Drawing.Point(39, 340);
-            this.rad5.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rad5.Location = new System.Drawing.Point(38, 375);
             this.rad5.Name = "rad5";
-            this.rad5.Size = new System.Drawing.Size(74, 21);
-            this.rad5.TabIndex = 15;
+            this.rad5.Size = new System.Drawing.Size(58, 17);
+            this.rad5.TabIndex = 30;
             this.rad5.TabStop = true;
             this.rad5.Text = "Normal";
             this.rad5.UseVisualStyleBackColor = true;
             // 
-            // chkDeleter
-            // 
-            this.chkDeleter.AutoSize = true;
-            this.chkDeleter.Location = new System.Drawing.Point(184, 130);
-            this.chkDeleter.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.chkDeleter.Name = "chkDeleter";
-            this.chkDeleter.Size = new System.Drawing.Size(71, 21);
-            this.chkDeleter.TabIndex = 14;
-            this.chkDeleter.Text = "Delete";
-            this.chkDeleter.UseVisualStyleBackColor = true;
-            // 
             // rad4
             // 
             this.rad4.AutoSize = true;
-            this.rad4.Location = new System.Drawing.Point(39, 452);
-            this.rad4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rad4.Location = new System.Drawing.Point(38, 466);
             this.rad4.Name = "rad4";
-            this.rad4.Size = new System.Drawing.Size(74, 21);
-            this.rad4.TabIndex = 13;
+            this.rad4.Size = new System.Drawing.Size(60, 17);
+            this.rad4.TabIndex = 28;
             this.rad4.Text = "Moving";
             this.rad4.UseVisualStyleBackColor = true;
             // 
             // button151
             // 
-            this.button151.Location = new System.Drawing.Point(39, 633);
-            this.button151.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button151.Location = new System.Drawing.Point(38, 613);
             this.button151.Name = "button151";
-            this.button151.Size = new System.Drawing.Size(217, 79);
-            this.button151.TabIndex = 12;
+            this.button151.Size = new System.Drawing.Size(163, 64);
+            this.button151.TabIndex = 27;
             this.button151.Text = "Export to Text";
             this.button151.UseVisualStyleBackColor = true;
-            this.button151.Click += new System.EventHandler(this.Export);
-            // 
-            // tileView
-            // 
-            this.tileView.Location = new System.Drawing.Point(109, 239);
-            this.tileView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.tileView.Name = "tileView";
-            this.tileView.Size = new System.Drawing.Size(67, 68);
-            this.tileView.TabIndex = 11;
-            this.tileView.TabStop = false;
             // 
             // rad3
             // 
             this.rad3.AutoSize = true;
-            this.rad3.Location = new System.Drawing.Point(39, 426);
-            this.rad3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rad3.Location = new System.Drawing.Point(38, 445);
             this.rad3.Name = "rad3";
-            this.rad3.Size = new System.Drawing.Size(112, 21);
-            this.rad3.TabIndex = 10;
+            this.rad3.Size = new System.Drawing.Size(86, 17);
+            this.rad3.TabIndex = 25;
             this.rad3.Text = "Non-Collision";
             this.rad3.UseVisualStyleBackColor = true;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(157, 511);
-            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label3.Location = new System.Drawing.Point(127, 514);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(92, 17);
-            this.label3.TabIndex = 8;
+            this.label3.Size = new System.Drawing.Size(71, 13);
+            this.label3.TabIndex = 24;
             this.label3.Text = "Tablet Width:";
             // 
             // tabletWidth
             // 
-            this.tabletWidth.Location = new System.Drawing.Point(161, 538);
-            this.tabletWidth.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabletWidth.Location = new System.Drawing.Point(130, 536);
             this.tabletWidth.Name = "tabletWidth";
-            this.tabletWidth.Size = new System.Drawing.Size(87, 22);
-            this.tabletWidth.TabIndex = 7;
+            this.tabletWidth.Size = new System.Drawing.Size(66, 20);
+            this.tabletWidth.TabIndex = 23;
             this.tabletWidth.Text = "15";
-            this.tabletWidth.TextChanged += new System.EventHandler(this.HeightWidthChange);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(37, 511);
-            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label2.Location = new System.Drawing.Point(37, 514);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(97, 17);
-            this.label2.TabIndex = 6;
+            this.label2.Size = new System.Drawing.Size(74, 13);
+            this.label2.TabIndex = 22;
             this.label2.Text = "Tablet Height:";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // tabletHeight
             // 
-            this.tabletHeight.Location = new System.Drawing.Point(41, 538);
-            this.tabletHeight.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabletHeight.Location = new System.Drawing.Point(40, 536);
             this.tabletHeight.Name = "tabletHeight";
-            this.tabletHeight.Size = new System.Drawing.Size(84, 22);
-            this.tabletHeight.TabIndex = 5;
+            this.tabletHeight.Size = new System.Drawing.Size(64, 20);
+            this.tabletHeight.TabIndex = 21;
             this.tabletHeight.Text = "10";
-            this.tabletHeight.TextChanged += new System.EventHandler(this.HeightWidthChange);
             // 
             // rad2
             // 
             this.rad2.AutoSize = true;
-            this.rad2.Location = new System.Drawing.Point(39, 398);
-            this.rad2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rad2.Location = new System.Drawing.Point(38, 422);
             this.rad2.Name = "rad2";
-            this.rad2.Size = new System.Drawing.Size(124, 21);
-            this.rad2.TabIndex = 4;
+            this.rad2.Size = new System.Drawing.Size(96, 17);
+            this.rad2.TabIndex = 20;
             this.rad2.Text = "Non-Damaging";
             this.rad2.UseVisualStyleBackColor = true;
             // 
             // rad1
             // 
             this.rad1.AutoSize = true;
-            this.rad1.Location = new System.Drawing.Point(39, 368);
-            this.rad1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rad1.Location = new System.Drawing.Point(38, 398);
             this.rad1.Name = "rad1";
-            this.rad1.Size = new System.Drawing.Size(93, 21);
-            this.rad1.TabIndex = 3;
+            this.rad1.Size = new System.Drawing.Size(73, 17);
+            this.rad1.TabIndex = 19;
             this.rad1.Text = "Damaging";
             this.rad1.UseVisualStyleBackColor = true;
             // 
-            // label1
+            // boxTiles
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(53, 165);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 17);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Tile:";
-            // 
-            // boxSelect
-            // 
-            this.boxSelect.FormattingEnabled = true;
-            this.boxSelect.Items.AddRange(new object[] {
-            "LTopLeft",
-            "LTopMid",
-            "LTopRight",
-            "LMidLeft",
-            "LMidRight",
-            "LBotLeft",
-            "LBotMid",
-            "LBotRight",
-            "",
-            "dTopLeft",
-            "dTopMid",
-            "dTopRight",
-            "dMidLeft",
-            "dSolid",
-            "",
-            "nLeftTop",
-            "nRightTop",
-            "nLeftBot",
-            "nRightBot",
-            "dMidRight",
-            "dBotLeft",
-            "dBotMid",
-            "dBotRight",
-            "Delete"});
-            this.boxSelect.Location = new System.Drawing.Point(39, 185);
-            this.boxSelect.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.boxSelect.Name = "boxSelect";
-            this.boxSelect.Size = new System.Drawing.Size(216, 24);
-            this.boxSelect.TabIndex = 1;
-            this.boxSelect.Text = "Choose Tile:";
-            this.boxSelect.SelectedIndexChanged += new System.EventHandler(this.BoxIndexChanged);
-            this.boxSelect.SelectedValueChanged += new System.EventHandler(this.BoxIndexChanged);
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Location = new System.Drawing.Point(4, 25);
-            this.tabPage2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tabPage2.Size = new System.Drawing.Size(1868, 855);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "tabPage2";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // tabPage3
-            // 
-            this.tabPage3.Location = new System.Drawing.Point(4, 25);
-            this.tabPage3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tabPage3.Size = new System.Drawing.Size(1868, 855);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "tabPage3";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.boxTiles.AutoScroll = true;
+            this.boxTiles.Location = new System.Drawing.Point(23, 25);
+            this.boxTiles.Name = "boxTiles";
+            this.boxTiles.Size = new System.Drawing.Size(197, 330);
+            this.boxTiles.TabIndex = 33;
             // 
             // Mappy
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1582, 873);
-            this.Controls.Add(this.tabHolder);
-            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.ClientSize = new System.Drawing.Size(1186, 709);
+            this.Controls.Add(this.boxTiles);
+            this.Controls.Add(this.txtFile);
+            this.Controls.Add(this.rad5);
+            this.Controls.Add(this.rad4);
+            this.Controls.Add(this.button151);
+            this.Controls.Add(this.rad3);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.tabletWidth);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.tabletHeight);
+            this.Controls.Add(this.rad2);
+            this.Controls.Add(this.rad1);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Mappy";
             this.Text = "MapBuilder";
             this.Load += new System.EventHandler(this.MapBuilder_Load);
-            this.tabHolder.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tileView)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.TabControl tabHolder;
-        private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TextBox txtFile;
+        private System.Windows.Forms.RadioButton rad5;
+        private System.Windows.Forms.RadioButton rad4;
+        private System.Windows.Forms.Button button151;
+        private System.Windows.Forms.RadioButton rad3;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox tabletWidth;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox tabletHeight;
         private System.Windows.Forms.RadioButton rad2;
         private System.Windows.Forms.RadioButton rad1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ComboBox boxSelect;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox tabletWidth;
-        private System.Windows.Forms.PictureBox tileView;
-        private System.Windows.Forms.RadioButton rad3;
-        private System.Windows.Forms.Button button151;
-        private System.Windows.Forms.RadioButton rad4;
-        private System.Windows.Forms.CheckBox chkDeleter;
-        private System.Windows.Forms.RadioButton rad5;
-        private System.Windows.Forms.TextBox txtFile;
+        private System.Windows.Forms.Panel boxTiles;
     }
 }

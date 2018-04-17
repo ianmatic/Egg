@@ -259,6 +259,14 @@ namespace Egg
                         }
                         break;
                     case GameState.Game:
+                        if (SingleKeyPress(Keys.D1))
+                        {
+                            mainScreen.ChangeLevel("mapDemo");
+                        }
+                        else if (SingleKeyPress(Keys.D2))
+                        {
+                            mainScreen.ChangeLevel("variableSizeDemo");
+                        }
                         GameUpdateLoop();
                         //Transition to level end not yet implemented
                         break;
@@ -268,34 +276,7 @@ namespace Egg
                         break;
                 }
 
-                //Must hold down P, O, and G at the same time to activate level editor
-                if (kb.IsKeyDown(Keys.P) && kb.IsKeyDown(Keys.O) && kb.IsKeyDown(Keys.G))
-                {
-                    //Show dialog goes here.
-                    Builder.ShowDialog();
-                }
-
-                if (SingleKeyPress(Keys.F8))
-                {
-                    enemy.DebugCollision = !enemy.DebugCollision;
-                    animationOn = true;
-                }
-
-                if (SingleKeyPress(Keys.F9) || player.Hitpoints <= 0)
-                {
-                    player.Hitbox = new Rectangle(player.LastCheckpoint.X, player.LastCheckpoint.Y, 75, 75);
-                    player.PlayerState = PlayerState.IdleRight;
-                    player.HorizontalVelocity = 0;
-                    player.VerticalVelocity = 0;
-                    player.Hitpoints = 5;
-                    player.InHitStun = false;
-                  
-                    
-                }
-                if (SingleKeyPress(Keys.F11))
-                {
-                    animationOn = false;
-                }
+                DebugKeyboardInputs();
             }
             else
             {
@@ -451,9 +432,7 @@ namespace Egg
             Tile[,] tileSet = mainScreen.UpdateTiles(tileList);
                       
             foreach (GameObject n in objectList)
-            {
-                //if (n.IsActive)
-                //{
+            {               
                     if (n is Player)
                     {
                         Player p = (Player)n;
@@ -486,8 +465,6 @@ namespace Egg
                         }
 
                     }
-
-                //}
 
             } // end foreach
 
@@ -632,6 +609,40 @@ namespace Egg
 
             
         }
+        public void DebugKeyboardInputs()
+        {
+            //Must hold down P, O, and G at the same time to activate level editor
+            if (kb.IsKeyDown(Keys.P) && kb.IsKeyDown(Keys.O) && kb.IsKeyDown(Keys.G))
+            {
+                //Show dialog goes here.
+                Builder.ShowDialog();
+            }
+
+            if (SingleKeyPress(Keys.F8))
+            {
+                enemy.DebugCollision = !enemy.DebugCollision;
+                animationOn = true;
+            }
+
+            if (SingleKeyPress(Keys.F9) || player.Hitpoints <= 0)
+            {
+                player.Hitbox = new Rectangle(player.LastCheckpoint.X, player.LastCheckpoint.Y, 75, 75);
+                player.PlayerState = PlayerState.IdleRight;
+                player.HorizontalVelocity = 0;
+                player.VerticalVelocity = 0;
+                player.Hitpoints = 5;
+                player.InHitStun = false;
+
+
+            }
+            if (SingleKeyPress(Keys.F11))
+            {
+                animationOn = false;
+            }
+
+            //Add more inputs here
+        }
+
         public void DrawWalking( SpriteEffects flip)
         {
             

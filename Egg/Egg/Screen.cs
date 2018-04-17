@@ -57,6 +57,7 @@ namespace Egg
             mapFileLocations.Add("mapDemo", @"..\..\..\..\Resources\levelExports\platformDemo");
             mapFileLocations.Add("demoTwo", @"..\..\..\..\Resources\levelExports\demoTwo");
             mapFileLocations.Add("variableSizeDemo", @"..\..\..\..\Resources\levelExports\nineByFifteen");
+                          //.Add("key", @"..\..\..\..\Resources\levelExports\(exported file in levelExports)
             #endregion
         }
 
@@ -292,6 +293,31 @@ namespace Egg
 
                 default:    //failsafe case
                     return 0;
+            }
+        }
+
+        /// <summary>
+        /// function change levels
+        /// </summary>
+        /// <param name="newLevel"></param>
+        public void ChangeLevel(string newLevel)
+        {
+            LevelMapClear();
+            currentLevel = newLevel;
+        }
+
+        /// <summary>
+        /// Function to fully clear out items in a map
+        /// IMPORTANT: Call any time while changing levels
+        /// </summary>
+        private void LevelMapClear()
+        {
+            for (int row = 0; row < VerticalTileCount; row++)
+            {
+                for (int column = 0; column < HorizontalTileCount; column++)
+                {
+                    screenTiles[row, column] = new Tile(0, null, new Rectangle(0, 0, 0, 0), Tile.TileType.NoCollision);
+                }
             }
         }
     }
