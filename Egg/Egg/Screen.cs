@@ -59,6 +59,7 @@ namespace Egg
             mapFileLocations.Add("mapDemo", @"..\..\..\..\Resources\levelExports\platformDemo");
             mapFileLocations.Add("demoTwo", @"..\..\..\..\Resources\levelExports\demoTwo");
             mapFileLocations.Add("variableSizeDemo", @"..\..\..\..\Resources\levelExports\nineByFifteen");
+                          //.Add("key", @"..\..\..\..\Resources\levelExports\(exported file in levelExports)
             #endregion
 
             tempScreenArray = new string[,]           
