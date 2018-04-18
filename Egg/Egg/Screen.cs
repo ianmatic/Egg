@@ -59,7 +59,9 @@ namespace Egg
             #region Map Location Dictionary element adding
             //Add in an external trigger in tiles to send players to different maps.
             mapFileLocations.Add("mapDemo", @"..\..\..\..\Resources\levelExports\platformDemo");
-            mapFileLocations.Add("demoTwo", @"..\..\..\..\Resources\levelExports\demoTwo");
+            mapFileLocations.Add("demo2", @"..\..\..\..\Resources\levelExports\demo2");
+            mapFileLocations.Add("demo3", @"..\..\..\..\Resources\levelExports\demo3");
+            mapFileLocations.Add("demo4", @"..\..\..\..\Resources\levelExports\demo4");
             mapFileLocations.Add("variableSizeDemo", @"..\..\..\..\Resources\levelExports\nineByFifteen");
                           //.Add("key", @"..\..\..\..\Resources\levelExports\(exported file in levelExports)
             #endregion
@@ -67,7 +69,7 @@ namespace Egg
             tempScreenArray = new string[,]           
             {
                 {"mapDemo", "mapDemo", "mapDemo", "variableSizeDemo"},
-                {null, null, "demoTwo", "mapDemo"},
+                {"demo2", "demo3", "demo3", "demo4"},
                 { null, null, null, null},
                 { null, null, null, null},
                 { null, null, null, null}
