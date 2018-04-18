@@ -18,6 +18,7 @@ namespace Egg
     {
         List<PictureBox> tabletButts = new List<PictureBox>();
         ImageBox chosenTile;
+        Panel boxTiles;
 
         public Mappy()
         {
@@ -25,6 +26,15 @@ namespace Egg
 
             this.Height = 860;
             this.Width = 1550;
+
+            boxTiles = new Panel();
+            boxTiles.Height = 330;
+            boxTiles.Width = 200;
+            boxTiles.Top = 23;
+            boxTiles.Left = 25;
+            boxTiles.Name = "boxTiles";
+            boxTiles.AutoScroll = true;
+            Controls.Add(boxTiles);
 
             InitializeTileBox();
             

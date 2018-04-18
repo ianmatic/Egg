@@ -39,7 +39,6 @@
             this.tabletHeight = new System.Windows.Forms.TextBox();
             this.rad2 = new System.Windows.Forms.RadioButton();
             this.rad1 = new System.Windows.Forms.RadioButton();
-            this.boxTiles = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 
             // txtFile
@@ -145,20 +144,11 @@
             this.rad1.Text = "Damaging";
             this.rad1.UseVisualStyleBackColor = true;
             // 
-            // boxTiles
-            // 
-            this.boxTiles.AutoScroll = true;
-            this.boxTiles.Location = new System.Drawing.Point(23, 25);
-            this.boxTiles.Name = "boxTiles";
-            this.boxTiles.Size = new System.Drawing.Size(197, 330);
-            this.boxTiles.TabIndex = 33;
-            // 
             // Mappy
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1186, 709);
-            this.Controls.Add(this.boxTiles);
             this.Controls.Add(this.txtFile);
             this.Controls.Add(this.rad5);
             this.Controls.Add(this.rad4);
@@ -192,6 +182,5 @@
         private System.Windows.Forms.TextBox tabletHeight;
         private System.Windows.Forms.RadioButton rad2;
         private System.Windows.Forms.RadioButton rad1;
-        private System.Windows.Forms.Panel boxTiles;
     }
 }
