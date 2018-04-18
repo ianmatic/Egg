@@ -449,7 +449,7 @@ namespace Egg
             if (paused && currentState == GameState.Game)
             {
                 spriteBatch.DrawString(menuText, "Paused", new Vector2(900, 400), Color.White);
-                spriteBatch.DrawString(menuText, "Press Tab for Options", new Vector2(800, 500), Color.White);
+                spriteBatch.DrawString(menuText, "Press Tab for Options", new Vector2(700, 500), Color.White);
             }          
             spriteBatch.End();
 
