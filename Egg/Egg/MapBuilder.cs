@@ -29,7 +29,7 @@ namespace Egg
 
             boxTiles = new Panel();
             boxTiles.Height = 330;
-            boxTiles.Width = 200;
+            boxTiles.Width = 205;
             boxTiles.Top = 23;
             boxTiles.Left = 25;
             boxTiles.Name = "boxTiles";
