@@ -190,7 +190,7 @@ namespace Egg
 
             // Clear the button if the delete is checked
             //else if (chkDeleter.Checked == true) 
-            if (currentTile == "blank")
+            if (chkDelete.Checked == true)
             {
                 tempCopy.Image = null;
                 tempCopy.Tag = null;
@@ -198,8 +198,10 @@ namespace Egg
             else
             {
                 tempCopy.Image = ImageSelect(currentTile);
-                tempCopy.Tag = currentTile + radioTag;
+                tempCopy.Tag = Translator(currentTile) + radioTag;
             }
+            
+            
             sender = tempCopy;
             
         }
@@ -524,7 +526,7 @@ namespace Egg
             string[,] LTiles = new string[,]
             {
                 {"LTopLeft", "LTopMid",   "LTopRight" },
-                {"LMidLeft", "blankTile", "LMidRight" },
+                {"LMidLeft", "dSolid",    "LMidRight" },
                 {"LBotLeft", "LBotMid",   "LBotRight" }
             };
 
@@ -648,5 +650,10 @@ namespace Egg
 
 
         #endregion
+
+        private void checkBox1_CheckedChanged_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }
