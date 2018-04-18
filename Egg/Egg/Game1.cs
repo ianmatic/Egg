@@ -33,7 +33,7 @@ namespace Egg
         Texture2D topRectangle;
         Texture2D sideRectangle;
         Texture2D collisionTest;
-        Screen mainScreen = new Screen("variableSizeDemo");
+        Screen mainScreen = new Screen("mapDemo");
 
         GameState currentState;
         //GameState previousState;
@@ -274,34 +274,7 @@ namespace Egg
                         break;
                 }
 
-                //Must hold down P, O, and G at the same time to activate level editor
-                if (kb.IsKeyDown(Keys.P) && kb.IsKeyDown(Keys.O) && kb.IsKeyDown(Keys.G))
-                {
-                    //Show dialog goes here.
-                    Builder.ShowDialog();
-                }
-
-                if (SingleKeyPress(Keys.F8))
-                {
-                    enemy.DebugCollision = !enemy.DebugCollision;
-                    animationOn = true;
-                }
-
-                if (SingleKeyPress(Keys.F9) || player.Hitpoints <= 0 || player.Y >= 1000)
-                {
-                    player.Hitbox = new Rectangle(player.LastCheckpoint.X, player.LastCheckpoint.Y, 75, 75);
-                    player.PlayerState = PlayerState.IdleRight;
-                    player.HorizontalVelocity = 0;
-                    player.VerticalVelocity = 0;
-                    player.Hitpoints = 5;
-                    player.InHitStun = false;
-                  
-                    
-                }
-                if (SingleKeyPress(Keys.F11))
-                {
-                    animationOn = false;
-                }
+                DebugKeyboardInputs();
             }
             else
             {
@@ -479,14 +452,71 @@ namespace Egg
             {               
                     if (n is Player)
                     {
-                        Player p = (Player)n;
-                        p.FiniteState();
-
+                        Player p = (Player)n;                       
                     //Add extra buffer to dimensions? Different way of doing this?
-                    Rectangle screenSize = new Rectangle(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+                    Rectangle screenSize = new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 
-                    //Start here to call for whether or not the player is fully on screen
-                    
+                    if (!screenSize.Contains(p.Hitbox))
+                    {
+                        if (p.Hitbox.X < 0)
+                        {
+                            if (mainScreen.ChangeLevel("left"))
+                            {
+                                Rectangle temp = p.Hitbox;
+                                temp.X = GraphicsDevice.Viewport.Width;
+                                p.Hitbox = temp;
+                            }
+                            else
+                            {
+                                p.Hitbox = p.LastCheckpoint;
+                            }
+                        }
+                        else if (p.Hitbox.X > GraphicsDevice.Viewport.Width)
+                        {
+                            if (mainScreen.ChangeLevel("right"))
+                            {
+                                Rectangle temp = p.Hitbox;
+                                temp.X = 0;
+                                p.Hitbox = temp;
+                            }
+                            else
+                            {
+                                p.Hitbox = p.LastCheckpoint;
+                            }
+                        }
+
+                        if (p.Hitbox.Y < 0)
+                        {
+                            if (mainScreen.ChangeLevel("up"))
+                            {
+                                Rectangle temp = p.Hitbox;
+                                temp.Y = GraphicsDevice.Viewport.Height;
+                                p.Hitbox = temp;
+                            }
+                            else
+                            {
+                                p.Hitbox = p.LastCheckpoint;
+                            }
+
+                        }
+                        else if (p.Hitbox.Y > GraphicsDevice.Viewport.Height)
+                        {
+                            if (mainScreen.ChangeLevel("down"))
+                            {
+                                Rectangle temp = p.Hitbox;
+                                temp.Y = 0;
+                                p.Hitbox = temp;
+                            }
+                            else
+                            {
+                                p.Hitbox = p.LastCheckpoint;
+                            }
+
+                        }
+                    }
+
+                    p.FiniteState();
+
 
                     //This should work on any enemy (i.e. enemy list of a screen), fix this later!
                     foreach (Enemy e in tempEnemyList)
@@ -607,13 +637,13 @@ namespace Egg
             #endregion
 
             #region Platform Code            
-            AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(700, 500, 700, 100), Tile.TileType.Normal));
-            AddObjectToList(new Tile(7, bottomRectangle, new Rectangle(0, 500, 500, 300), Tile.TileType.Normal));
-            AddObjectToList(new Tile(11, sideRectangle, new Rectangle(0, 0, 100, 900), Tile.TileType.Normal));
-            AddObjectToList(new Tile(12, sideRectangle, new Rectangle(500, 500, 200, 400), Tile.TileType.Normal));
-            AddObjectToList(new Tile(13, sideRectangle, new Rectangle(1100, 400, 100, 200), Tile.TileType.Normal));
-            AddObjectToList(new Tile(14, sideRectangle, new Rectangle(1600, 200, 100, 400), Tile.TileType.Normal));
-            AddObjectToList(new Tile(15, topRectangle, new Rectangle(0, 300, 400, 100), Tile.TileType.Normal));
+            //AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(700, 500, 700, 100), Tile.TileType.Normal));
+            //AddObjectToList(new Tile(7, bottomRectangle, new Rectangle(0, 500, 500, 300), Tile.TileType.Normal));
+            //AddObjectToList(new Tile(11, sideRectangle, new Rectangle(0, 0, 100, 900), Tile.TileType.Normal));
+            //AddObjectToList(new Tile(12, sideRectangle, new Rectangle(500, 500, 200, 400), Tile.TileType.Normal));
+            //AddObjectToList(new Tile(13, sideRectangle, new Rectangle(1100, 400, 100, 200), Tile.TileType.Normal));
+            //AddObjectToList(new Tile(14, sideRectangle, new Rectangle(1600, 200, 100, 400), Tile.TileType.Normal));
+            //AddObjectToList(new Tile(15, topRectangle, new Rectangle(0, 300, 400, 100), Tile.TileType.Normal));
             //AddObjectToList(new Tile(16, topRectangle, new Rectangle(1000, 200, 400, 100), Tile.TileType.Normal)); commented out to test bounce
             #endregion
 

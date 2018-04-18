@@ -21,6 +21,8 @@ namespace Egg
         string currentLevel;
         string[,] level;
 
+        int currentTempArrayC = 2;
+        int currentTempArrayR = 0;
         StreamReader interpreter;
         Tile[,] screenTiles;
         Dictionary<string, Tile.TileType> tileTypeDict = new Dictionary<string, Tile.TileType>();
@@ -64,8 +66,8 @@ namespace Egg
 
             tempScreenArray = new string[,]           
             {
-                {null, "mapDemo", "demoTwo", "variableSizeDemo"},
-                {null, null, null, null},
+                {"mapDemo", "mapDemo", "mapDemo", "variableSizeDemo"},
+                {null, null, "demoTwo", "mapDemo"},
                 { null, null, null, null},
                 { null, null, null, null},
                 { null, null, null, null}
@@ -310,13 +312,68 @@ namespace Egg
         }
 
         /// <summary>
-        /// function change levels
+        /// function change levels, returns true if successful
         /// </summary>
         /// <param name="newLevel"></param>
-        public void ChangeLevel(string newLevel)
-        {
-            LevelMapClear();
-            currentLevel = newLevel;
+        public bool ChangeLevel(string direction)
+        {           
+            switch (direction)
+            {               
+                case "left":
+                    if (currentTempArrayC == 0)
+                    {
+                        return false;
+                    }
+                    else if (tempScreenArray[currentTempArrayR, currentTempArrayC - 1] == null)
+                    {
+                        return false;
+                    }
+                    LevelMapClear();
+                    currentLevel = tempScreenArray[currentTempArrayR, currentTempArrayC - 1];
+                    currentTempArrayC -= 1;
+                    break;
+                case "right":
+                    if (currentTempArrayC == tempScreenArray.GetLength(1) - 1)
+                    {
+                        return false;
+                    }
+                    else if (tempScreenArray[currentTempArrayR, currentTempArrayC + 1] == null)
+                    {
+                        return false;
+                    }
+                    LevelMapClear();
+                    currentLevel = tempScreenArray[currentTempArrayR, currentTempArrayC + 1];
+                    currentTempArrayC += 1;
+                    break;
+                case "up":
+                    if (currentTempArrayR == 0)
+                    {
+                        return false;
+                    }
+                    else if (tempScreenArray[currentTempArrayR - 1, currentTempArrayC] == null)
+                    {
+                        return false;
+                    }
+                    LevelMapClear();
+                    currentLevel = tempScreenArray[currentTempArrayR - 1, currentTempArrayC];
+                    currentTempArrayR -= 1;
+                    break;
+                case "down":
+                    if (currentTempArrayR == tempScreenArray.GetLength(0) - 1)
+                    {
+                        return false;
+                    }
+                    else if (tempScreenArray[currentTempArrayR + 1, currentTempArrayC] == null)
+                    {
+                        return false;
+                    }
+                    LevelMapClear();
+                    currentLevel = tempScreenArray[currentTempArrayR + 1, currentTempArrayC];
+                    currentTempArrayR += 1;
+                    break;
+            }
+
+            return true;
         }
 
         /// <summary>
