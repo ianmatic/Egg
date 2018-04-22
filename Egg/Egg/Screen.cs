@@ -181,11 +181,17 @@ namespace Egg
                 {                    
                     Texture2D tempTexture = textures[1];                    //create temp texture 
                     int textureNumber = GetTexture(levelMap[row, column]);  //get told which texture to put in place from levelMap
+                    if (textureNumber == 1 || textureNumber == 2 || textureNumber == 3)
+                    {
+                        screenTiles[row, column].Height -= (screenTiles[row, column].Height / 8) * 6;
+                        screenTiles[row, column].Y += (screenTiles[row, column].Height / 8) * 6;
+                    }
 
                     if (textureNumber == 0)
                     {
                         levelMap[row, column] = null;
                     }
+
                     else
                     {
                         tempTexture = textures[textureNumber];                  //set texture into temp

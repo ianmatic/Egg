@@ -733,8 +733,8 @@ namespace Egg
             //enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 16, 60);
             //enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 4, 60, 5, 2, 100); //moving enemy
             enemy = new Enemy(new Rectangle(890, 500, 75, 75), collisionTest, 16, 60);
-            enemy2 = new Enemy(new Rectangle(245, 225, 75, 75), collisionTest, 4, 60);
-            enemy3 = new Enemy(new Rectangle(500, 150, 75, 75), collisionTest, 4, 60, 5, 2 , 100);
+            enemy2 = new Enemy(new Rectangle(225, 250, 75, 75), collisionTest, 4, 60);
+            enemy3 = new Enemy(new Rectangle(500, 250, 75, 75), collisionTest, 4, 60, 5, 2 , 100);
             AddObjectToList(enemy);
             AddObjectToList(enemy2);
             AddObjectToList(enemy3);
