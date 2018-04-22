@@ -399,3 +399,10 @@
 /processorParam:TextureFormat=Color
 /build:optionsTexture.png
 
+#begin optionsText.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:optionsText.spritefont
+

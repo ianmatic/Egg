@@ -25,6 +25,7 @@ namespace Egg
         SpriteBatch spriteBatch;
         SpriteFont menuText;
         SpriteFont titleText;
+        SpriteFont optionsText;
         Texture2D testSprite;
         Texture2D menu;
         Texture2D options;
@@ -52,6 +53,20 @@ namespace Egg
         Rectangle startRect;
         Rectangle optionsRect;
         Rectangle optionsReturnRect;
+        Rectangle fullscreenRect;
+        Rectangle leftRect;
+        Rectangle rightRect;
+        Rectangle jumpRect;
+        Rectangle downRect;
+        Rectangle rollRect;
+        Rectangle pauseRect;
+        bool rebindingLeft = false;
+        bool rebindingRight = false;
+        bool rebindingJump = false;
+        bool rebindingDown = false;
+        bool rebindingRoll = false;
+        bool rebindingPause = false;
+        Keys[] keys;
 
         Player player;
 
@@ -145,8 +160,10 @@ namespace Egg
             spriteBatch = new SpriteBatch(GraphicsDevice);
             menuText= Content.Load<SpriteFont>("menutext");
             titleText = Content.Load<SpriteFont>("titletext");
+            optionsText = Content.Load<SpriteFont>("optionsText");
             menu = Content.Load<Texture2D>("menuTexture");
             options = Content.Load<Texture2D>("optionsTexture");
+
 
             tileSpriteList = new List<Texture2D>();
             //Put tile loop here
@@ -246,7 +263,7 @@ namespace Egg
             mouseRect = new Rectangle(ms.X, ms.Y, 1, 1);
             if (!paused)
             {
-                if (SingleKeyPress(Keys.P) && currentState != GameState.Options)
+                if (SingleKeyPress(player.BindableKb["pause"]) && currentState != GameState.Options)
                 {
                     paused = true;
                 }
@@ -266,6 +283,12 @@ namespace Egg
                     case GameState.Options:
                         if (SingleKeyPress(Keys.Tab) || (optionsReturnRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)))
                         {
+                            rebindingLeft = false;
+                            rebindingRight = false;
+                            rebindingJump = false;
+                            rebindingDown = false;
+                            rebindingRoll = false;
+                            rebindingPause = false;
                             if (paused)
                             {
                                 currentState = GameState.Game;
@@ -274,6 +297,113 @@ namespace Egg
                             {
                                 currentState = GameState.Menu;
                             }
+                        }
+                        if ((leftRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingLeft)
+                        {
+                            rebindingLeft = true;
+
+                            rebindingRight = false;
+                            rebindingJump = false;
+                            rebindingDown = false;
+                            rebindingRoll = false;
+                            rebindingPause = false;
+
+                            keys = Keyboard.GetState().GetPressedKeys();
+                            if (keys.Length > 0)
+                            {
+                                player.BindableKb["left"] = keys[0];
+                                rebindingLeft = false;
+                            }
+                        }
+                        if ((rightRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingRight)
+                        {
+                            rebindingRight = true;
+
+                            rebindingLeft = false;
+                            rebindingJump = false;
+                            rebindingDown = false;
+                            rebindingRoll = false;
+                            rebindingPause = false;
+
+                            keys = Keyboard.GetState().GetPressedKeys();
+                            if (keys.Length > 0)
+                            {
+                                player.BindableKb["right"] = keys[0];
+                                rebindingRight = false;
+                            }
+                        }
+                        if ((rollRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingRoll)
+                        {
+                            rebindingRoll = true;
+
+                            rebindingLeft = false;
+                            rebindingRight = false;
+                            rebindingJump = false;
+                            rebindingDown = false;
+                            rebindingPause = false;
+
+                            keys = Keyboard.GetState().GetPressedKeys();
+                            if (keys.Length > 0)
+                            {
+                                player.BindableKb["roll"] = keys[0];
+                                rebindingRoll = false;
+                            }
+                        }
+                        if ((jumpRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingJump)
+                        {
+                            rebindingJump = true;
+
+                            rebindingLeft = false;
+                            rebindingRight = false;
+                            rebindingRoll = false;
+                            rebindingDown = false;
+                            rebindingPause = false;
+
+                            keys = Keyboard.GetState().GetPressedKeys();
+                            if (keys.Length > 0)
+                            {
+                                player.BindableKb["jump"] = keys[0];
+                                rebindingJump = false;
+                            }
+                        }
+                        if ((downRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingDown)
+                        {
+                            rebindingDown = true;
+
+                            rebindingLeft = false;
+                            rebindingRight = false;
+                            rebindingRoll = false;
+                            rebindingJump = false;
+                            rebindingPause = false;
+
+                            keys = Keyboard.GetState().GetPressedKeys();
+                            if (keys.Length > 0)
+                            {
+                                player.BindableKb["downDash"] = keys[0];
+                                rebindingDown = false;
+                            }
+                        }
+                        if ((pauseRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingPause)
+                        {
+                            rebindingPause = true;
+
+                            rebindingLeft = false;
+                            rebindingRight = false;
+                            rebindingRoll = false;
+                            rebindingJump = false;
+                            rebindingDown = false;
+
+                            keys = Keyboard.GetState().GetPressedKeys();
+                            if (keys.Length > 0 && keys[0] != Keys.Tab)
+                            {
+                                player.BindableKb["pause"] = keys[0];
+                                rebindingPause = false;
+                            }
+                        }
+                        if (fullscreenRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
+                        {
+                            fullscreen = !fullscreen;
+                            graphics.ToggleFullScreen();
                         }
                         break;
                     case GameState.Game:                       
@@ -290,6 +420,14 @@ namespace Egg
             }
             else
             {
+                if (currentState == GameState.Options)
+                {
+                    if (fullscreenRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
+                    {
+                        fullscreen = !fullscreen;
+                        graphics.ToggleFullScreen();
+                    }
+                }
                 if (SingleKeyPress(Keys.Tab) || (optionsReturnRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)))
                 {
                     if (currentState == GameState.Game)
@@ -299,10 +437,118 @@ namespace Egg
                     else if (currentState == GameState.Options)
                     {
                         currentState = GameState.Game;
+                        rebindingLeft = false;
+                        rebindingRight = false;
+                        rebindingJump = false;
+                        rebindingDown = false;
+                        rebindingRoll = false;
+                        rebindingPause = false;
                     }
 
                 }
-                if (SingleKeyPress(Keys.P) && currentState != GameState.Options)
+                if ((leftRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingLeft)
+                {
+                    rebindingLeft = true;
+
+                    rebindingRight = false;
+                    rebindingJump = false;
+                    rebindingDown = false;
+                    rebindingRoll = false;
+                    rebindingPause = false;
+
+                    keys = Keyboard.GetState().GetPressedKeys();
+                    if (keys.Length > 0 && keys[0] != Keys.Tab)
+                    {
+                        player.BindableKb["left"] = keys[0];
+                        rebindingLeft = false;
+                    }
+                }
+                if ((rightRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingRight)
+                {
+                    rebindingRight = true;
+
+                    rebindingLeft = false;
+                    rebindingJump = false;
+                    rebindingDown = false;
+                    rebindingRoll = false;
+                    rebindingPause = false;
+
+                    keys = Keyboard.GetState().GetPressedKeys();
+                    if (keys.Length > 0 &&  keys[0] != Keys.Tab)
+                    {
+                        player.BindableKb["right"] = keys[0];
+                        rebindingRight = false;
+                    }
+                }
+                if ((rollRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingRoll)
+                {
+                    rebindingRoll = true;
+
+                    rebindingLeft = false;
+                    rebindingRight = false;
+                    rebindingJump = false;
+                    rebindingDown = false;
+                    rebindingPause = false;
+
+                    keys = Keyboard.GetState().GetPressedKeys();
+                    if (keys.Length > 0 &&  keys[0] != Keys.Tab)
+                    {
+                        player.BindableKb["roll"] = keys[0];
+                        rebindingRoll = false;
+                    }
+                }
+                if ((jumpRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingJump)
+                {
+                    rebindingJump = true;
+
+                    rebindingLeft = false;
+                    rebindingRight = false;
+                    rebindingRoll = false;
+                    rebindingDown = false;
+                    rebindingPause = false;
+
+                    keys = Keyboard.GetState().GetPressedKeys();
+                    if (keys.Length > 0 &&  keys[0] != Keys.Tab)
+                    {
+                        player.BindableKb["jump"] = keys[0];
+                        rebindingJump = false;
+                    }
+                }
+                if ((downRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingDown)
+                {
+                    rebindingDown = true;
+
+                    rebindingLeft = false;
+                    rebindingRight = false;
+                    rebindingRoll = false;
+                    rebindingJump = false;
+                    rebindingPause = false;
+
+                    keys = Keyboard.GetState().GetPressedKeys();
+                    if (keys.Length > 0 &&  keys[0] != Keys.Tab)
+                    {
+                        player.BindableKb["downDash"] = keys[0];
+                        rebindingDown = false;
+                    }
+                }
+                if ((pauseRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingPause)
+                {
+                    rebindingPause = true;
+
+                    rebindingLeft = false;
+                    rebindingRight = false;
+                    rebindingRoll = false;
+                    rebindingJump = false;
+                    rebindingDown = false;
+
+                    keys = Keyboard.GetState().GetPressedKeys();
+                    if (keys.Length > 0 && keys[0] != Keys.Tab)
+                    {
+                        player.BindableKb["pause"] = keys[0];
+                        rebindingPause = false;
+                    }
+                }
+                if (SingleKeyPress(player.BindableKb["pause"]) && currentState != GameState.Options)
                 {
                     paused = false;
                 }
@@ -365,14 +611,84 @@ namespace Egg
                     spriteBatch.Draw(options, new Rectangle(0, 0, 1920, 1080), Color.White);
                     spriteBatch.Draw(topRectangle, mouseRect, Color.Red); //for testing
                     spriteBatch.DrawString(menuText, "Options", new Vector2(850, 300), Color.White);
-                    spriteBatch.DrawString(menuText, "Rebind keys: ", new Vector2(450, 450), Color.White);
-                    if (fullscreen)
+                    spriteBatch.DrawString(menuText, "Rebind keys ", new Vector2(450, 450), Color.White);
+                    leftRect = new Rectangle(450, 520, 170, 24);
+                    rightRect = new Rectangle(450, 550, 190, 24);
+                    rollRect = new Rectangle(450, 580, 80, 24);
+                    jumpRect = new Rectangle(450, 610, 80, 24);
+                    downRect = new Rectangle(450, 640, 170, 24);
+                    pauseRect = new Rectangle(450, 670, 100, 24);
+                    if (leftRect.Intersects(mouseRect) || rebindingLeft)
                     {
-                        spriteBatch.DrawString(menuText, "Toggle fullscreen: On ", new Vector2(1000, 450), Color.White);
+                        spriteBatch.DrawString(optionsText, "Move Left: " + player.BindableKb["left"].ToString(), new Vector2(450, 520), Color.Green);
                     }
                     else
                     {
-                        spriteBatch.DrawString(menuText, "Toggle fullscreen: Off ", new Vector2(1000, 450), Color.White);
+                        spriteBatch.DrawString(optionsText, "Move Left: " + player.BindableKb["left"].ToString(), new Vector2(450, 520), Color.White);
+                    }
+                    if (rightRect.Intersects(mouseRect) || rebindingRight)
+                    {
+                        spriteBatch.DrawString(optionsText, "Move Right: " + player.BindableKb["right"].ToString(), new Vector2(450, 550), Color.Green);
+                    }
+                    else
+                    {
+                        spriteBatch.DrawString(optionsText, "Move Right: " + player.BindableKb["right"].ToString(), new Vector2(450, 550), Color.White);
+                    }
+                    if (rollRect.Intersects(mouseRect) || rebindingRoll)
+                    {
+                        spriteBatch.DrawString(optionsText, "Roll: " + player.BindableKb["roll"].ToString(), new Vector2(450, 580), Color.Green);
+                    }
+                    else
+                    {
+                        spriteBatch.DrawString(optionsText, "Roll: " + player.BindableKb["roll"].ToString(), new Vector2(450, 580), Color.White);
+                    }
+                    if (jumpRect.Intersects(mouseRect) || rebindingJump)
+                    {
+                        spriteBatch.DrawString(optionsText, "Jump: " + player.BindableKb["jump"].ToString(), new Vector2(450, 610), Color.Green);
+                    }
+                    else
+                    {
+                        spriteBatch.DrawString(optionsText, "Jump: " + player.BindableKb["jump"].ToString(), new Vector2(450, 610), Color.White);
+                    }
+                    if (downRect.Intersects(mouseRect) || rebindingDown)
+                    {
+                        spriteBatch.DrawString(optionsText, "Down-Dash: " + player.BindableKb["downDash"].ToString(), new Vector2(450, 640), Color.Green);
+                    }
+                    else
+                    {
+                        spriteBatch.DrawString(optionsText, "Down-Dash: " + player.BindableKb["downDash"].ToString(), new Vector2(450, 640), Color.White);
+                    }
+                    if (pauseRect.Intersects(mouseRect) || rebindingPause)
+                    {
+                        spriteBatch.DrawString(optionsText, "Pause: " + player.BindableKb["pause"].ToString(), new Vector2(450, 670), Color.Green);
+                    }
+                    else
+                    {
+                        spriteBatch.DrawString(optionsText, "Pause: " + player.BindableKb["pause"].ToString(), new Vector2(450, 670), Color.White);
+                    }
+
+                    fullscreenRect = new Rectangle(920, 450, 555, 32);
+                    if (fullscreen)
+                    {
+                        if (fullscreenRect.Intersects(mouseRect))
+                        {
+                            spriteBatch.DrawString(menuText, "Fullscreen toggle: On", new Vector2(920, 450), Color.Green);
+                        }
+                        else
+                        {
+                            spriteBatch.DrawString(menuText, "Fullscreen toggle: On", new Vector2(920, 450), Color.White);
+                        }
+                    }
+                    else
+                    {
+                        if (fullscreenRect.Intersects(mouseRect))
+                        {
+                            spriteBatch.DrawString(menuText, "Fullscreen toggle: Off", new Vector2(920, 450), Color.Green);
+                        }
+                        else
+                        {
+                            spriteBatch.DrawString(menuText, "Fullscreen toggle: Off", new Vector2(920, 450), Color.White);
+                        }
                     }
                     optionsReturnRect = new Rectangle(50, 65, 695, 32);
 
@@ -391,11 +707,11 @@ namespace Egg
                     {
                         if (optionsReturnRect.Intersects(mouseRect))
                         {
-                            spriteBatch.DrawString(menuText, "Press Tab to return to game", new Vector2(50, 65), Color.Green);
+                            spriteBatch.DrawString(menuText, "Press Tab to return to menu", new Vector2(50, 65), Color.Green);
                         }
                         else
                         {
-                            spriteBatch.DrawString(menuText, "Press Tab to return to game", new Vector2(50, 65), Color.White);
+                            spriteBatch.DrawString(menuText, "Press Tab to return to menu", new Vector2(50, 65), Color.White);
                         }
                     }
                     break;
@@ -713,25 +1029,6 @@ namespace Egg
             AddObjectToList(new Checkpoint(3, collisionTest, new Rectangle(1500, 250, 75, 75)));
             #endregion
 
-            #region Platform Code            
-            //AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(700, 500, 700, 100), Tile.TileType.Normal));
-            //AddObjectToList(new Tile(7, bottomRectangle, new Rectangle(0, 500, 500, 300), Tile.TileType.Normal));
-            //AddObjectToList(new Tile(11, sideRectangle, new Rectangle(0, 0, 100, 900), Tile.TileType.Normal));
-            //AddObjectToList(new Tile(12, sideRectangle, new Rectangle(500, 500, 200, 400), Tile.TileType.Normal));
-            //AddObjectToList(new Tile(13, sideRectangle, new Rectangle(1100, 400, 100, 200), Tile.TileType.Normal));
-            //AddObjectToList(new Tile(14, sideRectangle, new Rectangle(1600, 200, 100, 400), Tile.TileType.Normal));
-            //AddObjectToList(new Tile(15, topRectangle, new Rectangle(0, 300, 400, 100), Tile.TileType.Normal));
-            //AddObjectToList(new Tile(16, topRectangle, new Rectangle(1000, 200, 400, 100), Tile.TileType.Normal)); commented out to test bounce
-            #endregion
-
-            /* BOX CODE
-            AddObjectToList(new Tile(6, bottomRectangle, new Rectangle(200, 1600, 1300, 100), Tile.TileType.Normal));
-            AddObjectToList(new Tile(7, sideRectangle, new Rectangle(800, 1000, 100, 800), Tile.TileType.Normal));
-            AddObjectToList(new Tile(8, sideRectangle, new Rectangle(100, 1000, 100, 800), Tile.TileType.Normal));
-            AddObjectToList(new Tile(9, topRectangle, new Rectangle(100,  1000, 1000, 100), Tile.TileType.Normal));
-            */
-            //enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 16, 60);
-            //enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 4, 60, 5, 2, 100); //moving enemy
             enemy = new Enemy(new Rectangle(890, 500, 75, 75), collisionTest, 16, 60);
             enemy2 = new Enemy(new Rectangle(225, 250, 75, 75), collisionTest, 4, 60);
             enemy3 = new Enemy(new Rectangle(500, 250, 75, 75), collisionTest, 4, 60, 5, 2 , 100);
@@ -739,6 +1036,14 @@ namespace Egg
             AddObjectToList(enemy2);
             AddObjectToList(enemy3);
             player = new Player(5, collisionTest, new Rectangle(450, 350, 75, 75), Color.White);
+            
+            //default movement
+            player.BindableKb.Add("left", Keys.A);
+            player.BindableKb.Add("right", Keys.D);
+            player.BindableKb.Add("jump", Keys.Space);
+            player.BindableKb.Add("roll", Keys.LeftShift);
+            player.BindableKb.Add("downDash", Keys.S);
+            player.BindableKb.Add("pause", Keys.P);
             AddObjectToList(player);
 
             foreach (GameObject g in objectList)
@@ -766,7 +1071,7 @@ namespace Egg
         public void DebugKeyboardInputs()
         {
             //Must hold down P, O, and G at the same time to activate level editor
-            if (kb.IsKeyDown(Keys.P) && kb.IsKeyDown(Keys.O) && kb.IsKeyDown(Keys.G))
+            if (kb.IsKeyDown(player.BindableKb["pause"]) && kb.IsKeyDown(Keys.O) && kb.IsKeyDown(Keys.G))
             {
                 //Show dialog goes here.
                 Builder.ShowDialog();
