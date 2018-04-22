@@ -88,6 +88,9 @@ namespace Egg
 
         private Color color;
 
+        //for rebinding keys
+        private Dictionary<string, Keys> bindableKb;
+
         GameTime gameTime;
         #endregion
         //################
@@ -177,6 +180,8 @@ namespace Egg
             rollDelay = 30;
             hitStunDelay = 20;
             miliseconds = 2;
+
+            bindableKb = new Dictionary<string, Keys>();
         }
         #endregion
         //################

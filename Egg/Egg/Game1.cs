@@ -45,6 +45,13 @@ namespace Egg
        
 
         bool paused = false;
+        bool fullscreen = false;
+        MouseState ms;
+        MouseState previousMs;
+        Rectangle mouseRect;
+        Rectangle startRect;
+        Rectangle optionsRect;
+        Rectangle optionsReturnRect;
 
         Player player;
 
@@ -232,6 +239,11 @@ namespace Egg
 
             oldKB = kb;
             kb = Keyboard.GetState();
+
+            previousMs = ms;
+            ms = Mouse.GetState();
+
+            mouseRect = new Rectangle(ms.X, ms.Y, 1, 1);
             if (!paused)
             {
                 if (SingleKeyPress(Keys.P) && currentState != GameState.Options)
@@ -242,17 +254,17 @@ namespace Egg
                 switch (currentState)
                 {
                     case GameState.Menu:
-                        if (SingleKeyPress(Keys.Enter))
+                        if (SingleKeyPress(Keys.Enter) || (startRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)))
                         {
                             currentState = GameState.Game;
                         }
-                        else if (SingleKeyPress(Keys.Tab))
+                        else if (SingleKeyPress(Keys.Tab) || (optionsRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)))
                         {
                             currentState = GameState.Options;
                         }
                         break;
                     case GameState.Options:
-                        if (SingleKeyPress(Keys.Tab))
+                        if (SingleKeyPress(Keys.Tab) || (optionsReturnRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)))
                         {
                             if (paused)
                             {
@@ -278,7 +290,7 @@ namespace Egg
             }
             else
             {
-                if (SingleKeyPress(Keys.Tab))
+                if (SingleKeyPress(Keys.Tab) || (optionsReturnRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)))
                 {
                     if (currentState == GameState.Game)
                     {
@@ -323,23 +335,68 @@ namespace Egg
             {
                 case GameState.Menu:
                     spriteBatch.Draw(menu, new Rectangle(0, 0, 1920, 1080), Color.White);
+                    spriteBatch.Draw(topRectangle, mouseRect, Color.Red); //for testing
                     spriteBatch.DrawString(titleText, "Egg", new Vector2(880, 320), Color.White);
-                    spriteBatch.DrawString(menuText, "Press Enter", new Vector2(800, 470), Color.White);
-                    spriteBatch.DrawString(menuText, "- Or -", new Vector2(860, 570), Color.White);
-                    spriteBatch.DrawString(menuText, "Press Tab for Options", new Vector2(680, 670), Color.White);
-                    break;
-                case GameState.Options:
-                    spriteBatch.Draw(options, new Rectangle(0, 0, 1920, 1080), Color.White);
-                    spriteBatch.DrawString(menuText, "Options", new Vector2(850, 300), Color.White);
-                    spriteBatch.DrawString(menuText, "Rebind keys: ", new Vector2(450, 450), Color.White);
-                    spriteBatch.DrawString(menuText, "Toggle fullscreen: ", new Vector2(1000, 450), Color.White);
-                    if (paused)
+                    startRect = new Rectangle(690, 470, 515, 32);
+                    spriteBatch.DrawString(menuText, "Press Enter to Start", new Vector2(690, 470), Color.White);
+
+                    if (startRect.Intersects(mouseRect))
                     {
-                        spriteBatch.DrawString(menuText, "Press tab to return to game", new Vector2(50, 65), Color.White);
+                        spriteBatch.DrawString(menuText, "Press Enter to Start", new Vector2(690, 470), Color.Green);
                     }
                     else
                     {
-                        spriteBatch.DrawString(menuText, "Press tab to return to menu", new Vector2(50, 65), Color.White);
+                        spriteBatch.DrawString(menuText, "Press Enter to Start", new Vector2(690, 470), Color.White);
+                    }
+
+
+                    spriteBatch.DrawString(menuText, "- Or -", new Vector2(860, 570), Color.White);
+                    optionsRect = new Rectangle(680, 670, 545, 32);
+                    if (optionsRect.Intersects(mouseRect))
+                    {
+                        spriteBatch.DrawString(menuText, "Press Tab for Options", new Vector2(680, 670), Color.Green);
+                    }
+                    else
+                    {
+                        spriteBatch.DrawString(menuText, "Press Tab for Options", new Vector2(680, 670), Color.White);
+                    }
+                    break;
+                case GameState.Options:
+                    spriteBatch.Draw(options, new Rectangle(0, 0, 1920, 1080), Color.White);
+                    spriteBatch.Draw(topRectangle, mouseRect, Color.Red); //for testing
+                    spriteBatch.DrawString(menuText, "Options", new Vector2(850, 300), Color.White);
+                    spriteBatch.DrawString(menuText, "Rebind keys: ", new Vector2(450, 450), Color.White);
+                    if (fullscreen)
+                    {
+                        spriteBatch.DrawString(menuText, "Toggle fullscreen: On ", new Vector2(1000, 450), Color.White);
+                    }
+                    else
+                    {
+                        spriteBatch.DrawString(menuText, "Toggle fullscreen: Off ", new Vector2(1000, 450), Color.White);
+                    }
+                    optionsReturnRect = new Rectangle(50, 65, 695, 32);
+
+                    if (paused)
+                    {
+                        if (optionsReturnRect.Intersects(mouseRect))
+                        {
+                            spriteBatch.DrawString(menuText, "Press Tab to return to game", new Vector2(50, 65), Color.Green);
+                        }
+                        else
+                        {
+                            spriteBatch.DrawString(menuText, "Press Tab to return to game", new Vector2(50, 65), Color.White);
+                        }
+                    }
+                    else
+                    {
+                        if (optionsReturnRect.Intersects(mouseRect))
+                        {
+                            spriteBatch.DrawString(menuText, "Press Tab to return to game", new Vector2(50, 65), Color.Green);
+                        }
+                        else
+                        {
+                            spriteBatch.DrawString(menuText, "Press Tab to return to game", new Vector2(50, 65), Color.White);
+                        }
                     }
                     break;
                 case GameState.Game:
@@ -421,8 +478,17 @@ namespace Egg
             }
             if (paused && currentState == GameState.Game)
             {
-                spriteBatch.DrawString(menuText, "Paused", new Vector2(900, 400), Color.White);
-                spriteBatch.DrawString(menuText, "Press Tab for Options", new Vector2(700, 500), Color.White);
+                spriteBatch.DrawString(menuText, "Paused", new Vector2(870, 400), Color.White);
+                optionsReturnRect = new Rectangle(700, 500, 540, 32);
+                if (optionsReturnRect.Intersects(mouseRect))
+                {
+                    spriteBatch.DrawString(menuText, "Press Tab for Options", new Vector2(700, 500), Color.Green);
+                }
+                else
+                {
+                    spriteBatch.DrawString(menuText, "Press Tab for Options", new Vector2(700, 500), Color.White);
+                }
+
             }          
             spriteBatch.End();
 
@@ -441,6 +507,17 @@ namespace Egg
                 return false;
             }
             
+        }
+        public bool LeftMouseSinglePress(ButtonState n)
+        {
+            if (ms.LeftButton == n && previousMs.LeftButton != n)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         //Any logic during the game loop (minus drawing) goes here, as the Update loop is intended to hold logic involving the FSM between menus
@@ -656,7 +733,7 @@ namespace Egg
             //enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 16, 60);
             //enemy = new Enemy(new Rectangle(800, 400, 75, 75), collisionTest, 4, 60, 5, 2, 100); //moving enemy
             enemy = new Enemy(new Rectangle(890, 500, 75, 75), collisionTest, 16, 60);
-            enemy2 = new Enemy(new Rectangle(225, 150, 75, 75), collisionTest, 4, 60);
+            enemy2 = new Enemy(new Rectangle(245, 225, 75, 75), collisionTest, 4, 60);
             enemy3 = new Enemy(new Rectangle(500, 150, 75, 75), collisionTest, 4, 60, 5, 2 , 100);
             AddObjectToList(enemy);
             AddObjectToList(enemy2);
