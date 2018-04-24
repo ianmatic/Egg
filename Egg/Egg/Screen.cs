@@ -63,13 +63,14 @@ namespace Egg
             mapFileLocations.Add("demo3", @"..\..\..\..\Resources\levelExports\demo3");
             mapFileLocations.Add("demo4", @"..\..\..\..\Resources\levelExports\demo4");
             mapFileLocations.Add("variableSizeDemo", @"..\..\..\..\Resources\levelExports\nineByFifteen");
+            mapFileLocations.Add("collisionTest", @"..\..\..\..\Resources\levelExports\collisionTestMap");
                           //.Add("key", @"..\..\..\..\Resources\levelExports\(exported file in levelExports)
             #endregion
 
             tempScreenArray = new string[,]           
             {
                 {"mapDemo", "mapDemo", "mapDemo", "variableSizeDemo"},
-                {"demo2", "demo3", "demo3", "demo4"},
+                {"demo2", "collisionTest", "demo3", "demo4"},
                 { null, null, null, null},
                 { null, null, null, null},
                 { null, null, null, null}
@@ -181,17 +182,20 @@ namespace Egg
                 {                    
                     Texture2D tempTexture = textures[1];                    //create temp texture 
                     int textureNumber = GetTexture(levelMap[row, column]);  //get told which texture to put in place from levelMap
+
+                    //if the tile should be lowered, add its tile number to this list
                     if (textureNumber == 1 || textureNumber == 2 || textureNumber == 3)
                     {
                         screenTiles[row, column].Height -= (screenTiles[row, column].Height / 8) * 6;
                         screenTiles[row, column].Y += (screenTiles[row, column].Height / 8) * 6;
                     }
 
+                    //if it's an empty tile, set it to null in the 2d array
                     if (textureNumber == 0)
                     {
                         levelMap[row, column] = null;
                     }
-
+                    //otherwise, set the tile's texture to it's ref in the texture list & add tags
                     else
                     {
                         tempTexture = textures[textureNumber];                  //set texture into temp
@@ -215,6 +219,7 @@ namespace Egg
             int tileWidth = screenLength / HorizontalTileCount; //Set up as screen length divided into segments
             int tileHeight = screenHeight / VerticalTileCount;
 
+            //Look through each tile drawing it onto the map
             for (int row = 0; row < VerticalTileCount; row++)
             {
                 for (int column = 0; column < HorizontalTileCount; column++)

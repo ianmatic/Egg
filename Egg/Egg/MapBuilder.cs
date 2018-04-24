@@ -19,6 +19,8 @@ namespace Egg
         List<PictureBox> tabletButts = new List<PictureBox>();
         ImageBox chosenTile;
         Panel boxTiles;
+        Dictionary<string, string> ToShortTiles = new Dictionary<string, string>();
+        Dictionary<string, string> ToLongTiles = new Dictionary<string, string>();
 
         public Mappy()
         {
@@ -26,7 +28,7 @@ namespace Egg
 
             this.Height = 860;
             this.Width = 1550;
-
+            #region BoxTiles Panel Setup
             boxTiles = new Panel();
             boxTiles.Height = 330;
             boxTiles.Width = 205;
@@ -35,6 +37,45 @@ namespace Egg
             boxTiles.Name = "boxTiles";
             boxTiles.AutoScroll = true;
             Controls.Add(boxTiles);
+            #endregion
+
+            #region Tile Dictionary Setup
+            //light exterior tiles
+            ToShortTiles.Add("LTopLeft",     "b1");
+            ToShortTiles.Add("LTopMid",      "b2");
+            ToShortTiles.Add("LTopRight",    "b3");
+            ToShortTiles.Add("LMidLeft",     "b4");
+            //b5 doesn't exist (exterior tiles)
+            ToShortTiles.Add("LMidRight",    "b6");
+            ToShortTiles.Add("LBotLeft",     "b7");
+            ToShortTiles.Add("LBotMid",      "b8");
+            ToShortTiles.Add("LBotRight",    "b9");
+
+
+            //light interior corner tiles
+            ToShortTiles.Add("nLeftTop",     "n1");
+            ToShortTiles.Add("nRightTop",    "n2");
+            ToShortTiles.Add("nLeftBot",     "n3");
+            ToShortTiles.Add("nRightBot",    "n4");
+
+
+            //dark tiles all
+            ToShortTiles.Add("dTopLeft",     "i1");
+            ToShortTiles.Add("dTopMid",      "i2");
+            ToShortTiles.Add("dTopRight",    "i3");
+            ToShortTiles.Add("dMidLeft",     "i4");
+            ToShortTiles.Add("dSolid",       "i5");
+            ToShortTiles.Add("dMidRight",    "i6");
+            ToShortTiles.Add("dBotLeft",     "i7");
+            ToShortTiles.Add("dBotMid",      "i8");
+            ToShortTiles.Add("dBotRight",    "i9");
+
+            //setting up inverse dictionary
+            foreach (var entry in ToShortTiles)
+            {
+                ToLongTiles.Add(entry.Value, entry.Key);
+            }
+            #endregion
 
             InitializeTileBox();
             
@@ -138,6 +179,9 @@ namespace Egg
         private void BoxIndexChanged(object sender, EventArgs e)
         {
             //currentTile = boxSelect.Text.ToString();
+            ImageBox temp = (ImageBox)sender;
+            currentTile = temp.TileName;
+            //temp.
             chosenTile.Image = ImageSelect(currentTile);
         }
 
@@ -183,22 +227,21 @@ namespace Egg
             else
                 radioTag = "nt";            //neutral/normal
 
-            PictureBox tempCopy = (PictureBox)sender;
 
-            
-            // Drop the an image equal to the current drop 
-
+            ImageBox tempCopy = (ImageBox)sender;
+           
             // Clear the button if the delete is checked
-            //else if (chkDeleter.Checked == true) 
             if (chkDelete.Checked == true)
             {
                 tempCopy.Image = null;
-                tempCopy.Tag = null;
+                tempCopy.TileName = null;
+                tempCopy.Tag = null; 
             }
             else
             {
                 tempCopy.Image = ImageSelect(currentTile);
-                tempCopy.Tag = Translator(currentTile) + radioTag;
+                tempCopy.TileName = ToShortTiles[currentTile];
+                tempCopy.Tag = tempCopy.TileName + radioTag;
             }
             
             
@@ -240,7 +283,7 @@ namespace Egg
                 if (incrementer >= width)  //Check if a new line is needed and add if it is
                 {
                     if (btn.Tag != null)  //Make sure the button has a tag
-                        output += Translator(btnTag.ToString()) + btnRad + "," + Environment.NewLine;
+                        output += btnTag.ToString() + btnRad + "," + Environment.NewLine;
                     else  //If there's no tag, add 00
                         output += "0000" + "," + Environment.NewLine;
                     incrementer = 0;
@@ -248,7 +291,7 @@ namespace Egg
                 else if (0 <= incrementer && incrementer <= width) //If a new line isn't needed, run regularly
                 {
                     if (btn.Tag != null)  //Still make sure the button has a tag
-                        output += Translator(btnTag.ToString()) + btnRad + ",";
+                        output += btnTag.ToString() + btnRad + ",";
                     else  //If there's no tag, add 00
                         output += "0000" + ",";
                     incrementer++;
@@ -316,8 +359,8 @@ namespace Egg
         }
         #endregion
 
-        #region Translators
-
+        #region Translators (Replaced with dictionaries)
+        /*
         /// <summary>
         /// Takes in a string parameter "s" which is then run through a switch
         /// statement to convert and return it in it's encoded form for the exporter
@@ -381,6 +424,7 @@ namespace Egg
                     return "#### TRANSLATOR BROKEN #####";
             }
         }
+
         /// <summary>
         /// Translates text file names for tiles back to tiles names
         /// </summary>
@@ -440,7 +484,7 @@ namespace Egg
             }
 
         }
-
+        */
         #endregion
 
         private void MapBuilder_Load(object sender, EventArgs e)
@@ -448,6 +492,9 @@ namespace Egg
             InitialMap();
         }
 
+        /// <summary>
+        /// Creates the initially used empty tileMap
+        /// </summary>
         private void InitialMap()
         {
             const int BASEX = 300;  // Top left corner of the container
@@ -512,12 +559,9 @@ namespace Egg
         #region Visual Tile Selector
 
 
-
         private void InitializeTileBox()
         {
             //fields for tile setup
-            int tileTop = 10;
-            int tileLeft = 0;
             int tileWidth = (boxTiles.Width - 24) / 3;
             int tileHeight = tileWidth;
             int tileBuffer = 2;
