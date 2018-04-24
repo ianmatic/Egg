@@ -84,6 +84,10 @@
     <Content Include="Resources\dTopLeft.png" />
     <Content Include="Resources\dTopMid.png" />
     <Content Include="Resources\dTopRight.png" />
+    <Content Include="Resources\e1.png" />
+    <Content Include="Resources\e2.png" />
+    <Content Include="Resources\e3.png" />
+    <Content Include="Resources\e4.png" />
     <Content Include="Resources\indicator.png" />
     <Content Include="Resources\LBotLeft.png" />
     <Content Include="Resources\LBotMid.png" />
@@ -99,6 +103,7 @@
     <Content Include="Resources\nLeftTop.png" />
     <Content Include="Resources\nRightBot.png" />
     <Content Include="Resources\nRightTop.png" />
+    <Content Include="Resources\player.png" />
     <Content Include="Resources\tile3_scaled.png" />
     <Content Include="Resources\tile4_scaled.png" />
     <Content Include="Resources\Untitled-2.png" />

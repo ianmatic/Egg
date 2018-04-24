@@ -17,8 +17,8 @@ namespace Egg
     public partial class Mappy : Form
     {
         List<PictureBox> tabletButts = new List<PictureBox>();
-        ImageBox chosenTile;
         Panel boxTiles;
+        ImageBox chosenTile;
         Dictionary<string, string> ToShortTiles = new Dictionary<string, string>();
         Dictionary<string, string> ToLongTiles = new Dictionary<string, string>();
 
@@ -70,11 +70,15 @@ namespace Egg
             ToShortTiles.Add("dBotMid",      "i8");
             ToShortTiles.Add("dBotRight",    "i9");
 
-            //setting up inverse dictionary
-            foreach (var entry in ToShortTiles)
-            {
-                ToLongTiles.Add(entry.Value, entry.Key);
-            }
+            //entities
+            ToShortTiles.Add("player",      "p1");
+            ToShortTiles.Add("e1",          "e1");
+            ToShortTiles.Add("e2",          "e1");
+            ToShortTiles.Add("e3",          "e1");
+            ToShortTiles.Add("e4",          "e1");
+
+            
+            //set up inverse dictionary here if it's every needed
             #endregion
 
             InitializeTileBox();
@@ -587,6 +591,13 @@ namespace Egg
                 {"nLeftBot", "nRightBot" }
             };
 
+            string[,] entities = new string[,]
+            {
+                {"player",  "e1" },
+                {"e2",      "e3" },
+                {"e3",      "e4" }   
+            };
+
             #region Adding 3x3 Tile Sets
             //loop that populates boxTiles container with first set of clickable tiles
             for (int column = 0; column < 3; column++)
@@ -635,10 +646,34 @@ namespace Egg
                     boxTiles.Controls.Add(tempTile);
                 }
             }
+            #endregion  
+
+            #region Adding 2x3 Tile Sets
+            for (int column = 0; column < 2; column++)
+            {
+                for (int row = 0; row < 3; row++)
+                {
+                    ImageBox tempTile = new ImageBox();
+                    tempTile.Height = tileHeight;
+                    tempTile.Width = tileWidth;
+                    tempTile.Top = (row * tileHeight) + (row * tileBuffer) + (topBuffer * 6) + (6 * tileHeight);
+                    tempTile.Left = (column * tileWidth) + (column * tileBuffer) + 4 + (boxTiles.Width / 6);
+
+                    tempTile.Visible = true;
+                    tempTile.Image = ImageSelect(entities[row, column]);
+                    tempTile.TileName = entities[row, column];
+
+
+                    tempTile.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                    tempTile.SizeMode = PictureBoxSizeMode.Zoom;
+                    tempTile.Click += TileClicked;
+
+                    boxTiles.Controls.Add(tempTile);
+                }
+            }
             #endregion
 
             #region Adding 2x2 Tile Sets
-
             //loop that populates boxTiles container with third set of clickable tiles
             for (int column = 0; column < 2; column++)
             {
@@ -647,7 +682,7 @@ namespace Egg
                     ImageBox tempTile = new ImageBox();
                     tempTile.Height = tileHeight;
                     tempTile.Width = tileWidth;
-                    tempTile.Top = (row * tileHeight) + (row * tileBuffer) + (topBuffer * 6) + (6 * tileHeight);
+                    tempTile.Top = (row * tileHeight) + (row * tileBuffer) + (topBuffer * 20) + (6 * tileHeight);
                     tempTile.Left = (column * tileWidth) + (column * tileBuffer) + 4 + (boxTiles.Width / 6);
 
                     tempTile.Visible = true;
@@ -670,7 +705,7 @@ namespace Egg
             
             indicator.Height = tileHeight;
             indicator.Width = tileWidth;
-            indicator.Top = (0 * tileHeight) + (0 * tileBuffer) + (topBuffer * 6) + (6 * tileHeight);
+            indicator.Top = (0 * tileHeight) + (0 * tileBuffer) + (topBuffer * 9) + (6 * tileHeight);
             indicator.Left = (0 * tileWidth) + (0 * tileBuffer) + 4 + (boxTiles.Width / 6);
 
             indicator.Visible = true;
