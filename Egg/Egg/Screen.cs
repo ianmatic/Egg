@@ -20,23 +20,19 @@ namespace Egg
         int screenHeight = 1080;        //same for this 
         string currentLevel;
         string[,] level;
-
-        int currentTempArrayC = 2;
-        int currentTempArrayR = 0;
+        string filePath;
+     
         StreamReader interpreter;
         Tile[,] screenTiles;
         Dictionary<string, Tile.TileType> tileTypeDict = new Dictionary<string, Tile.TileType>();
-        Dictionary<string, string> mapFileLocations = new Dictionary<string, string>();
 
         string[,] tempScreenArray;
 
         /// <summary>
         /// By default, the screen is populated with screenTiles to be an X by Y array filled with empty tiles
         /// </summary>
-        public Screen(string map)
+        public Screen(string filePath)
         {
-            currentLevel = map;
-
             #region initializing tile array
             screenTiles = new Tile[HorizontalTileCount, VerticalTileCount];  //initializes screenTiles
             for (int row = 0; row < HorizontalTileCount; row++)
@@ -48,35 +44,16 @@ namespace Egg
             }
             #endregion
 
+            this.filePath = filePath;
+
             #region Tile Type Dictionary element adding
             tileTypeDict.Add("nt", Tile.TileType.Normal);
             tileTypeDict.Add("dm", Tile.TileType.Damaging);
             tileTypeDict.Add("mv", Tile.TileType.Moving);
             tileTypeDict.Add("nc", Tile.TileType.NoCollision);
             tileTypeDict.Add("00", Tile.TileType.NoCollision);
-            #endregion
-
-            #region Map Location Dictionary element adding
-            //Add in an external trigger in tiles to send players to different maps.
-            mapFileLocations.Add("mapDemo", @"..\..\..\..\Resources\levelExports\platformDemo");
-            mapFileLocations.Add("demo2", @"..\..\..\..\Resources\levelExports\demo2");
-            mapFileLocations.Add("demo3", @"..\..\..\..\Resources\levelExports\demo3");
-            mapFileLocations.Add("demo4", @"..\..\..\..\Resources\levelExports\demo4");
-            mapFileLocations.Add("variableSizeDemo", @"..\..\..\..\Resources\levelExports\nineByFifteen");
-            mapFileLocations.Add("collisionTest", @"..\..\..\..\Resources\levelExports\collisionTestMap");
-                          //.Add("key", @"..\..\..\..\Resources\levelExports\(exported file in levelExports)
-            #endregion
-
-            tempScreenArray = new string[,]           
-            {
-                {"mapDemo", "mapDemo", "mapDemo", "variableSizeDemo"},
-                {"demo2", "collisionTest", "demo3", "demo4"},
-                { null, null, null, null},
-                { null, null, null, null},
-                { null, null, null, null}
-            };
-
-            
+            #endregion           
+        
         }
 
         /// <summary>
@@ -84,7 +61,7 @@ namespace Egg
         /// </summary>
         public Tile[,] UpdateTiles(List<Texture2D> textures)
         {
-            string[,] baseLevelMap = LevelInterpreter(mapFileLocations[currentLevel]);      //turn the text file into a 2d array
+            string[,] baseLevelMap = LevelInterpreter(filePath);      //turn the text file into a 2d array
             Tile[,] tileMap = new Tile[VerticalTileCount, HorizontalTileCount];     //turn that 2d array into a 2d array of tiles
             tileMap = LoadTiles(baseLevelMap, textures);                            //populate those 2d arrays with 2d textures
             screenTiles = tileMap;
@@ -322,78 +299,13 @@ namespace Egg
                 default:    //failsafe case
                     return 0;
             }
-        }
-
-        /// <summary>
-        /// function change levels, returns true if successful
-        /// </summary>
-        /// <param name="newLevel"></param>
-        public bool ChangeLevel(string direction)
-        {           
-            switch (direction)
-            {               
-                case "left":
-                    if (currentTempArrayC == 0)
-                    {
-                        return false;
-                    }
-                    else if (tempScreenArray[currentTempArrayR, currentTempArrayC - 1] == null)
-                    {
-                        return false;
-                    }
-                    LevelMapClear();
-                    currentLevel = tempScreenArray[currentTempArrayR, currentTempArrayC - 1];
-                    currentTempArrayC -= 1;
-                    break;
-                case "right":
-                    if (currentTempArrayC == tempScreenArray.GetLength(1) - 1)
-                    {
-                        return false;
-                    }
-                    else if (tempScreenArray[currentTempArrayR, currentTempArrayC + 1] == null)
-                    {
-                        return false;
-                    }
-                    LevelMapClear();
-                    currentLevel = tempScreenArray[currentTempArrayR, currentTempArrayC + 1];
-                    currentTempArrayC += 1;
-                    break;
-                case "up":
-                    if (currentTempArrayR == 0)
-                    {
-                        return false;
-                    }
-                    else if (tempScreenArray[currentTempArrayR - 1, currentTempArrayC] == null)
-                    {
-                        return false;
-                    }
-                    LevelMapClear();
-                    currentLevel = tempScreenArray[currentTempArrayR - 1, currentTempArrayC];
-                    currentTempArrayR -= 1;
-                    break;
-                case "down":
-                    if (currentTempArrayR == tempScreenArray.GetLength(0) - 1)
-                    {
-                        return false;
-                    }
-                    else if (tempScreenArray[currentTempArrayR + 1, currentTempArrayC] == null)
-                    {
-                        return false;
-                    }
-                    LevelMapClear();
-                    currentLevel = tempScreenArray[currentTempArrayR + 1, currentTempArrayC];
-                    currentTempArrayR += 1;
-                    break;
-            }
-
-            return true;
-        }
+        }        
 
         /// <summary>
         /// Function to fully clear out items in a map
         /// IMPORTANT: Call any time while changing levels
         /// </summary>
-        private void LevelMapClear()
+        public void LevelMapClear()
         {
             for (int row = 0; row < VerticalTileCount; row++)
             {
