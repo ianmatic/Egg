@@ -77,11 +77,16 @@ namespace Egg
         double secondsPerFrame;
         double timeCounter = 0;
         int numSpritesPerSheet = 4;
-        int widthOfASingleSprite = 795 / 4;
+        int widthOfASingleSprite = 56 / 4;
         bool animationOn= false;
-        double timeCounter2;
+        Dictionary<int, Texture2D> walkFrameDictionary;
+
+       
         GameTime gameTime = new GameTime();
 
+        //enemy texture
+        Texture2D jellyBoi;
+      
 
         //Tile Fields
         public Texture2D blankTile;
@@ -163,18 +168,20 @@ namespace Egg
             optionsText = Content.Load<SpriteFont>("optionsText");
             menu = Content.Load<Texture2D>("menuTexture");
             options = Content.Load<Texture2D>("optionsTexture");
-
+            jellyBoi = Content.Load<Texture2D>("jellyboi");
 
             tileSpriteList = new List<Texture2D>();
             //Put tile loop here
 
             tempEnemyList = new List<Enemy>();
-
-            PotatoDebugging();
-
             //animation Stuff
             spriteSheet = Content.Load<Texture2D>("sprites");
+            PotatoDebugging();
+            walkFrameDictionary = new Dictionary<int, Texture2D>();
+            
            
+           
+            
             
 
 
@@ -1029,13 +1036,13 @@ namespace Egg
             AddObjectToList(new Checkpoint(3, collisionTest, new Rectangle(1500, 250, 75, 75)));
             #endregion
 
-            enemy = new Enemy(new Rectangle(890, 500, 75, 75), collisionTest, 16, 60);
-            enemy2 = new Enemy(new Rectangle(225, 250, 75, 75), collisionTest, 4, 60);
-            enemy3 = new Enemy(new Rectangle(500, 250, 75, 75), collisionTest, 4, 60, 5, 2 , 100);
+            enemy = new Enemy(new Rectangle(890, 500, 75, 75), jellyBoi, 16, 60);
+            enemy2 = new Enemy(new Rectangle(225, 250, 75, 75), jellyBoi, 4, 60);
+            enemy3 = new Enemy(new Rectangle(500, 250, 75, 75), jellyBoi, 4, 60, 5, 2 , 100);
             AddObjectToList(enemy);
             AddObjectToList(enemy2);
             AddObjectToList(enemy3);
-            player = new Player(5, collisionTest, new Rectangle(450, 350, 75, 75), Color.White);
+            player = new Player(5, collisionTest , new Rectangle(450, 350, 75, 75), Color.White);
             
             //default movement
             player.BindableKb.Add("left", Keys.A);
@@ -1057,15 +1064,15 @@ namespace Egg
             secondsPerFrame = 1.0f / fps; 
             timeCounter += time.ElapsedGameTime.TotalSeconds;
 
-            if (timeCounter >=  5*secondsPerFrame) //if 3 frames have passed
+            if (timeCounter >=  10*secondsPerFrame) //if 3 frames have passed
             {
                  currentFrame++; //move to next frame 
-                    if (currentFrame >= 4) currentFrame = 1; //if it reaches the end of the spritesheet, go back to the beginning
+                 if (currentFrame >= 4) currentFrame = 1; //if it reaches the end of the spritesheet, go back to the beginning
 
 
-                timeCounter -= 5*secondsPerFrame; //reduce timeCounter so it can restart process
+                timeCounter -= 10*secondsPerFrame; //reduce timeCounter so it can restart process
             }
-
+            
             
         }
         public void DebugKeyboardInputs()
@@ -1112,10 +1119,10 @@ namespace Egg
 
         public void DrawWalking( SpriteEffects flip) //this is for test will edit when we have actual animation assets
         {
-            
+           
             spriteBatch.Draw(
                 spriteSheet,
-                new Vector2(player.Hitbox.X ,player.Hitbox.Y-200),
+                new Vector2(player.Hitbox.X ,player.Hitbox.Y),
                 new Rectangle(widthOfASingleSprite * currentFrame, 0, widthOfASingleSprite, spriteSheet.Height),
                 Color.White,
                 0.0f,
@@ -1123,13 +1130,13 @@ namespace Egg
                 1.0f,
                 flip,
                 0.0f);
-
+         
         }
         public void DrawIdle( SpriteEffects flip) //this is for test will edit when we have actual animation assets
         {
                 spriteBatch.Draw(
                 spriteSheet,
-                 new Vector2(player.Hitbox.X , player.Hitbox.Y- 200),
+                 new Vector2(player.Hitbox.X , player.Hitbox.Y),
                 new Rectangle(0, 0, widthOfASingleSprite, spriteSheet.Height),
                 Color.White,
                 0.0f,
