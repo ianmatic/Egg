@@ -75,7 +75,6 @@ namespace Egg
         double fps = 60.0;
         double secondsPerFrame;
         double timeCounter = 0;
-        bool animationOn= false;
         Dictionary<int, Texture2D> walkFrameDictionary;
         Dictionary<int, Texture2D> walkFrameDictionaryLeft;
         Dictionary<int, Texture2D> rollFrameDictionary;
@@ -777,8 +776,8 @@ namespace Egg
                     {
 
                         g.Draw(spriteBatch);
-                        if (animationOn == true)
-                        {
+                        
+                        
                             if (g is Player)
                             {
                                 Player p = (Player)g;
@@ -827,10 +826,14 @@ namespace Egg
                                 {
                                     DrawIdle(false);
                                 }
+                                else if(p.PlayerState == PlayerState.DownDash)
+                                {
+                                    DrawDownDash();
+                                }
 
                             }
 
-                        }
+                        
                     }
                     if (player.IsDebugging) //debugging text for player
                     {
@@ -1150,18 +1153,7 @@ namespace Egg
 
 
             }
-            if (SingleKeyPress(Keys.F11))
-            {
-                if(animationOn == true)
-                {
-                    animationOn = false;
-                }
-                else
-                {
-                    animationOn = true;
-                }
-      
-            }
+           
 
             //Add more inputs here
         }
@@ -1223,6 +1215,10 @@ namespace Egg
         public void DrawFlutter(bool isFlipped)
         {
 
+        }
+        public void DrawDownDash()
+        {
+            player.DefaultSprite = rollFrameDictionary[1];
         }
 
 
