@@ -830,7 +830,14 @@ namespace Egg
                                 {
                                     DrawDownDash();
                                 }
-
+                                else if(p.PlayerState == PlayerState.BounceLeft)
+                                {
+                                    DrawRoll(true);
+                                }
+                                else if (p.PlayerState == PlayerState.BounceRight)
+                                {
+                                    DrawRoll(false);
+                                }
                             }
 
                         
@@ -1116,13 +1123,13 @@ namespace Egg
             secondsPerFrame = 1.0f / fps; 
             timeCounter += time.ElapsedGameTime.TotalSeconds;
 
-            if (timeCounter >=  6*secondsPerFrame) //if 3 frames have passed
+            if (timeCounter >=  3*secondsPerFrame) //if 3 frames have passed
             {
                  currentFrame++; //move to next frame 
                  if (currentFrame >= 4) currentFrame = 1; //if it reaches the end of the spritesheet, go back to the beginning
 
 
-                timeCounter -= 6*secondsPerFrame; //reduce timeCounter so it can restart process
+                timeCounter -= 3*secondsPerFrame; //reduce timeCounter so it can restart process
             }
             
             
