@@ -71,7 +71,7 @@ namespace Egg
         //for directionality and FSM
         private bool isFacingRight;
         private PlayerState playerState;
-
+        private PlayerState previousPlayerState;
         //for movement
         private bool rollInAir;
         private bool isRolling;
@@ -90,6 +90,8 @@ namespace Egg
 
         //for rebinding keys
         private Dictionary<string, Keys> bindableKb;
+
+        private int collectedChickens;
 
         GameTime gameTime;
         #endregion
@@ -151,6 +153,16 @@ namespace Egg
             get { return bindableKb; }
             set { bindableKb = value; }
         }
+        public int CollectedChickens
+        {
+            get { return collectedChickens; }
+            set { collectedChickens = value; }
+        }
+
+        public PlayerState PreviousPlayerState
+        {
+            get { return previousPlayerState; }
+        }
         #endregion
         //################
 
@@ -185,6 +197,7 @@ namespace Egg
             rollDelay = 30;
             hitStunDelay = 20;
             miliseconds = 2;
+            collectedChickens = 0;
 
             bindableKb = new Dictionary<string, Keys>();
         }
@@ -572,6 +585,7 @@ namespace Egg
         {
             //previousPosition tracks player from previous frame
             previousPlayerPosition = playerPosition;
+            previousPlayerState = PlayerState;
             playerPosition = new Vector2(X, Y); //player position of current frame
 
 
@@ -1306,7 +1320,15 @@ namespace Egg
             }
         }
         //Implement when working on enemy collision
-       
+
+
+        /// <summary>
+        /// Whenever the player touches an active chicken, they "save" it (counter is incremented)
+        /// </summary>
+        public void UpdateChickenCounter()
+        {
+            collectedChickens++;
+        }
         //not applicable
         public override void CheckColliderAgainstPlayer(Player p)
         {

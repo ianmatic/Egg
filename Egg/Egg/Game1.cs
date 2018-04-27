@@ -34,10 +34,10 @@ namespace Egg
         Texture2D topRectangle;
         Texture2D sideRectangle;
         Texture2D collisionTest;
-        Screen mainScreen = new Screen("mapDemo");
+        Screen tilesScreen = new Screen("mapDemo");
+        Screen entitiesScreen = new Screen("mapDemo");
 
         GameState currentState;
-        //GameState previousState;
         KeyboardState kb;
         KeyboardState oldKB;
         Enemy enemy;
@@ -76,18 +76,31 @@ namespace Egg
         double fps = 60.0;
         double secondsPerFrame;
         double timeCounter = 0;
-        int numSpritesPerSheet = 4;
-        int widthOfASingleSprite = 56 / 4;
-        bool animationOn= false;
         Dictionary<int, Texture2D> walkFrameDictionary;
-
-       
+        Dictionary<int, Texture2D> walkFrameDictionaryLeft;
+        Dictionary<int, Texture2D> rollFrameDictionary;
+        Dictionary<int, Texture2D> rollFrameDictionaryLeft;
         GameTime gameTime = new GameTime();
 
         //enemy texture
         Texture2D jellyBoi;
-      
-
+        //frames of animation
+        Texture2D walkCycle1;
+        Texture2D walkCycle2;
+        Texture2D walkCycle3;
+        Texture2D walkCycle4;
+        Texture2D walkCycleLeft1;
+        Texture2D walkCycleLeft2;
+        Texture2D walkCycleLeft3;
+        Texture2D walkCycleLeft4;
+        Texture2D rollCycle1;
+        Texture2D rollCycle2;
+        Texture2D rollCycle3;
+        Texture2D rollCycle4;
+        Texture2D rollCycleLeft1;
+        Texture2D rollCycleLeft2;
+        Texture2D rollCycleLeft3;
+        Texture2D rollCycleLeft4;
         //Tile Fields
         public Texture2D blankTile;
         public Texture2D LTopLeft;
@@ -111,6 +124,8 @@ namespace Egg
         public Texture2D nLeftTop;
         public Texture2D nRightBot;
         public Texture2D nRightTop;
+        public Texture2D enemy1;
+        
 
         //DO NOT ADD DIRECTLY TO THIS LIST
         List<GameObject> objectList;
@@ -177,17 +192,52 @@ namespace Egg
             //animation Stuff
             spriteSheet = Content.Load<Texture2D>("sprites");
             PotatoDebugging();
+            #region loading and storing animations
             walkFrameDictionary = new Dictionary<int, Texture2D>();
-            
-           
-           
-            
-            
+            walkFrameDictionaryLeft = new Dictionary<int, Texture2D>();
+            rollFrameDictionary = new Dictionary<int, Texture2D>();
+            rollFrameDictionaryLeft = new Dictionary<int, Texture2D>();
+            walkCycle1 = Content.Load<Texture2D>("walkCycle 1");
+            walkCycle2 = Content.Load<Texture2D>("walkCycle2");
+            walkCycle3 = Content.Load<Texture2D>("walkCycle3");
+            walkCycle4 = Content.Load<Texture2D>("walkCycle4");
+            walkCycleLeft1 = Content.Load<Texture2D>("walkCycleLeft1");
+            walkCycleLeft2 = Content.Load<Texture2D>("walkCycleLeft2");
+            walkCycleLeft3 = Content.Load<Texture2D>("walkCycleLeft3");
+            walkCycleLeft4 = Content.Load<Texture2D>("walkCycleLeft4");
+            rollCycle1 = Content.Load<Texture2D>("rollCycle1");
+            rollCycle2 = Content.Load<Texture2D>("rollCycle2");
+            rollCycle3 = Content.Load<Texture2D>("rollCycle3");
+            rollCycle4 = Content.Load<Texture2D>("rollCycle4");
+            rollCycleLeft1 = Content.Load<Texture2D>("rollCycleLeft1");
+            rollCycleLeft2 = Content.Load<Texture2D>("rollCycleLeft2");
+            rollCycleLeft3 = Content.Load<Texture2D>("rollCycleLeft3");
+            rollCycleLeft4 = Content.Load<Texture2D>("rollCycleLeft4");
+            walkFrameDictionary.Add(1, walkCycle1);
+            walkFrameDictionary.Add(2, walkCycle2);
+            walkFrameDictionary.Add(3, walkCycle3);
+            walkFrameDictionary.Add(4, walkCycle4);
+            walkFrameDictionaryLeft.Add(1, walkCycleLeft1);
+            walkFrameDictionaryLeft.Add(2, walkCycleLeft2);
+            walkFrameDictionaryLeft.Add(3, walkCycleLeft3);
+            walkFrameDictionaryLeft.Add(4, walkCycleLeft4);
+            rollFrameDictionary.Add(1, rollCycle1);
+            rollFrameDictionary.Add(2, rollCycle2);
+            rollFrameDictionary.Add(3, rollCycle3);
+            rollFrameDictionary.Add(4, rollCycle4);
+            rollFrameDictionaryLeft.Add(1, rollCycleLeft1);
+            rollFrameDictionaryLeft.Add(2, rollCycleLeft2);
+            rollFrameDictionaryLeft.Add(3, rollCycleLeft3);
+            rollFrameDictionaryLeft.Add(4, rollCycleLeft4);
+            #endregion
+
+
 
 
 
             #region loading Tiles
             blankTile = Content.Load<Texture2D>(@"clearTile");
+
             LTopLeft = Content.Load<Texture2D>(@"tiles\LTopLeft");
             LTopMid = Content.Load<Texture2D>(@"tiles\LTopMid");
             LTopRight = Content.Load<Texture2D>(@"tiles\LTopRight");
@@ -196,6 +246,7 @@ namespace Egg
             LBotLeft = Content.Load<Texture2D>(@"tiles\LBotLeft");
             LBotRight = Content.Load<Texture2D>(@"tiles\LBotRight");
             LBotMid = Content.Load<Texture2D>(@"tiles\LBotMid");
+
             dBotLeft = Content.Load<Texture2D>(@"tiles\dBotLeft");
             dBotMid = Content.Load<Texture2D>(@"tiles\dBotMid");
             dBotRight = Content.Load<Texture2D>(@"tiles\dBotRight");
@@ -205,10 +256,14 @@ namespace Egg
             dSolid = Content.Load<Texture2D>(@"tiles\dSolid");
             dTopMid = Content.Load<Texture2D>(@"tiles\dTopMid");
             dTopRight = Content.Load<Texture2D>(@"tiles\dTopRight");
+
             nLeftTop = Content.Load<Texture2D>(@"tiles\nLeftTop");
             nLeftBot = Content.Load<Texture2D>(@"tiles\nLeftbot");
             nRightBot = Content.Load<Texture2D>(@"tiles\nRightBot");
             nRightTop = Content.Load<Texture2D>(@"tiles\nRightTop");
+
+            enemy1 = Content.Load<Texture2D>(@"entity");
+
 
             tileList.Add(blankTile);
 
@@ -238,7 +293,8 @@ namespace Egg
             tileList.Add(nRightTop);
             #endregion 
             
-            mainScreen.UpdateTiles(tileList);
+            tilesScreen.UpdateTiles(tileList);
+            entitiesScreen.UpdateTiles(tileList);
         }
 
         /// <summary>
@@ -723,67 +779,79 @@ namespace Egg
                     }
                     break;
                 case GameState.Game:
-                    mainScreen.DrawTilesFromMap(spriteBatch, @"..\..\..\..\Resources\levelExports\platformDemo", tileList);
+                    tilesScreen.DrawTilesFromMap(spriteBatch, @"..\..\..\..\Resources\levelExports\platformDemo", tileList);
+                    //entitiesScreen.DrawTilesFromMap(spriteBatch, "does having a dumb thing here break stuff?", tileList);
                     //Draws potatos to test DrawLevel
 
                     foreach (GameObject g in objectList)
                     {
 
                         g.Draw(spriteBatch);
-                        if (animationOn == true)
-                        {
+                        
+                        
                             if (g is Player)
                             {
                                 Player p = (Player)g;
 
                                 if (p.PlayerState == PlayerState.IdleLeft)
                                 {
-                                    DrawIdle(SpriteEffects.FlipHorizontally);
+                                    DrawIdle(true);
                                 }
                                 else if (p.PlayerState == PlayerState.IdleRight)
                                 {
-                                    DrawIdle(SpriteEffects.None);
+                                    DrawIdle(false);
                                 }
                                 else if (p.PlayerState == PlayerState.WalkLeft)
                                 {
-                                     DrawWalking(SpriteEffects.FlipHorizontally);
+                                     DrawWalking(true);
                                 }
                                 else if (p.PlayerState == PlayerState.WalkRight)
                                 {
-                                     DrawWalking(SpriteEffects.None);
+                                     DrawWalking(false);
                                 }
                                 else if (p.PlayerState == PlayerState.JumpLeft)
                                 {
-                                    DrawIdle(SpriteEffects.FlipHorizontally);
+                                    DrawIdle(true);
                                 }
                                 else if (p.PlayerState == PlayerState.JumpRight)
                                 {
-                                    DrawIdle(SpriteEffects.None);
+                                    DrawIdle(false);
                                 }
                                 else if (p.PlayerState == PlayerState.Fall)
                                 {
-                                    DrawIdle(SpriteEffects.None);
+                                    DrawFalling();
                                 }
                                 else if( p.PlayerState == PlayerState.RollLeft)
                                 {
-                                    DrawWalking(SpriteEffects.FlipHorizontally);
+                                    DrawRoll(true);
                                 }
                                 else if (p.PlayerState == PlayerState.RollRight)
                                 {
-                                    DrawWalking(SpriteEffects.None);
+                                    DrawRoll(false);
                                 }
                                 else if (p.PlayerState == PlayerState.HitStunLeft)
                                 {
-                                    DrawIdle(SpriteEffects.FlipHorizontally);
+                                    DrawIdle(true);
                                 }
                                 else if (p.PlayerState == PlayerState.HitStunRight)
                                 {
-                                    DrawIdle(SpriteEffects.None);
+                                    DrawIdle(false);
                                 }
-
+                                else if(p.PlayerState == PlayerState.DownDash)
+                                {
+                                    DrawDownDash();
+                                }
+                                else if(p.PlayerState == PlayerState.BounceLeft)
+                                {
+                                    DrawRoll(true);
+                                }
+                                else if (p.PlayerState == PlayerState.BounceRight)
+                                {
+                                    DrawRoll(false);
+                                }
                             }
 
-                        }
+                        
                     }
                     if (player.IsDebugging) //debugging text for player
                     {
@@ -792,6 +860,12 @@ namespace Egg
                         spriteBatch.DrawString(menuText, "Player State: " + player.PlayerState, new Vector2(100, 95), Color.Cyan);
                         spriteBatch.DrawString(menuText, "Facing right?: " + player.IsFacingRight, new Vector2(100, 130), Color.Cyan);
                         spriteBatch.DrawString(menuText, "hitpoints: " + player.Hitpoints, new Vector2(100, 165), Color.Cyan);
+                    }
+                    else
+                    {
+                        //Draw collectibles
+                        spriteBatch.Draw(testSprite, new Rectangle(135, 55, 40, 40), Color.White);
+                        spriteBatch.DrawString(menuText, player.CollectedChickens.ToString(), new Vector2(200, 60), Color.Orange);
                     }
                     break;
 
@@ -846,7 +920,7 @@ namespace Egg
         //Any logic during the game loop (minus drawing) goes here, as the Update loop is intended to hold logic involving the FSM between menus
         private void GameUpdateLoop()
         {
-            Tile[,] tileSet = mainScreen.UpdateTiles(tileList);
+            Tile[,] tileSet = tilesScreen.UpdateTiles(tileList);
                       
             foreach (GameObject n in objectList)
             {               
@@ -860,7 +934,7 @@ namespace Egg
                     {
                         if (p.Hitbox.X < 0)
                         {
-                            if (mainScreen.ChangeLevel("left"))
+                            if (tilesScreen.ChangeLevel("left"))
                             {
                                 Rectangle temp = p.Hitbox;
                                 temp.X = GraphicsDevice.Viewport.Width;
@@ -873,7 +947,7 @@ namespace Egg
                         }
                         else if (p.Hitbox.X > GraphicsDevice.Viewport.Width)
                         {
-                            if (mainScreen.ChangeLevel("right"))
+                            if (tilesScreen.ChangeLevel("right"))
                             {
                                 Rectangle temp = p.Hitbox;
                                 temp.X = 0;
@@ -887,21 +961,17 @@ namespace Egg
 
                         if (p.Hitbox.Y < 0)
                         {
-                            if (mainScreen.ChangeLevel("up"))
+                            if (tilesScreen.ChangeLevel("up"))
                             {
                                 Rectangle temp = p.Hitbox;
                                 temp.Y = GraphicsDevice.Viewport.Height;
                                 p.Hitbox = temp;
                             }
-                            else
-                            {
-                                p.Hitbox = p.LastCheckpoint;
-                            }
 
                         }
                         else if (p.Hitbox.Y > GraphicsDevice.Viewport.Height)
                         {
-                            if (mainScreen.ChangeLevel("down"))
+                            if (tilesScreen.ChangeLevel("down"))
                             {
                                 Rectangle temp = p.Hitbox;
                                 temp.Y = 0;
@@ -909,7 +979,7 @@ namespace Egg
                             }
                             else
                             {
-                                p.Hitbox = p.LastCheckpoint;
+                                p.Hitpoints = 0;
                             }
 
                         }
@@ -1064,13 +1134,13 @@ namespace Egg
             secondsPerFrame = 1.0f / fps; 
             timeCounter += time.ElapsedGameTime.TotalSeconds;
 
-            if (timeCounter >=  10*secondsPerFrame) //if 3 frames have passed
+            if (timeCounter >=  3*secondsPerFrame) //if 3 frames have passed
             {
                  currentFrame++; //move to next frame 
                  if (currentFrame >= 4) currentFrame = 1; //if it reaches the end of the spritesheet, go back to the beginning
 
 
-                timeCounter -= 10*secondsPerFrame; //reduce timeCounter so it can restart process
+                timeCounter -= 3*secondsPerFrame; //reduce timeCounter so it can restart process
             }
             
             
@@ -1101,50 +1171,72 @@ namespace Egg
 
 
             }
-            if (SingleKeyPress(Keys.F11))
-            {
-                if(animationOn == true)
-                {
-                    animationOn = false;
-                }
-                else
-                {
-                    animationOn = true;
-                }
-      
-            }
+           
 
             //Add more inputs here
         }
 
-        public void DrawWalking( SpriteEffects flip) //this is for test will edit when we have actual animation assets
+        public void DrawWalking(bool isFlipped ) //this is for test will edit when we have actual animation assets
         {
-           
-            spriteBatch.Draw(
-                spriteSheet,
-                new Vector2(player.Hitbox.X ,player.Hitbox.Y),
-                new Rectangle(widthOfASingleSprite * currentFrame, 0, widthOfASingleSprite, spriteSheet.Height),
-                Color.White,
-                0.0f,
-                Vector2.Zero,
-                1.0f,
-                flip,
-                0.0f);
-         
+            if (isFlipped == false)
+            {
+                player.DefaultSprite = walkFrameDictionary[currentFrame];
+            }
+            else
+            {
+                player.DefaultSprite = walkFrameDictionaryLeft[currentFrame];
+            }
         }
-        public void DrawIdle( SpriteEffects flip) //this is for test will edit when we have actual animation assets
+        public void DrawIdle(bool isFlipped ) //this is for test will edit when we have actual animation assets
         {
-                spriteBatch.Draw(
-                spriteSheet,
-                 new Vector2(player.Hitbox.X , player.Hitbox.Y),
-                new Rectangle(0, 0, widthOfASingleSprite, spriteSheet.Height),
-                Color.White,
-                0.0f,
-                Vector2.Zero,
-                1.0f,
-                flip,
-                0.0f);
 
+            if (isFlipped == false)
+            {
+                player.DefaultSprite = walkFrameDictionary[1];
+            }
+            else
+            {
+                player.DefaultSprite = walkFrameDictionaryLeft[1];
+            }
+        }
+
+        public void DrawFalling()
+        {
+            if(player.PreviousPlayerState == PlayerState.WalkLeft ||
+                player.PreviousPlayerState == PlayerState.RollLeft||
+                player.PreviousPlayerState == PlayerState.JumpLeft||
+                player.PreviousPlayerState == PlayerState.HitStunLeft)
+            {
+                player.DefaultSprite = walkFrameDictionaryLeft[1];
+            }
+            else if (player.PreviousPlayerState == PlayerState.WalkRight ||
+                player.PreviousPlayerState == PlayerState.RollRight ||
+                player.PreviousPlayerState == PlayerState.JumpRight ||
+                player.PreviousPlayerState == PlayerState.HitStunRight)
+            {
+                player.DefaultSprite = walkFrameDictionary[1];
+            }
+        }
+
+        public void DrawRoll(bool isFlipped)
+        {
+            if(isFlipped == true)
+            {
+                player.DefaultSprite = rollFrameDictionaryLeft[currentFrame];
+            }
+            else
+            {
+                player.DefaultSprite = rollFrameDictionary[currentFrame];
+            }
+        }
+
+        public void DrawFlutter(bool isFlipped)
+        {
+
+        }
+        public void DrawDownDash()
+        {
+            player.DefaultSprite = rollFrameDictionary[1];
         }
 
 

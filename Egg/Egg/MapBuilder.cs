@@ -207,7 +207,7 @@ namespace Egg
             catch (System.IO.FileNotFoundException)
             {
                 Form broken = new Form() { Width = 300 , Height = 20};
-                MessageBox.Show("Please select an image from the drop-list to the left.");
+                MessageBox.Show("Please select a tile on the left.");
                 test = Image.FromFile(@"..\..\..\..\Resources\dSolid.png");
             }
             return test;

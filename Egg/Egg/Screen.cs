@@ -14,11 +14,11 @@ namespace Egg
     class Screen
     {
         //FIELDS
-        int HorizontalTileCount = 9;    //eventually set this to be fed in by the text file
+        int HorizontalTileCount = 9;    //fed in by the text file
         int VerticalTileCount = 16;     //this one too
         int screenLength = 1920;        //Set this up to get fed in by whatever the current screen size is
         int screenHeight = 1080;        //same for this 
-        string currentLevel;
+        string currentLevel = "mapDemo";
         string[,] level;
         string filePath;
      
@@ -61,19 +61,34 @@ namespace Egg
         /// </summary>
         public Tile[,] UpdateTiles(List<Texture2D> textures)
         {
-            string[,] baseLevelMap = LevelInterpreter(filePath);      //turn the text file into a 2d array
-            Tile[,] tileMap = new Tile[VerticalTileCount, HorizontalTileCount];     //turn that 2d array into a 2d array of tiles
-            tileMap = LoadTiles(baseLevelMap, textures);                            //populate those 2d arrays with 2d textures
-            screenTiles = tileMap;
-            return tileMap;
+            try
+            {
+                string[,] baseLevelMap = LevelInterpreter(mapFileLocations[currentLevel]);      //turn the text file into a 2d array
+                tileMap = new Tile[VerticalTileCount, HorizontalTileCount];     //turn that 2d array into a 2d array of tiles
+                tileMap = LoadTiles(baseLevelMap, textures);                            //populate those 2d arrays with 2d textures
+                screenTiles = tileMap;
+                return tileMap;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
         }
+
+
 
         /// <summary>
         /// Public callable function to print all the tiles to the screen
         /// </summary>
         public void DrawTilesFromMap(SpriteBatch sb, string s, List<Texture2D> textures)
         {
-            DrawLevel(screenTiles, sb); //draw everything tot he screen
+            DrawLevel(UpdateTiles(textures), sb); //draw everything tot he screen
+            foreach (var enemy in enemies)
+            {
+                enemy.Draw(sb);
+            }
         }
 
         /// <summary>
@@ -95,7 +110,9 @@ namespace Egg
             line = interpreter.ReadLine(); //reads FIRST line only
             split = line.Split(','); //splits into array of 2
             row = int.Parse(split[0]); //reads rows of level array
+            HorizontalTileCount = row;
             column = int.Parse(split[1]); //reads collumns of level array
+            VerticalTileCount = column;
             level = new string[row, column]; //creates level array with determined dimensions
 
             //Reading in the tiles from the file and placing them into the array
@@ -160,11 +177,27 @@ namespace Egg
                     Texture2D tempTexture = textures[1];                    //create temp texture 
                     int textureNumber = GetTexture(levelMap[row, column]);  //get told which texture to put in place from levelMap
 
+                    //send the entities to a different array
+
+
                     //if the tile should be lowered, add its tile number to this list
                     if (textureNumber == 1 || textureNumber == 2 || textureNumber == 3)
                     {
                         screenTiles[row, column].Height -= (screenTiles[row, column].Height / 8) * 6;
                         screenTiles[row, column].Y += (screenTiles[row, column].Height / 8) * 6;
+                    }
+
+                    //if it's the enemy tile, stretch it out
+                    if (textureNumber == 22)
+                    {
+                        int tempX = screenTiles[row, column].X;
+                        int tempY = screenTiles[row, column].Y;
+                        Rectangle tempRect = screenTiles[row, column].Hitbox;
+                        Enemy tempE = new Enemy(tempRect, textures[22], 4, 1);
+                        enemies.Add(tempE);
+
+                        //levelMap[row, column] = null;
+                        //screenTiles[row, column] = null;
                     }
 
                     //if it's an empty tile, set it to null in the 2d array
@@ -200,18 +233,20 @@ namespace Egg
             for (int row = 0; row < VerticalTileCount; row++)
             {
                 for (int column = 0; column < HorizontalTileCount; column++)
-                {
-                    level[row, column].X = (column * tileWidth) - ((1 / 2) * tileWidth);    //determine placement then draw
-                    level[row, column].Y = (row * tileHeight) - ((1 / 2) * tileHeight);     //each tile accordingly
-                    level[row, column].Height = tileHeight;
-                    level[row, column].Width = tileWidth;   
-                    Tile temp = level[row, column]; //create a temporary copy of the given tile (for readability)
-
-                    if (level[row, column].DefaultSprite != null)
+                { 
+                    if (level[row, column] != null)
                     {
-                        sb.Draw(temp.DefaultSprite, temp.Hitbox, Color.White);
+                        level[row, column].X = (column * tileWidth) - ((1 / 2) * tileWidth);    //determine placement then draw
+                        level[row, column].Y = (row * tileHeight) - ((1 / 2) * tileHeight);     //each tile accordingly
+                        level[row, column].Height = tileHeight;
+                        level[row, column].Width = tileWidth;
+                        Tile temp = level[row, column]; //create a temporary copy of the given tile (for readability)
+
+                        if (level[row, column].DefaultSprite != null)
+                        {
+                            sb.Draw(temp.DefaultSprite, temp.Hitbox, Color.White);
+                        }
                     }
-                    
                 }
             }
         }
