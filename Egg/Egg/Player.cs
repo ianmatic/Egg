@@ -71,7 +71,7 @@ namespace Egg
         //for directionality and FSM
         private bool isFacingRight;
         private PlayerState playerState;
-
+        private PlayerState previousPlayerState;
         //for movement
         private bool rollInAir;
         private bool isRolling;
@@ -150,6 +150,11 @@ namespace Egg
         {
             get { return bindableKb; }
             set { bindableKb = value; }
+        }
+
+        public PlayerState PreviousPlayerState
+        {
+            get { return previousPlayerState; }
         }
         #endregion
         //################
@@ -572,6 +577,7 @@ namespace Egg
         {
             //previousPosition tracks player from previous frame
             previousPlayerPosition = playerPosition;
+            previousPlayerState = PlayerState;
             playerPosition = new Vector2(X, Y); //player position of current frame
 
 

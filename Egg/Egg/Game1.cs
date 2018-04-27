@@ -37,7 +37,6 @@ namespace Egg
         Screen mainScreen = new Screen("mapDemo");
 
         GameState currentState;
-        //GameState previousState;
         KeyboardState kb;
         KeyboardState oldKB;
         Enemy enemy;
@@ -76,18 +75,32 @@ namespace Egg
         double fps = 60.0;
         double secondsPerFrame;
         double timeCounter = 0;
-        int numSpritesPerSheet = 4;
-        int widthOfASingleSprite = 56 / 4;
         bool animationOn= false;
         Dictionary<int, Texture2D> walkFrameDictionary;
-
-       
+        Dictionary<int, Texture2D> walkFrameDictionaryLeft;
+        Dictionary<int, Texture2D> rollFrameDictionary;
+        Dictionary<int, Texture2D> rollFrameDictionaryLeft;
         GameTime gameTime = new GameTime();
 
         //enemy texture
         Texture2D jellyBoi;
-      
-
+        //frames of animation
+        Texture2D walkCycle1;
+        Texture2D walkCycle2;
+        Texture2D walkCycle3;
+        Texture2D walkCycle4;
+        Texture2D walkCycleLeft1;
+        Texture2D walkCycleLeft2;
+        Texture2D walkCycleLeft3;
+        Texture2D walkCycleLeft4;
+        Texture2D rollCycle1;
+        Texture2D rollCycle2;
+        Texture2D rollCycle3;
+        Texture2D rollCycle4;
+        Texture2D rollCycleLeft1;
+        Texture2D rollCycleLeft2;
+        Texture2D rollCycleLeft3;
+        Texture2D rollCycleLeft4;
         //Tile Fields
         public Texture2D blankTile;
         public Texture2D LTopLeft;
@@ -177,12 +190,46 @@ namespace Egg
             //animation Stuff
             spriteSheet = Content.Load<Texture2D>("sprites");
             PotatoDebugging();
+            #region loading and storing animations
             walkFrameDictionary = new Dictionary<int, Texture2D>();
-            
-           
-           
-            
-            
+            walkFrameDictionaryLeft = new Dictionary<int, Texture2D>();
+            rollFrameDictionary = new Dictionary<int, Texture2D>();
+            rollFrameDictionaryLeft = new Dictionary<int, Texture2D>();
+            walkCycle1 = Content.Load<Texture2D>("walkCycle 1");
+            walkCycle2 = Content.Load<Texture2D>("walkCycle2");
+            walkCycle3 = Content.Load<Texture2D>("walkCycle3");
+            walkCycle4 = Content.Load<Texture2D>("walkCycle4");
+            walkCycleLeft1 = Content.Load<Texture2D>("walkCycleLeft1");
+            walkCycleLeft2 = Content.Load<Texture2D>("walkCycleLeft2");
+            walkCycleLeft3 = Content.Load<Texture2D>("walkCycleLeft3");
+            walkCycleLeft4 = Content.Load<Texture2D>("walkCycleLeft4");
+            rollCycle1 = Content.Load<Texture2D>("rollCycle1");
+            rollCycle2 = Content.Load<Texture2D>("rollCycle2");
+            rollCycle3 = Content.Load<Texture2D>("rollCycle3");
+            rollCycle4 = Content.Load<Texture2D>("rollCycle4");
+            rollCycleLeft1 = Content.Load<Texture2D>("rollCycleLeft1");
+            rollCycleLeft2 = Content.Load<Texture2D>("rollCycleLeft2");
+            rollCycleLeft3 = Content.Load<Texture2D>("rollCycleLeft3");
+            rollCycleLeft4 = Content.Load<Texture2D>("rollCycleLeft4");
+            walkFrameDictionary.Add(1, walkCycle1);
+            walkFrameDictionary.Add(2, walkCycle2);
+            walkFrameDictionary.Add(3, walkCycle3);
+            walkFrameDictionary.Add(4, walkCycle4);
+            walkFrameDictionaryLeft.Add(1, walkCycleLeft1);
+            walkFrameDictionaryLeft.Add(2, walkCycleLeft2);
+            walkFrameDictionaryLeft.Add(3, walkCycleLeft3);
+            walkFrameDictionaryLeft.Add(4, walkCycleLeft4);
+            rollFrameDictionary.Add(1, rollCycle1);
+            rollFrameDictionary.Add(2, rollCycle2);
+            rollFrameDictionary.Add(3, rollCycle3);
+            rollFrameDictionary.Add(4, rollCycle4);
+            rollFrameDictionaryLeft.Add(1, rollCycleLeft1);
+            rollFrameDictionaryLeft.Add(2, rollCycleLeft2);
+            rollFrameDictionaryLeft.Add(3, rollCycleLeft3);
+            rollFrameDictionaryLeft.Add(4, rollCycleLeft4);
+            #endregion
+
+
 
 
 
@@ -738,47 +785,47 @@ namespace Egg
 
                                 if (p.PlayerState == PlayerState.IdleLeft)
                                 {
-                                    DrawIdle(SpriteEffects.FlipHorizontally);
+                                    DrawIdle(true);
                                 }
                                 else if (p.PlayerState == PlayerState.IdleRight)
                                 {
-                                    DrawIdle(SpriteEffects.None);
+                                    DrawIdle(false);
                                 }
                                 else if (p.PlayerState == PlayerState.WalkLeft)
                                 {
-                                     DrawWalking(SpriteEffects.FlipHorizontally);
+                                     DrawWalking(true);
                                 }
                                 else if (p.PlayerState == PlayerState.WalkRight)
                                 {
-                                     DrawWalking(SpriteEffects.None);
+                                     DrawWalking(false);
                                 }
                                 else if (p.PlayerState == PlayerState.JumpLeft)
                                 {
-                                    DrawIdle(SpriteEffects.FlipHorizontally);
+                                    DrawIdle(true);
                                 }
                                 else if (p.PlayerState == PlayerState.JumpRight)
                                 {
-                                    DrawIdle(SpriteEffects.None);
+                                    DrawIdle(false);
                                 }
                                 else if (p.PlayerState == PlayerState.Fall)
                                 {
-                                    DrawIdle(SpriteEffects.None);
+                                    DrawFalling();
                                 }
                                 else if( p.PlayerState == PlayerState.RollLeft)
                                 {
-                                    DrawWalking(SpriteEffects.FlipHorizontally);
+                                    DrawRoll(true);
                                 }
                                 else if (p.PlayerState == PlayerState.RollRight)
                                 {
-                                    DrawWalking(SpriteEffects.None);
+                                    DrawRoll(false);
                                 }
                                 else if (p.PlayerState == PlayerState.HitStunLeft)
                                 {
-                                    DrawIdle(SpriteEffects.FlipHorizontally);
+                                    DrawIdle(true);
                                 }
                                 else if (p.PlayerState == PlayerState.HitStunRight)
                                 {
-                                    DrawIdle(SpriteEffects.None);
+                                    DrawIdle(false);
                                 }
 
                             }
@@ -1064,13 +1111,13 @@ namespace Egg
             secondsPerFrame = 1.0f / fps; 
             timeCounter += time.ElapsedGameTime.TotalSeconds;
 
-            if (timeCounter >=  10*secondsPerFrame) //if 3 frames have passed
+            if (timeCounter >=  6*secondsPerFrame) //if 3 frames have passed
             {
                  currentFrame++; //move to next frame 
                  if (currentFrame >= 4) currentFrame = 1; //if it reaches the end of the spritesheet, go back to the beginning
 
 
-                timeCounter -= 10*secondsPerFrame; //reduce timeCounter so it can restart process
+                timeCounter -= 6*secondsPerFrame; //reduce timeCounter so it can restart process
             }
             
             
@@ -1117,33 +1164,62 @@ namespace Egg
             //Add more inputs here
         }
 
-        public void DrawWalking( SpriteEffects flip) //this is for test will edit when we have actual animation assets
+        public void DrawWalking(bool isFlipped ) //this is for test will edit when we have actual animation assets
         {
-           
-            spriteBatch.Draw(
-                spriteSheet,
-                new Vector2(player.Hitbox.X ,player.Hitbox.Y),
-                new Rectangle(widthOfASingleSprite * currentFrame, 0, widthOfASingleSprite, spriteSheet.Height),
-                Color.White,
-                0.0f,
-                Vector2.Zero,
-                1.0f,
-                flip,
-                0.0f);
-         
+            if (isFlipped == false)
+            {
+                player.DefaultSprite = walkFrameDictionary[currentFrame];
+            }
+            else
+            {
+                player.DefaultSprite = walkFrameDictionaryLeft[currentFrame];
+            }
         }
-        public void DrawIdle( SpriteEffects flip) //this is for test will edit when we have actual animation assets
+        public void DrawIdle(bool isFlipped ) //this is for test will edit when we have actual animation assets
         {
-                spriteBatch.Draw(
-                spriteSheet,
-                 new Vector2(player.Hitbox.X , player.Hitbox.Y),
-                new Rectangle(0, 0, widthOfASingleSprite, spriteSheet.Height),
-                Color.White,
-                0.0f,
-                Vector2.Zero,
-                1.0f,
-                flip,
-                0.0f);
+
+            if (isFlipped == false)
+            {
+                player.DefaultSprite = walkFrameDictionary[1];
+            }
+            else
+            {
+                player.DefaultSprite = walkFrameDictionaryLeft[1];
+            }
+        }
+
+        public void DrawFalling()
+        {
+            if(player.PreviousPlayerState == PlayerState.WalkLeft ||
+                player.PreviousPlayerState == PlayerState.RollLeft||
+                player.PreviousPlayerState == PlayerState.JumpLeft||
+                player.PreviousPlayerState == PlayerState.HitStunLeft)
+            {
+                player.DefaultSprite = walkFrameDictionaryLeft[1];
+            }
+            else if (player.PreviousPlayerState == PlayerState.WalkRight ||
+                player.PreviousPlayerState == PlayerState.RollRight ||
+                player.PreviousPlayerState == PlayerState.JumpRight ||
+                player.PreviousPlayerState == PlayerState.HitStunRight)
+            {
+                player.DefaultSprite = walkFrameDictionary[1];
+            }
+        }
+
+        public void DrawRoll(bool isFlipped)
+        {
+            if(isFlipped == true)
+            {
+                player.DefaultSprite = rollFrameDictionaryLeft[currentFrame];
+            }
+            else
+            {
+                player.DefaultSprite = rollFrameDictionary[currentFrame];
+            }
+        }
+
+        public void DrawFlutter(bool isFlipped)
+        {
 
         }
 
