@@ -34,6 +34,7 @@ namespace Egg
             if (hitbox.Intersects(p.Hitbox))
             {
                 //Run some method on P to update saved chickens
+                p.UpdateChickenCounter();
                 isActive = false;
             }
         }
