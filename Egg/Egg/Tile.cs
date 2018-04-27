@@ -54,13 +54,7 @@ namespace Egg
 
         public override void CheckColliderAgainstPlayer(Player p)
         {
-            if (p.CollisionCheck(this))
-            {
-                if (this.Type == TileType.Damaging)
-                {
-                    //Damage player
-                }
-            }
+            p.CollisionCheck(this);
         }
 
         public override void CheckColliderAgainstEnemy(Enemy e)
