@@ -34,7 +34,8 @@ namespace Egg
         Texture2D topRectangle;
         Texture2D sideRectangle;
         Texture2D collisionTest;
-        Screen mainScreen = new Screen("mapDemo");
+        Screen tilesScreen = new Screen("mapDemo");
+        Screen entitiesScreen = new Screen("mapDemo");
 
         GameState currentState;
         //GameState previousState;
@@ -106,6 +107,8 @@ namespace Egg
         public Texture2D nLeftTop;
         public Texture2D nRightBot;
         public Texture2D nRightTop;
+        public Texture2D enemy1;
+        
 
         //DO NOT ADD DIRECTLY TO THIS LIST
         List<GameObject> objectList;
@@ -181,6 +184,7 @@ namespace Egg
 
             #region loading Tiles
             blankTile = Content.Load<Texture2D>(@"clearTile");
+
             LTopLeft = Content.Load<Texture2D>(@"tiles\LTopLeft");
             LTopMid = Content.Load<Texture2D>(@"tiles\LTopMid");
             LTopRight = Content.Load<Texture2D>(@"tiles\LTopRight");
@@ -189,6 +193,7 @@ namespace Egg
             LBotLeft = Content.Load<Texture2D>(@"tiles\LBotLeft");
             LBotRight = Content.Load<Texture2D>(@"tiles\LBotRight");
             LBotMid = Content.Load<Texture2D>(@"tiles\LBotMid");
+
             dBotLeft = Content.Load<Texture2D>(@"tiles\dBotLeft");
             dBotMid = Content.Load<Texture2D>(@"tiles\dBotMid");
             dBotRight = Content.Load<Texture2D>(@"tiles\dBotRight");
@@ -198,10 +203,14 @@ namespace Egg
             dSolid = Content.Load<Texture2D>(@"tiles\dSolid");
             dTopMid = Content.Load<Texture2D>(@"tiles\dTopMid");
             dTopRight = Content.Load<Texture2D>(@"tiles\dTopRight");
+
             nLeftTop = Content.Load<Texture2D>(@"tiles\nLeftTop");
             nLeftBot = Content.Load<Texture2D>(@"tiles\nLeftbot");
             nRightBot = Content.Load<Texture2D>(@"tiles\nRightBot");
             nRightTop = Content.Load<Texture2D>(@"tiles\nRightTop");
+
+            enemy1 = Content.Load<Texture2D>(@"entity");
+
 
             tileList.Add(blankTile);
 
@@ -231,7 +240,8 @@ namespace Egg
             tileList.Add(nRightTop);
             #endregion 
             
-            mainScreen.UpdateTiles(tileList);
+            tilesScreen.UpdateTiles(tileList);
+            entitiesScreen.UpdateTiles(tileList);
         }
 
         /// <summary>
@@ -716,7 +726,8 @@ namespace Egg
                     }
                     break;
                 case GameState.Game:
-                    mainScreen.DrawTilesFromMap(spriteBatch, @"..\..\..\..\Resources\levelExports\platformDemo", tileList);
+                    tilesScreen.DrawTilesFromMap(spriteBatch, @"..\..\..\..\Resources\levelExports\platformDemo", tileList);
+                    //entitiesScreen.DrawTilesFromMap(spriteBatch, "does having a dumb thing here break stuff?", tileList);
                     //Draws potatos to test DrawLevel
 
                     foreach (GameObject g in objectList)
@@ -839,7 +850,7 @@ namespace Egg
         //Any logic during the game loop (minus drawing) goes here, as the Update loop is intended to hold logic involving the FSM between menus
         private void GameUpdateLoop()
         {
-            Tile[,] tileSet = mainScreen.UpdateTiles(tileList);
+            Tile[,] tileSet = tilesScreen.UpdateTiles(tileList);
                       
             foreach (GameObject n in objectList)
             {               
@@ -853,7 +864,7 @@ namespace Egg
                     {
                         if (p.Hitbox.X < 0)
                         {
-                            if (mainScreen.ChangeLevel("left"))
+                            if (tilesScreen.ChangeLevel("left"))
                             {
                                 Rectangle temp = p.Hitbox;
                                 temp.X = GraphicsDevice.Viewport.Width;
@@ -866,7 +877,7 @@ namespace Egg
                         }
                         else if (p.Hitbox.X > GraphicsDevice.Viewport.Width)
                         {
-                            if (mainScreen.ChangeLevel("right"))
+                            if (tilesScreen.ChangeLevel("right"))
                             {
                                 Rectangle temp = p.Hitbox;
                                 temp.X = 0;
@@ -880,7 +891,7 @@ namespace Egg
 
                         if (p.Hitbox.Y < 0)
                         {
-                            if (mainScreen.ChangeLevel("up"))
+                            if (tilesScreen.ChangeLevel("up"))
                             {
                                 Rectangle temp = p.Hitbox;
                                 temp.Y = GraphicsDevice.Viewport.Height;
@@ -894,7 +905,7 @@ namespace Egg
                         }
                         else if (p.Hitbox.Y > GraphicsDevice.Viewport.Height)
                         {
-                            if (mainScreen.ChangeLevel("down"))
+                            if (tilesScreen.ChangeLevel("down"))
                             {
                                 Rectangle temp = p.Hitbox;
                                 temp.Y = 0;
