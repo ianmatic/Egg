@@ -840,6 +840,12 @@ namespace Egg
                         spriteBatch.DrawString(menuText, "Facing right?: " + player.IsFacingRight, new Vector2(100, 130), Color.Cyan);
                         spriteBatch.DrawString(menuText, "hitpoints: " + player.Hitpoints, new Vector2(100, 165), Color.Cyan);
                     }
+                    else
+                    {
+                        //Draw collectibles
+                        spriteBatch.Draw(testSprite, new Rectangle(135, 55, 40, 40), Color.White);
+                        spriteBatch.DrawString(menuText, player.CollectedChickens.ToString(), new Vector2(200, 60), Color.Orange);
+                    }
                     break;
 
                 case GameState.GameOver:
@@ -940,10 +946,6 @@ namespace Egg
                                 temp.Y = GraphicsDevice.Viewport.Height;
                                 p.Hitbox = temp;
                             }
-                            else
-                            {
-                                p.Hitbox = p.LastCheckpoint;
-                            }
 
                         }
                         else if (p.Hitbox.Y > GraphicsDevice.Viewport.Height)
@@ -956,7 +958,7 @@ namespace Egg
                             }
                             else
                             {
-                                p.Hitbox = p.LastCheckpoint;
+                                p.Hitpoints = 0;
                             }
 
                         }
