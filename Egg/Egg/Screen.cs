@@ -21,7 +21,10 @@ namespace Egg
         string currentLevel = "mapDemo";
         string[,] level;
         string filePath;
-     
+
+        Tile[,] tileMap;
+        List<Enemy> enemies = new List<Enemy>();
+
         StreamReader interpreter;
         Tile[,] screenTiles;
         Dictionary<string, Tile.TileType> tileTypeDict = new Dictionary<string, Tile.TileType>();
@@ -63,7 +66,7 @@ namespace Egg
         {
             try
             {
-                string[,] baseLevelMap = LevelInterpreter(mapFileLocations[currentLevel]);      //turn the text file into a 2d array
+                string[,] baseLevelMap = LevelInterpreter(filePath);      //turn the text file into a 2d array
                 tileMap = new Tile[VerticalTileCount, HorizontalTileCount];     //turn that 2d array into a 2d array of tiles
                 tileMap = LoadTiles(baseLevelMap, textures);                            //populate those 2d arrays with 2d textures
                 screenTiles = tileMap;
