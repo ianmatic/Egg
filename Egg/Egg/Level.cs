@@ -12,7 +12,15 @@ namespace Egg
     {
         Dictionary<string, string> mapFileLocations = new Dictionary<string, string>();
         Screen[,] screenArray;
+
         Screen currentScreen;
+        Screen startScreen;
+        Screen endScreen;
+
+        public Screen CurrentScreen
+        {
+            get { return currentScreen; }
+        }
 
         int currentTempArrayC;
         int currentTempArrayR;
@@ -31,7 +39,10 @@ namespace Egg
             #endregion
 
             screenArray = new Screen[5, 5];
-            
+
+            FillScreenArray(levelNum);
+
+            currentScreen = startScreen;
         }
 
         private void FillScreenArray(int level)
@@ -44,13 +55,62 @@ namespace Egg
 
             string temp = startFolderArray[0];
 
+            string tempDigit2 = temp[temp.Length - 5] + "";
+            string tempDigit1 = temp[temp.Length - 6] + "";
+
+            int indexRow;
+            int indexColumn;
+
+            bool tryParse = int.TryParse(tempDigit1, out indexRow);
+            tryParse = int.TryParse(tempDigit2, out indexColumn);
+
+            screenArray[indexRow, indexColumn] = new Screen(temp);
+
+            startScreen = screenArray[indexRow, indexColumn];
             //subsplit the filename, then Parse ints to get index. Then create a new screen object with the filepath and place it at the index
-            
+
             #endregion
+
+            #region End Folder
+            string endFolderPath = filePath + @"\endScreen";
+            string[] endFolderArray = Directory.GetFiles(endFolderPath);
+
+            temp = endFolderArray[0];
+
+            tempDigit2 = temp[temp.Length - 5] + "";
+            tempDigit1 = temp[temp.Length - 6] + "";
+
+            tryParse = int.TryParse(tempDigit1, out indexRow);
+            tryParse = int.TryParse(tempDigit2, out indexColumn);
+
+            screenArray[indexRow, indexColumn] = new Screen(temp);
+            endScreen = screenArray[indexRow, indexColumn];
+            #endregion
+
+            #region Other Screens
+
+            foreach (string file in Directory.GetFiles(filePath))
+            {
+                string rowString = file[file.Length - 6] + "";
+                string columnString = file[file.Length - 5] + "";
+
+                bool getInts;
+                int row;
+                int column;
+
+                getInts = int.TryParse(rowString, out row);
+                getInts = int.TryParse(columnString, out column);
+
+                screenArray[row, column] = new Screen(file);
+
+            }
+
+            #endregion
+
         }
 
        
-        //BUgged, fix me later
+        
         /// <summary>
         /// function change levels, returns true if successful
         /// </summary>
@@ -64,25 +124,25 @@ namespace Egg
                     {
                         return false;
                     }
-                    else if (tempScreenArray[currentTempArrayR, currentTempArrayC - 1] == null)
+                    else if (screenArray[currentTempArrayR, currentTempArrayC - 1] == null)
                     {
                         return false;
                     }
                     currentScreen.LevelMapClear();
-                    currentScreen = tempScreenArray[currentTempArrayR, currentTempArrayC - 1];
+                    currentScreen = screenArray[currentTempArrayR, currentTempArrayC - 1];
                     currentTempArrayC -= 1;
                     break;
                 case "right":
-                    if (currentTempArrayC == tempScreenArray.GetLength(1) - 1)
+                    if (currentTempArrayC == screenArray.GetLength(1) - 1)
                     {
                         return false;
                     }
-                    else if (tempScreenArray[currentTempArrayR, currentTempArrayC + 1] == null)
+                    else if (screenArray[currentTempArrayR, currentTempArrayC + 1] == null)
                     {
                         return false;
                     }
                     currentScreen.LevelMapClear();
-                    currentScreen = tempScreenArray[currentTempArrayR, currentTempArrayC + 1];
+                    currentScreen = screenArray[currentTempArrayR, currentTempArrayC + 1];
                     currentTempArrayC += 1;
                     break;
                 case "up":
@@ -90,31 +150,31 @@ namespace Egg
                     {
                         return false;
                     }
-                    else if (tempScreenArray[currentTempArrayR - 1, currentTempArrayC] == null)
+                    else if (screenArray[currentTempArrayR - 1, currentTempArrayC] == null)
                     {
                         return false;
                     }
-                    LevelMapClear();
-                    currentLevel = tempScreenArray[currentTempArrayR - 1, currentTempArrayC];
+                    currentScreen.LevelMapClear();
+                    currentScreen = screenArray[currentTempArrayR - 1, currentTempArrayC];
                     currentTempArrayR -= 1;
                     break;
                 case "down":
-                    if (currentTempArrayR == tempScreenArray.GetLength(0) - 1)
+                    if (currentTempArrayR == screenArray.GetLength(0) - 1)
                     {
                         return false;
                     }
-                    else if (tempScreenArray[currentTempArrayR + 1, currentTempArrayC] == null)
+                    else if (screenArray[currentTempArrayR + 1, currentTempArrayC] == null)
                     {
                         return false;
                     }
-                    LevelMapClear();
-                    currentLevel = tempScreenArray[currentTempArrayR + 1, currentTempArrayC];
+                    currentScreen.LevelMapClear();
+                    currentScreen = screenArray[currentTempArrayR + 1, currentTempArrayC];
                     currentTempArrayR += 1;
                     break;
             }
 
             return true;
         }
-
+      
     }
 }

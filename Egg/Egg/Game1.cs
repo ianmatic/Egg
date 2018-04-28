@@ -34,8 +34,9 @@ namespace Egg
         Texture2D topRectangle;
         Texture2D sideRectangle;
         Texture2D collisionTest;
-        Screen tilesScreen = new Screen("mapDemo");
-        Screen entitiesScreen = new Screen("mapDemo");
+
+        Level currentLevel;
+        int levelCount = 1;
 
         GameState currentState;
         KeyboardState kb;
@@ -262,7 +263,7 @@ namespace Egg
             nRightBot = Content.Load<Texture2D>(@"tiles\nRightBot");
             nRightTop = Content.Load<Texture2D>(@"tiles\nRightTop");
 
-            enemy1 = Content.Load<Texture2D>(@"entity");
+            enemy1 = Content.Load<Texture2D>(@"jellyboi");
 
 
             tileList.Add(blankTile);
@@ -291,10 +292,11 @@ namespace Egg
             tileList.Add(nLeftBot);
             tileList.Add(nRightBot);
             tileList.Add(nRightTop);
-            #endregion 
-            
-            tilesScreen.UpdateTiles(tileList);
-            entitiesScreen.UpdateTiles(tileList);
+            #endregion
+
+            currentLevel = new Level(1);
+
+            currentLevel.CurrentScreen.UpdateTiles(tileList);
         }
 
         /// <summary>
@@ -779,7 +781,9 @@ namespace Egg
                     }
                     break;
                 case GameState.Game:
-                    tilesScreen.DrawTilesFromMap(spriteBatch, @"..\..\..\..\Resources\levelExports\platformDemo", tileList);
+                    currentLevel.CurrentScreen.DrawTilesFromMap(spriteBatch, tileList);
+
+                    //levelName.CurrentScreen.DrawTilesFromMap
                     //entitiesScreen.DrawTilesFromMap(spriteBatch, "does having a dumb thing here break stuff?", tileList);
                     //Draws potatos to test DrawLevel
 
@@ -920,7 +924,7 @@ namespace Egg
         //Any logic during the game loop (minus drawing) goes here, as the Update loop is intended to hold logic involving the FSM between menus
         private void GameUpdateLoop()
         {
-            Tile[,] tileSet = tilesScreen.UpdateTiles(tileList);
+            Tile[,] tileSet = currentLevel.CurrentScreen.UpdateTiles(tileList);
                       
             foreach (GameObject n in objectList)
             {               
@@ -934,7 +938,7 @@ namespace Egg
                     {
                         if (p.Hitbox.X < 0)
                         {
-                            if (tilesScreen.ChangeLevel("left"))
+                            if (currentLevel.ChangeLevel("left"))
                             {
                                 Rectangle temp = p.Hitbox;
                                 temp.X = GraphicsDevice.Viewport.Width;
@@ -947,7 +951,7 @@ namespace Egg
                         }
                         else if (p.Hitbox.X > GraphicsDevice.Viewport.Width)
                         {
-                            if (tilesScreen.ChangeLevel("right"))
+                            if (currentLevel.ChangeLevel("right"))
                             {
                                 Rectangle temp = p.Hitbox;
                                 temp.X = 0;
@@ -961,7 +965,7 @@ namespace Egg
 
                         if (p.Hitbox.Y < 0)
                         {
-                            if (tilesScreen.ChangeLevel("up"))
+                            if (currentLevel.ChangeLevel("up"))
                             {
                                 Rectangle temp = p.Hitbox;
                                 temp.Y = GraphicsDevice.Viewport.Height;
@@ -971,7 +975,7 @@ namespace Egg
                         }
                         else if (p.Hitbox.Y > GraphicsDevice.Viewport.Height)
                         {
-                            if (tilesScreen.ChangeLevel("down"))
+                            if (currentLevel.ChangeLevel("down"))
                             {
                                 Rectangle temp = p.Hitbox;
                                 temp.Y = 0;
@@ -1239,6 +1243,17 @@ namespace Egg
             player.DefaultSprite = rollFrameDictionary[1];
         }
 
+        void IncrementLevel()
+        {
+            //Increments level and sets up next level
+            levelCount++;
+            currentLevel = new Level(levelCount);
 
+            //Resets player position to middle of screen (for now)
+            Rectangle temp = player.Hitbox;
+            temp.X = GraphicsDevice.Viewport.Width / 2;
+            temp.Y = GraphicsDevice.Viewport.Height / 2;
+            player.Hitbox = temp;
+        }
     }
 }

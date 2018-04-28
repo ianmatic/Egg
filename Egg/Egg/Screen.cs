@@ -18,7 +18,6 @@ namespace Egg
         int VerticalTileCount = 16;     //this one too
         int screenLength = 1920;        //Set this up to get fed in by whatever the current screen size is
         int screenHeight = 1080;        //same for this 
-        string currentLevel = "mapDemo";
         string[,] level;
         string filePath;
 
@@ -28,8 +27,6 @@ namespace Egg
         StreamReader interpreter;
         Tile[,] screenTiles;
         Dictionary<string, Tile.TileType> tileTypeDict = new Dictionary<string, Tile.TileType>();
-
-        string[,] tempScreenArray;
 
         /// <summary>
         /// By default, the screen is populated with screenTiles to be an X by Y array filled with empty tiles
@@ -85,10 +82,10 @@ namespace Egg
         /// <summary>
         /// Public callable function to print all the tiles to the screen
         /// </summary>
-        public void DrawTilesFromMap(SpriteBatch sb, string s, List<Texture2D> textures)
+        public void DrawTilesFromMap(SpriteBatch sb, List<Texture2D> textures)
         {
             DrawLevel(UpdateTiles(textures), sb); //draw everything tot he screen
-            foreach (var enemy in enemies)
+            foreach (Enemy enemy in enemies)
             {
                 enemy.Draw(sb);
             }
@@ -107,7 +104,7 @@ namespace Egg
             string tempString = "";
             string[] split;
 
-            interpreter = new StreamReader(s + ".txt");
+            interpreter = new StreamReader(s);
 
             //Setup for creating the level's 2d array
             line = interpreter.ReadLine(); //reads FIRST line only
