@@ -190,8 +190,9 @@ namespace Egg
                     //if it's the enemy tile, stretch it out
                     if (textureNumber == 23)
                     {
+                        bool doubleChecker = false;
                         Rectangle tempRect = screenTiles[row, column].Hitbox;
-                        int tempBuffer = (64 - 50) / 2;
+                        int tempBuffer = (64 - 40) / 2;
                         int tempX = screenTiles[row, column].X + tempBuffer;
                         int tempY = screenTiles[row, column].Y + tempBuffer;
                         tempRect.X = tempX;
@@ -200,7 +201,17 @@ namespace Egg
                         tempRect.Height -= tempBuffer * 2;
 
                         Enemy tempE = new Enemy(tempRect, textures[23], 4, 1);
-                        enemies.Add(tempE);
+
+                        foreach (Enemy e in enemies)
+                        {
+                            if (e.X == tempE.X)
+                            {
+                                doubleChecker = true;
+                            }
+                        }
+
+                        if (!doubleChecker)
+                            enemies.Add(tempE);
 
                         //levelMap[row, column] = null;
                         //screenTiles[row, column] = null;

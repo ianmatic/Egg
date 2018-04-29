@@ -181,7 +181,9 @@ namespace Egg
         public Texture2D nRightBot;
         public Texture2D nRightTop;
         public Texture2D enemy1;
-        
+
+
+        public Texture2D backGround;
 
         //DO NOT ADD DIRECTLY TO THIS LIST
         List<GameObject> objectList;
@@ -381,9 +383,6 @@ namespace Egg
             #endregion
 
 
-
-
-
             #region loading Tiles
             blankTile = Content.Load<Texture2D>(@"clearTile");
 
@@ -443,6 +442,9 @@ namespace Egg
 
             tileList.Add(enemy1);
             #endregion
+
+            backGround = Content.Load<Texture2D>("bg");
+
 
             currentLevel = new Level(2);
 
@@ -790,6 +792,9 @@ namespace Egg
             //this makes it so the pixel art keeps crisp lines
             spriteBatch.Begin(SpriteSortMode.Immediate);
             GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+
+            //draw background
+            spriteBatch.Draw(backGround, new Rectangle(0, 0, 1920, 1080), Color.White);
 
             //Draws sprites & text based on FSM
           
