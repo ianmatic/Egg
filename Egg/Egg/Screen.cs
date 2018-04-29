@@ -350,5 +350,10 @@ namespace Egg
                 }
             }
         }
+
+        public List<Enemy> GetEnemiesFromTextFile()
+        {
+            return enemies;
+        }
     }
 }

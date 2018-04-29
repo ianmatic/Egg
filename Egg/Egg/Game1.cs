@@ -20,7 +20,7 @@ namespace Egg
         }
 
         List<Texture2D> tileList;
-        List<Enemy> tempEnemyList;
+        List<Enemy> enemyList;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SpriteFont menuText;
@@ -189,7 +189,7 @@ namespace Egg
             tileSpriteList = new List<Texture2D>();
             //Put tile loop here
 
-            tempEnemyList = new List<Enemy>();
+            enemyList = new List<Enemy>();
             //animation Stuff
             spriteSheet = Content.Load<Texture2D>("sprites");
             PotatoDebugging();
@@ -471,7 +471,7 @@ namespace Egg
                             graphics.ToggleFullScreen();
                         }
                         break;
-                    case GameState.Game:                       
+                    case GameState.Game:
                         GameUpdateLoop();
                         //Transition to level end not yet implemented
                         break;
@@ -993,7 +993,7 @@ namespace Egg
 
 
                     //This should work on any enemy (i.e. enemy list of a screen), fix this later!
-                    foreach (Enemy e in tempEnemyList)
+                    foreach (Enemy e in enemyList)
                         {
                             if (!p.InBounceLockout)
                             {
@@ -1012,7 +1012,7 @@ namespace Egg
                     else
                     {
                         n.CheckColliderAgainstPlayer(player);
-                        foreach (Enemy e in tempEnemyList)
+                        foreach (Enemy e in enemyList)
                         {
                             n.CheckColliderAgainstEnemy(enemy);
                         }
@@ -1027,7 +1027,7 @@ namespace Egg
                 {
                     t.CheckColliderAgainstPlayer(player);
 
-                    foreach (Enemy e in tempEnemyList)
+                    foreach (Enemy e in enemyList)
                     {
                         t.CheckColliderAgainstEnemy(enemy);
                     }
@@ -1044,7 +1044,7 @@ namespace Egg
             if (g is Enemy)
             {
                 Enemy e = (Enemy)g;
-                tempEnemyList.Add(e);
+                enemyList.Add(e);
             }
 
             if (objectList.Count == 0)
