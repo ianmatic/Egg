@@ -836,7 +836,7 @@ namespace Egg
                     {
                         playerState = PlayerState.WalkRight;
                     }
-                    else if (SingleKeyPress(bindableKb["jump"]) && !isRolling)
+                    else if (SingleKeyPress(bindableKb["jump"]) && !isRolling && bottomIntersects)
                     {
                         playerState = PlayerState.JumpLeft;
                     }
@@ -855,7 +855,7 @@ namespace Egg
                     {
                         playerState = PlayerState.Fall;
                     }
-                    if (SingleKeyPress(bindableKb["jump"]) && !isRolling)
+                    if (SingleKeyPress(bindableKb["jump"]) && !isRolling && bottomIntersects)
                     {
                         playerState = PlayerState.JumpRight;
                     }
