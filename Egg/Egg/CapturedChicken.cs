@@ -16,6 +16,7 @@ namespace Egg
         Random rn = new Random();
         Color[] Colors = new Color[] { Color.Red, Color.Orange, Color.Yellow, Color.Green, Color.Blue, Color.Indigo, Color.Purple };
 
+        Screen originScreen;
 
         public Color Color
         {
@@ -28,7 +29,7 @@ namespace Egg
             this.defaultSprite = defaultSprite;
             this.hitbox = hitbox;
             this.color = RandomColor();
-            this.isActive = true;
+            this.isActive = true;            
         }
 
         //Unknown what will be done with this

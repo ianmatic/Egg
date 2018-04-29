@@ -39,7 +39,7 @@ namespace Egg
 
         Level currentLevel;
         int eggCounter = 0;
-        int levelCount = 1;
+        int levelCount = 2;
         int totalLevels;
         bool hasDrawnEggsForEndScreen = false;
         bool theEnd = false;
@@ -462,6 +462,7 @@ namespace Egg
             currentLevel = new Level(2);
 
             currentLevel.CurrentScreen.UpdateTiles(tileList);
+
         }
 
         /// <summary>
@@ -963,85 +964,75 @@ namespace Egg
                     //levelName.CurrentScreen.DrawTilesFromMap
                     //entitiesScreen.DrawTilesFromMap(spriteBatch, "does having a dumb thing here break stuff?", tileList);
                     //Draws potatos to test DrawLevel
+                    #region Draw Player
+                    player.Draw(spriteBatch);
 
-                    foreach (GameObject g in objectList)
+                    if (player.PlayerState == PlayerState.IdleLeft)
                     {
-
-                        g.Draw(spriteBatch);
-
-
-                        if (g is Player)
-                        {
-                            Player p = (Player)g;
-
-                                if (p.PlayerState == PlayerState.IdleLeft)
-                                {
-                                    DrawIdle(true);
-                                }
-                                else if (p.PlayerState == PlayerState.IdleRight)
-                                {
-                                    DrawIdle(false);
-                                }
-                                else if (p.PlayerState == PlayerState.WalkLeft)
-                                {
-                                     DrawWalking(true);
-                                }
-                                else if (p.PlayerState == PlayerState.WalkRight)
-                                {
-                                     DrawWalking(false);
-                                }
-                                else if (p.PlayerState == PlayerState.JumpLeft)
-                                {
-                                    DrawIdle(true);
-                                }
-                                else if (p.PlayerState == PlayerState.JumpRight)
-                                {
-                                    DrawIdle(false);
-                                }
-                                else if (p.PlayerState == PlayerState.Fall)
-                                {
-                                    DrawFalling();
-                                }
-                                else if( p.PlayerState == PlayerState.RollLeft)
-                                {
-                                    DrawRoll(true);
-                                }
-                                else if (p.PlayerState == PlayerState.RollRight)
-                                {
-                                    DrawRoll(false);
-                                }
-                                else if (p.PlayerState == PlayerState.HitStunLeft)
-                                {
-                                    DrawHitStun(true);
-                                }
-                                else if (p.PlayerState == PlayerState.HitStunRight)
-                                {
-                                    DrawHitStun(false);
-                                }
-                                else if(p.PlayerState == PlayerState.DownDash)
-                                {
-                                    DrawDownDash();
-                                }
-                                else if(p.PlayerState == PlayerState.BounceLeft)
-                                {
-                                    DrawRoll(true);
-                                }
-                                else if (p.PlayerState == PlayerState.BounceRight)
-                                {
-                                    DrawRoll(false);
-                                }
-                                else if(p.PlayerState == PlayerState.FloatLeft)
-                                {
-                                    DrawFlutter(true);
-                                }
-                                else if(p.PlayerState == PlayerState.FloatRight)
-                                {
-                                    DrawFlutter(false);
-                                }
-                            }
-                            
-                        
+                        DrawIdle(true);
                     }
+                    else if (player.PlayerState == PlayerState.IdleRight)
+                    {
+                        DrawIdle(false);
+                    }
+                    else if (player.PlayerState == PlayerState.WalkLeft)
+                    {
+                        DrawWalking(true);
+                    }
+                    else if (player.PlayerState == PlayerState.WalkRight)
+                    {
+                        DrawWalking(false);
+                    }
+                    else if (player.PlayerState == PlayerState.JumpLeft)
+                    {
+                        DrawIdle(true);
+                    }
+                    else if (player.PlayerState == PlayerState.JumpRight)
+                    {
+                        DrawIdle(false);
+                    }
+                    else if (player.PlayerState == PlayerState.Fall)
+                    {
+                        DrawFalling();
+                    }
+                    else if (player.PlayerState == PlayerState.RollLeft)
+                    {
+                        DrawRoll(true);
+                    }
+                    else if (player.PlayerState == PlayerState.RollRight)
+                    {
+                        DrawRoll(false);
+                    }
+                    else if (player.PlayerState == PlayerState.HitStunLeft)
+                    {
+                        DrawHitStun(true);
+                    }
+                    else if (player.PlayerState == PlayerState.HitStunRight)
+                    {
+                        DrawHitStun(false);
+                    }
+                    else if (player.PlayerState == PlayerState.DownDash)
+                    {
+                        DrawDownDash();
+                    }
+                    else if (player.PlayerState == PlayerState.BounceLeft)
+                    {
+                        DrawRoll(true);
+                    }
+                    else if (player.PlayerState == PlayerState.BounceRight)
+                    {
+                        DrawRoll(false);
+                    }
+                    else if (player.PlayerState == PlayerState.FloatLeft)
+                    {
+                        DrawFlutter(true);
+                    }
+                    else if (player.PlayerState == PlayerState.FloatRight)
+                    {
+                        DrawFlutter(false);
+                    }
+                    #endregion
+
                     if (player.IsDebugging) //debugging text for player
                     {
                         spriteBatch.DrawString(menuText, "Horizontal Velocity: " + player.HorizontalVelocity, new Vector2(100, 25), Color.Cyan);
@@ -1209,7 +1200,19 @@ namespace Egg
                             break;
 
                         case 0:
-                            player.Hitbox = player.LastCheckpoint;
+                            if (player.LastCheckpoint == null)
+                            {
+                                currentLevel.CurrentScreen = currentLevel.StartScreen;
+                                Rectangle r = player.Hitbox;
+                                r.X = GraphicsDevice.Viewport.Width / 2;
+                                r.Y = GraphicsDevice.Viewport.Height / 2;
+                                player.Hitbox = r;
+                            }
+                            else
+                            {
+                                currentLevel.CurrentScreen = player.LastCheckpoint.OriginScreen;
+                                player.Hitbox = player.LastCheckpoint.Hitbox;
+                            }                        
                             break;
 
                         case -1:
@@ -1229,7 +1232,19 @@ namespace Egg
                             break;
 
                         case 0:
-                            player.Hitbox = player.LastCheckpoint;
+                            if (player.LastCheckpoint == null)
+                            {
+                                currentLevel.CurrentScreen = currentLevel.StartScreen;
+                                Rectangle r = player.Hitbox;
+                                r.X = GraphicsDevice.Viewport.Width / 2;
+                                r.Y = GraphicsDevice.Viewport.Height / 2;
+                                player.Hitbox = r;
+                            }
+                            else
+                            {
+                                currentLevel.CurrentScreen = player.LastCheckpoint.OriginScreen;
+                                player.Hitbox = player.LastCheckpoint.Hitbox;
+                            }
                             break;
 
                         case -1:
@@ -1249,7 +1264,19 @@ namespace Egg
                             break;
 
                         case 0:
-                            player.Hitbox = player.LastCheckpoint;
+                            if (player.LastCheckpoint == null)
+                            {
+                                currentLevel.CurrentScreen = currentLevel.StartScreen;
+                                Rectangle r = player.Hitbox;
+                                r.X = GraphicsDevice.Viewport.Width / 2;
+                                r.Y = GraphicsDevice.Viewport.Height / 2;
+                                player.Hitbox = r;
+                            }
+                            else
+                            {
+                                currentLevel.CurrentScreen = player.LastCheckpoint.OriginScreen;
+                                player.Hitbox = player.LastCheckpoint.Hitbox;
+                            }
                             break;
 
                         case -1:
@@ -1268,7 +1295,19 @@ namespace Egg
                             break;
 
                         case 0:
-                            player.Hitbox = player.LastCheckpoint;
+                            if (player.LastCheckpoint == null)
+                            {
+                                currentLevel.CurrentScreen = currentLevel.StartScreen;
+                                Rectangle r = player.Hitbox;
+                                r.X = GraphicsDevice.Viewport.Width / 2;
+                                r.Y = GraphicsDevice.Viewport.Height / 2;
+                                player.Hitbox = r;
+                            }
+                            else
+                            {
+                                currentLevel.CurrentScreen = player.LastCheckpoint.OriginScreen;
+                                player.Hitbox = player.LastCheckpoint.Hitbox;
+                            }
                             break;
 
                         case -1:
@@ -1378,10 +1417,12 @@ namespace Egg
             topRectangle = Content.Load<Texture2D>("green");
             collisionTest = Content.Load<Texture2D>("white");
 
+            /*
             #region Checkpoints
             AddObjectToList(new Checkpoint(3, collisionTest, new Rectangle(400, 350, 75, 75)));
             AddObjectToList(new Checkpoint(3, collisionTest, new Rectangle(1500, 250, 75, 75)));
             #endregion
+            */
 
             enemy = new Enemy(new Rectangle(890, 500, 75, 75), jellyBoi, 16, 60);
             enemy2 = new Enemy(new Rectangle(225, 250, 75, 75), jellyBoi, 4, 60);

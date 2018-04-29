@@ -22,6 +22,12 @@ namespace Egg
         public Screen CurrentScreen
         {
             get { return currentScreen; }
+            set { currentScreen = value; }
+        }
+
+        public Screen StartScreen
+        {
+            get { return startScreen; }
         }
         public int TotalChickensInLevel
         {
