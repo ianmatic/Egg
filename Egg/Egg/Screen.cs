@@ -273,7 +273,7 @@ namespace Egg
                         tempRect.X += 75 / 2;
                         tempRect.Y += 60;
 
-                        Checkpoint tempCheck = new Checkpoint(0, textures[textureNumber], tempRect);
+                        Checkpoint tempCheck = new Checkpoint(0, textures[textureNumber], tempRect, this);
 
                         foreach (GameObject c in gameObjs)
                         {
