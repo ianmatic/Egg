@@ -17,9 +17,15 @@ namespace Egg
         Screen startScreen;
         Screen endScreen;
 
+        int totalChickensInLevel;
+
         public Screen CurrentScreen
         {
             get { return currentScreen; }
+        }
+        public int TotalChickensInLevel
+        {
+            get { return totalChickensInLevel; }
         }
 
         int currentTempArrayC;
@@ -43,6 +49,9 @@ namespace Egg
             FillScreenArray(levelNum);
 
             currentScreen = startScreen;
+
+            //temporary
+            totalChickensInLevel = 0;
         }
 
         private void FillScreenArray(int level)
@@ -112,21 +121,25 @@ namespace Egg
        
         
         /// <summary>
-        /// function change levels, returns true if successful
+        /// function change screens, returns 1 if successful, 0 if null, or -1 if new level
         /// </summary>
         /// <param name="newLevel"></param>
-        public bool ChangeLevel(string direction)
+        public int ChangeScreen(string direction)
         {
             switch (direction)
             {
                 case "left":
                     if (currentTempArrayC == 0)
                     {
-                        return false;
+                        return 0;
                     }
                     else if (screenArray[currentTempArrayR, currentTempArrayC - 1] == null)
                     {
-                        return false;
+                        if (screenArray[currentTempArrayR, currentTempArrayC] == endScreen)
+                        {
+                            return -1;
+                        }
+                        return 0;
                     }
                     currentScreen.LevelMapClear();
                     currentScreen = screenArray[currentTempArrayR, currentTempArrayC - 1];
@@ -135,11 +148,15 @@ namespace Egg
                 case "right":
                     if (currentTempArrayC == screenArray.GetLength(1) - 1)
                     {
-                        return false;
+                        return 0;
                     }
                     else if (screenArray[currentTempArrayR, currentTempArrayC + 1] == null)
                     {
-                        return false;
+                        if (screenArray[currentTempArrayR, currentTempArrayC] == endScreen)
+                        {
+                            return -1;
+                        }
+                        return 0;
                     }
                     currentScreen.LevelMapClear();
                     currentScreen = screenArray[currentTempArrayR, currentTempArrayC + 1];
@@ -148,11 +165,15 @@ namespace Egg
                 case "up":
                     if (currentTempArrayR == 0)
                     {
-                        return false;
+                        return 0;
                     }
                     else if (screenArray[currentTempArrayR - 1, currentTempArrayC] == null)
                     {
-                        return false;
+                        if (screenArray[currentTempArrayR, currentTempArrayC] == endScreen)
+                        {
+                            return -1;
+                        }
+                        return 0;
                     }
                     currentScreen.LevelMapClear();
                     currentScreen = screenArray[currentTempArrayR - 1, currentTempArrayC];
@@ -161,11 +182,15 @@ namespace Egg
                 case "down":
                     if (currentTempArrayR == screenArray.GetLength(0) - 1)
                     {
-                        return false;
+                        return 0;
                     }
                     else if (screenArray[currentTempArrayR + 1, currentTempArrayC] == null)
                     {
-                        return false;
+                        if (screenArray[currentTempArrayR, currentTempArrayC] == endScreen)
+                        {
+                            return -1;
+                        }
+                        return 0;
                     }
                     currentScreen.LevelMapClear();
                     currentScreen = screenArray[currentTempArrayR + 1, currentTempArrayC];
@@ -173,8 +198,17 @@ namespace Egg
                     break;
             }
 
-            return true;
+            return 1;
         }
-      
+        public int ChickensInLevel()
+        {
+            int result = 0;
+            foreach(Screen currentScreen in screenArray)
+            {
+
+            }
+            return result;
+        }
+
     }
 }

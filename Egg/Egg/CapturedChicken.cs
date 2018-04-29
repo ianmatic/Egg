@@ -12,13 +12,15 @@ namespace Egg
     class CapturedChicken : GameObject
     {
         Color color;
+        Random rn = new Random();
+        Color[] Colors = new Color[] { Color.Red, Color.Orange, Color.Yellow, Color.Green, Color.Blue, Color.Indigo, Color.Purple };
 
-        public CapturedChicken(int drawLevel, Texture2D defaultSprite, Rectangle hitbox, Color color)
+        public CapturedChicken(int drawLevel, Texture2D defaultSprite, Rectangle hitbox)
         {
             this.drawLevel = drawLevel;
             this.defaultSprite = defaultSprite;
             this.hitbox = hitbox;
-            this.color = color;
+            this.color = RandomColor();
             this.isActive = true;
         }
 
@@ -34,7 +36,7 @@ namespace Egg
             if (hitbox.Intersects(p.Hitbox))
             {
                 //Run some method on P to update saved chickens
-                p.UpdateChickenCounter();
+                p.UpdateChickenList(this);
                 isActive = false;
             }
         }
@@ -53,5 +55,9 @@ namespace Egg
             throw new NotImplementedException();
         }
 
+        public Color RandomColor()
+        {
+            return Colors[rn.Next(Colors.Length)];
+        }
     }
 }

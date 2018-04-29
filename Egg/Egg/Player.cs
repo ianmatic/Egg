@@ -91,7 +91,7 @@ namespace Egg
         //for rebinding keys
         private Dictionary<string, Keys> bindableKb;
 
-        private int collectedChickens;
+        private List<CapturedChicken> collectedChickens;
 
         GameTime gameTime;
         #endregion
@@ -153,7 +153,7 @@ namespace Egg
             get { return bindableKb; }
             set { bindableKb = value; }
         }
-        public int CollectedChickens
+        public List<CapturedChicken> CollectedChickens
         {
             get { return collectedChickens; }
             set { collectedChickens = value; }
@@ -197,7 +197,7 @@ namespace Egg
             rollDelay = 30;
             hitStunDelay = 20;
             miliseconds = 2;
-            collectedChickens = 0;
+            collectedChickens = new List<CapturedChicken>();
 
             bindableKb = new Dictionary<string, Keys>();
         }
@@ -1325,9 +1325,9 @@ namespace Egg
         /// <summary>
         /// Whenever the player touches an active chicken, they "save" it (counter is incremented)
         /// </summary>
-        public void UpdateChickenCounter()
+        public void UpdateChickenList(CapturedChicken chick)
         {
-            collectedChickens++;
+            collectedChickens.Add(chick);
         }
         //not applicable
         public override void CheckColliderAgainstPlayer(Player p)
