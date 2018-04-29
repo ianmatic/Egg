@@ -792,7 +792,7 @@ namespace Egg
 
                         g.Draw(spriteBatch);
                         
-                        
+
                             if (g is Player)
                             {
                                 Player p = (Player)g;
@@ -854,7 +854,7 @@ namespace Egg
                                     DrawRoll(false);
                                 }
                             }
-
+                            
                         
                     }
                     if (player.IsDebugging) //debugging text for player
@@ -983,90 +983,115 @@ namespace Egg
                     if (n is Player)
                     {
                         Player p = (Player)n;                       
-                    //Add extra buffer to dimensions? Different way of doing this?
-                    Rectangle screenSize = new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
+                        //Add extra buffer to dimensions? Different way of doing this?
+                        Rectangle screenSize = new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 
-                    if (!screenSize.Contains(p.Hitbox))
-                    {
-                        if (p.Hitbox.X < 0)
+                        if (!screenSize.Contains(p.Hitbox))
                         {
-                            if (currentLevel.ChangeLevel("left"))
+                            if (p.Hitbox.X < 0)
                             {
-                                Rectangle temp = p.Hitbox;
-                                temp.X = GraphicsDevice.Viewport.Width;
-                                p.Hitbox = temp;
+                                switch (currentLevel.ChangeScreen("left"))
+                                {
+                                    case 1:
+                                        Rectangle temp = p.Hitbox;
+                                        temp.X = GraphicsDevice.Viewport.Width;
+                                        p.Hitbox = temp;
+                                        break;
+
+                                    case 0:
+                                        p.Hitbox = p.LastCheckpoint;
+                                        break;
+
+                                    case -1:
+                                        IncrementLevel();
+                                        break;
+                                }
+                            
                             }
-                            else
+                            else if (p.Hitbox.X > GraphicsDevice.Viewport.Width)
                             {
-                                p.Hitbox = p.LastCheckpoint;
+                                switch (currentLevel.ChangeScreen("right"))
+                                {
+                                    case 1:
+                                        Rectangle temp = p.Hitbox;
+                                        temp.X = 0;
+                                        p.Hitbox = temp;
+                                        break;
+
+                                    case 0:
+                                        p.Hitbox = p.LastCheckpoint;
+                                        break;
+
+                                    case -1:
+                                        IncrementLevel();
+                                        break;
+                                }                            
+                            }
+
+                            if (p.Hitbox.Y < 0)
+                            {
+                                switch (currentLevel.ChangeScreen("up"))
+                                {
+                                    case 1:
+                                        Rectangle temp = p.Hitbox;
+                                        temp.Y = GraphicsDevice.Viewport.Height;
+                                        p.Hitbox = temp;
+                                        break;
+
+                                    case 0:
+                                        p.Hitbox = p.LastCheckpoint;
+                                        break;
+
+                                    case -1:
+                                        IncrementLevel();
+                                        break;
+                                }                           
+                            }
+                            else if (p.Hitbox.Y > GraphicsDevice.Viewport.Height)
+                            {
+                                switch (currentLevel.ChangeScreen("down"))
+                                {
+                                    case 1:
+                                        Rectangle temp = p.Hitbox;
+                                        temp.Y = 0;
+                                        p.Hitbox = temp;
+                                        break;
+
+                                    case 0:
+                                        p.Hitbox = p.LastCheckpoint;
+                                        break;
+
+                                    case -1:
+                                        IncrementLevel();
+                                        break;
+                                }                          
                             }
                         }
-                        else if (p.Hitbox.X > GraphicsDevice.Viewport.Width)
-                        {
-                            if (currentLevel.ChangeLevel("right"))
-                            {
-                                Rectangle temp = p.Hitbox;
-                                temp.X = 0;
-                                p.Hitbox = temp;
-                            }
-                            else
-                            {
-                                p.Hitbox = p.LastCheckpoint;
-                            }
-                        }
 
-                        if (p.Hitbox.Y < 0)
-                        {
-                            if (currentLevel.ChangeLevel("up"))
-                            {
-                                Rectangle temp = p.Hitbox;
-                                temp.Y = GraphicsDevice.Viewport.Height;
-                                p.Hitbox = temp;
-                            }
-
-                        }
-                        else if (p.Hitbox.Y > GraphicsDevice.Viewport.Height)
-                        {
-                            if (currentLevel.ChangeLevel("down"))
-                            {
-                                Rectangle temp = p.Hitbox;
-                                temp.Y = 0;
-                                p.Hitbox = temp;
-                            }
-                            else
-                            {
-                                p.Hitpoints = 0;
-                            }
-
-                        }
-                    }
-
-                    p.FiniteState();
+                        p.FiniteState();
 
 
-                    //This should work on any enemy (i.e. enemy list of a screen), fix this later!
-                    foreach (Enemy e in enemyList)
+                        //This should work on any enemy (i.e. enemy list of a screen), fix this later!
+                        foreach (Enemy e in currentLevel.CurrentScreen.Enemies)
                         {
                             if (!p.InBounceLockout)
                             {
                                 p.CheckColliderAgainstEnemy(e);
                             }
+
+                            e.FiniteState();
+                            e.UpdateEnemyData();
+                            e.CheckColliderAgainstPlayer(player);
                         }
                         
                     }
-                    else if (n is Enemy)
-                    {
-                        Enemy e = (Enemy)n;
-                        e.FiniteState();
-                        e.UpdateEnemyData();
-                        e.CheckColliderAgainstPlayer(player);
-                    }
+                    
                     else
                     {
                         n.CheckColliderAgainstPlayer(player);
-                        foreach (Enemy e in enemyList)
+                        foreach (Enemy e in currentLevel.CurrentScreen.Enemies)
                         {
-                            n.CheckColliderAgainstEnemy(enemy);
+                            n.CheckColliderAgainstEnemy(e);
                         }
 
                     }

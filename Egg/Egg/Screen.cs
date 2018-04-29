@@ -23,6 +23,10 @@ namespace Egg
 
         Tile[,] tileMap;
         List<Enemy> enemies = new List<Enemy>();
+        public List<Enemy> Enemies
+        {
+            get { return enemies; }
+        }
 
         StreamReader interpreter;
         Tile[,] screenTiles;
@@ -85,10 +89,6 @@ namespace Egg
         public void DrawTilesFromMap(SpriteBatch sb, List<Texture2D> textures)
         {
             DrawLevel(UpdateTiles(textures), sb); //draw everything tot he screen
-            foreach (Enemy enemy in enemies)
-            {
-                enemy.Draw(sb);
-            }
         }
 
         /// <summary>
@@ -248,6 +248,11 @@ namespace Egg
                         }
                     }
                 }
+            }
+
+            foreach (Enemy e in enemies)
+            {
+                e.Draw(sb);
             }
         }
 
