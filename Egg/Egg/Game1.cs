@@ -411,7 +411,7 @@ namespace Egg
             nRightBot = Content.Load<Texture2D>(@"tiles\nRightBot");
             nRightTop = Content.Load<Texture2D>(@"tiles\nRightTop");
 
-            enemy1 = Content.Load<Texture2D>(@"jellyboi");
+            enemy1 = Content.Load<Texture2D>(@"e1");
 
 
             tileList.Add(blankTile);
@@ -440,9 +440,11 @@ namespace Egg
             tileList.Add(nLeftBot);
             tileList.Add(nRightBot);
             tileList.Add(nRightTop);
+
+            tileList.Add(enemy1);
             #endregion
 
-            currentLevel = new Level(1);
+            currentLevel = new Level(2);
 
             currentLevel.CurrentScreen.UpdateTiles(tileList);
         }

@@ -194,20 +194,27 @@ namespace Egg
                     }
 
                     //if it's the enemy tile, stretch it out
-                    if (textureNumber == 22)
+                    if (textureNumber == 23)
                     {
-                        int tempX = screenTiles[row, column].X;
-                        int tempY = screenTiles[row, column].Y;
                         Rectangle tempRect = screenTiles[row, column].Hitbox;
-                        Enemy tempE = new Enemy(tempRect, textures[22], 4, 1);
+                        int tempBuffer = (64 - 50) / 2;
+                        int tempX = screenTiles[row, column].X + tempBuffer;
+                        int tempY = screenTiles[row, column].Y + tempBuffer;
+                        tempRect.X = tempX;
+                        tempRect.Y = tempY;
+                        tempRect.Width -= tempBuffer * 2;
+                        tempRect.Height -= tempBuffer * 2;
+
+                        Enemy tempE = new Enemy(tempRect, textures[23], 4, 1);
                         enemies.Add(tempE);
 
                         //levelMap[row, column] = null;
                         //screenTiles[row, column] = null;
+                        screenTiles[row, column].DefaultSprite = null;
                     }
 
                     //if it's an empty tile, set it to null in the 2d array
-                    if (textureNumber == 0)
+                    if (textureNumber == 0 || textureNumber == 23)
                     {
                         levelMap[row, column] = null;
                     }
@@ -337,10 +344,12 @@ namespace Egg
                     return 19;
                 case "n3":
                     return 20;
-                case "n2":
-                    return 21;
                 case "n4":
+                    return 21;
+                case "n2":
                     return 22;
+                case "e1":
+                    return 23;
 
                 default:    //failsafe case
                     return 0;
