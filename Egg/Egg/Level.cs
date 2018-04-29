@@ -49,9 +49,8 @@ namespace Egg
             FillScreenArray(levelNum);
 
             currentScreen = startScreen;
-
-            //temporary
-            totalChickensInLevel = 0;
+           
+            totalChickensInLevel = ChickensInLevel();
         }
 
         private void FillScreenArray(int level)
@@ -203,9 +202,12 @@ namespace Egg
         public int ChickensInLevel()
         {
             int result = 0;
-            foreach(Screen currentScreen in screenArray)
+            foreach(Screen s in screenArray)
             {
-
+                if (s != null)
+                {
+                    result += s.ChickenCount;
+                }             
             }
             return result;
         }
