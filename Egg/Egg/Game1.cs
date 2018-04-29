@@ -938,54 +938,82 @@ namespace Egg
                     {
                         if (p.Hitbox.X < 0)
                         {
-                            if (currentLevel.ChangeLevel("left"))
+                            switch (currentLevel.ChangeScreen("left"))
                             {
-                                Rectangle temp = p.Hitbox;
-                                temp.X = GraphicsDevice.Viewport.Width;
-                                p.Hitbox = temp;
+                                case 1:
+                                    Rectangle temp = p.Hitbox;
+                                    temp.X = GraphicsDevice.Viewport.Width;
+                                    p.Hitbox = temp;
+                                    break;
+
+                                case 0:
+                                    p.Hitbox = p.LastCheckpoint;
+                                    break;
+
+                                case -1:
+                                    IncrementLevel();
+                                    break;
                             }
-                            else
-                            {
-                                p.Hitbox = p.LastCheckpoint;
-                            }
+                            
                         }
                         else if (p.Hitbox.X > GraphicsDevice.Viewport.Width)
                         {
-                            if (currentLevel.ChangeLevel("right"))
+                            switch (currentLevel.ChangeScreen("right"))
                             {
-                                Rectangle temp = p.Hitbox;
-                                temp.X = 0;
-                                p.Hitbox = temp;
-                            }
-                            else
-                            {
-                                p.Hitbox = p.LastCheckpoint;
-                            }
+                                case 1:
+                                    Rectangle temp = p.Hitbox;
+                                    temp.X = 0;
+                                    p.Hitbox = temp;
+                                    break;
+
+                                case 0:
+                                    p.Hitbox = p.LastCheckpoint;
+                                    break;
+
+                                case -1:
+                                    IncrementLevel();
+                                    break;
+                            }                            
                         }
 
                         if (p.Hitbox.Y < 0)
                         {
-                            if (currentLevel.ChangeLevel("up"))
+                            switch (currentLevel.ChangeScreen("up"))
                             {
-                                Rectangle temp = p.Hitbox;
-                                temp.Y = GraphicsDevice.Viewport.Height;
-                                p.Hitbox = temp;
-                            }
+                                case 1:
+                                    Rectangle temp = p.Hitbox;
+                                    temp.Y = GraphicsDevice.Viewport.Height;
+                                    p.Hitbox = temp;
+                                    break;
+
+                                case 0:
+                                    p.Hitbox = p.LastCheckpoint;
+                                    break;
+
+                                case -1:
+                                    IncrementLevel();
+                                    break;
+                            }                           
 
                         }
                         else if (p.Hitbox.Y > GraphicsDevice.Viewport.Height)
                         {
-                            if (currentLevel.ChangeLevel("down"))
+                            switch (currentLevel.ChangeScreen("down"))
                             {
-                                Rectangle temp = p.Hitbox;
-                                temp.Y = 0;
-                                p.Hitbox = temp;
-                            }
-                            else
-                            {
-                                p.Hitpoints = 0;
-                            }
+                                case 1:
+                                    Rectangle temp = p.Hitbox;
+                                    temp.Y = 0;
+                                    p.Hitbox = temp;
+                                    break;
 
+                                case 0:
+                                    p.Hitbox = p.LastCheckpoint;
+                                    break;
+
+                                case -1:
+                                    IncrementLevel();
+                                    break;
+                            }                          
                         }
                     }
 
