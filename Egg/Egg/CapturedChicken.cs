@@ -40,7 +40,7 @@ namespace Egg
         //Checks if player has collected chicken
         public override void CheckColliderAgainstPlayer(Player p)
         {
-            if (hitbox.Intersects(p.Hitbox))
+            if (hitbox.Intersects(p.Hitbox) && isActive)
             {
                 //Run some method on P to update saved chickens
                 p.UpdateChickenList(this);
@@ -49,7 +49,11 @@ namespace Egg
         }
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(defaultSprite, hitbox, this.color);
+            if (isActive)
+            {
+                sb.Draw(defaultSprite, hitbox, this.color);
+            }
+            
         }
         //Enemies pass through chickens
         public override void CheckColliderAgainstEnemy(Enemy e)
