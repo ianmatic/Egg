@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 
 namespace Egg
 {
@@ -39,6 +40,7 @@ namespace Egg
         Level currentLevel;
         int eggCounter = 0;
         int levelCount = 1;
+        int totalLevels;
         bool hasDrawnEggsForEndScreen = false;
 
         GameState currentState;
@@ -386,6 +388,7 @@ namespace Egg
             hitStunNoShellDictionaryLeft.Add(1, hitStunNoShellLeft);
             #endregion
 
+            totalLevels = Directory.GetDirectories(@"..\..\..\..\Resources\Levels").Length;
 
             #region loading Tiles
             blankTile = Content.Load<Texture2D>(@"clearTile");
@@ -1632,6 +1635,17 @@ namespace Egg
 
         void IncrementLevel()
         {
+            if (levelCount >= totalLevels)
+            {
+                //Put end screen here
+
+                //Move this code to when the Next button is pressed
+                levelCount = 1;
+                //Reset saved chicken count
+                currentLevel = new Level(1);
+                return;
+            }
+
             //Increments level and sets up next level
             levelCount++;
             currentLevel = new Level(levelCount);
