@@ -452,8 +452,8 @@ namespace Egg
             tileList.Add(nRightTop);
 
             tileList.Add(enemy1);
-            tileList.Add(flag);
             tileList.Add(egg);
+            tileList.Add(flag);
             #endregion
 
             backGround = Content.Load<Texture2D>("bg");
