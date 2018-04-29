@@ -238,13 +238,10 @@ namespace Egg
                     {
                         bool doubleChecker = false;
                         Rectangle tempRect = screenTiles[row, column].Hitbox;
-                        int tempBuffer = (64 - 40) / 2;
-                        int tempX = screenTiles[row, column].X + tempBuffer;
-                        int tempY = screenTiles[row, column].Y + tempBuffer;
-                        tempRect.X = tempX;
-                        tempRect.Y = tempY;
-                        tempRect.Width -= tempBuffer * 2;
-                        tempRect.Height -= tempBuffer * 2;
+                        tempRect.Height = 50;
+                        tempRect.Width = 50;
+                        tempRect.X += 60 / 2;
+                        tempRect.Y += 60;
 
                         CapturedChicken tempChicken = new CapturedChicken(0, textures[textureNumber], tempRect);
 
