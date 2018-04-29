@@ -181,7 +181,8 @@ namespace Egg
         public Texture2D nRightBot;
         public Texture2D nRightTop;
         public Texture2D enemy1;
-
+        public Texture2D flag;
+        public Texture2D egg;
 
         public Texture2D backGround;
 
@@ -411,6 +412,8 @@ namespace Egg
             nRightTop = Content.Load<Texture2D>(@"tiles\nRightTop");
 
             enemy1 = Content.Load<Texture2D>(@"e1");
+            flag = Content.Load<Texture2D>(@"flag");
+            egg = Content.Load<Texture2D>(@"egg");
 
 
             tileList.Add(blankTile);
@@ -441,6 +444,8 @@ namespace Egg
             tileList.Add(nRightTop);
 
             tileList.Add(enemy1);
+            tileList.Add(flag);
+            tileList.Add(egg);
             #endregion
 
             backGround = Content.Load<Texture2D>("bg");
