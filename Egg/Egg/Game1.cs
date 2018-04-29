@@ -792,7 +792,7 @@ namespace Egg
 
                         g.Draw(spriteBatch);
                         
-                        
+
                             if (g is Player)
                             {
                                 Player p = (Player)g;
@@ -854,7 +854,7 @@ namespace Egg
                                     DrawRoll(false);
                                 }
                             }
-
+                            
                         
                     }
                     if (player.IsDebugging) //debugging text for player
