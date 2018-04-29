@@ -17,9 +17,15 @@ namespace Egg
         Screen startScreen;
         Screen endScreen;
 
+        int totalChickensInLevel;
+
         public Screen CurrentScreen
         {
             get { return currentScreen; }
+        }
+        public int TotalChickensInLevel
+        {
+            get { return totalChickensInLevel; }
         }
 
         int currentTempArrayC;
@@ -43,6 +49,9 @@ namespace Egg
             FillScreenArray(levelNum);
 
             currentScreen = startScreen;
+
+            //temporary
+            totalChickensInLevel = 0;
         }
 
         private void FillScreenArray(int level)
@@ -175,6 +184,15 @@ namespace Egg
 
             return true;
         }
-      
+        public int ChickensInLevel()
+        {
+            int result = 0;
+            foreach(Screen currentScreen in screenArray)
+            {
+
+            }
+            return result;
+        }
+
     }
 }

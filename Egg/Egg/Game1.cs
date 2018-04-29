@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -26,7 +27,7 @@ namespace Egg
         SpriteFont menuText;
         SpriteFont titleText;
         SpriteFont optionsText;
-        Texture2D testSprite;
+        Texture2D collectibleEgg;
         Texture2D menu;
         Texture2D options;
         //test textures
@@ -642,11 +643,11 @@ namespace Egg
             GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
             //Draws sprites & text based on FSM
+            currentState = GameState.GameOver;
             switch (currentState)
             {
                 case GameState.Menu:
                     spriteBatch.Draw(menu, new Rectangle(0, 0, 1920, 1080), Color.White);
-                    spriteBatch.Draw(topRectangle, mouseRect, Color.Red); //for testing
                     spriteBatch.DrawString(titleText, "Egg", new Vector2(880, 320), Color.White);
                     startRect = new Rectangle(690, 470, 515, 32);
                     spriteBatch.DrawString(menuText, "Press Enter to Start", new Vector2(690, 470), Color.White);
@@ -674,7 +675,6 @@ namespace Egg
                     break;
                 case GameState.Options:
                     spriteBatch.Draw(options, new Rectangle(0, 0, 1920, 1080), Color.White);
-                    spriteBatch.Draw(topRectangle, mouseRect, Color.Red); //for testing
                     spriteBatch.DrawString(menuText, "Options", new Vector2(850, 300), Color.White);
                     spriteBatch.DrawString(menuText, "Rebind keys ", new Vector2(450, 450), Color.White);
                     leftRect = new Rectangle(450, 520, 170, 24);
@@ -868,13 +868,65 @@ namespace Egg
                     else
                     {
                         //Draw collectibles
-                        spriteBatch.Draw(testSprite, new Rectangle(135, 55, 40, 40), Color.White);
+                        spriteBatch.Draw(collectibleEgg, new Rectangle(135, 55, 40, 40), Color.White);
                         spriteBatch.DrawString(menuText, player.CollectedChickens.ToString(), new Vector2(200, 60), Color.Orange);
                     }
                     break;
 
                 case GameState.GameOver:
-                    spriteBatch.DrawString(menuText, "You beat a level, but you shouldn't see this yet.", new Vector2(350, 200), Color.White);
+                    spriteBatch.Draw(menu, new Rectangle(0, 0, 1920, 1080), Color.LightSeaGreen);
+                    spriteBatch.DrawString(titleText, "Level Complete!", new Vector2(700, 320), Color.White);
+                    spriteBatch.DrawString(menuText, "Chickens Rescued: ", new Vector2(500, 500), Color.White);
+
+
+                    player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
+                    player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
+                    player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
+                    player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
+                    player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
+                    player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
+                    player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
+                    player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
+
+                    //temporary
+                    /*
+                    for (int i = 0; i < 30; i++)
+                    {
+                        currentLevel.AddChicken(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
+                    }
+                    */
+                    for (int i = 0; i < currentLevel.TotalChickensInLevel; i++)
+                    {
+
+                        if (i < 9)
+                        {
+                            spriteBatch.Draw(collectibleEgg, new Rectangle(i * 60 + 1000, 500, 50, 50), Color.Gray);
+                        }
+                        else if (i >= 10 && i < 19)
+                        {
+                            spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 600, 600, 50, 50), Color.Gray);
+                        }
+                        else if (i >= 20 && i < 29)
+                        {
+                            spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 1200, 700, 50, 50), Color.Gray);
+                        }
+                    }
+
+                    for (int i = 0; i < player.CollectedChickens.Count; i++)
+                    {
+                        if (i < 9)
+                        {
+                            spriteBatch.Draw(collectibleEgg, new Rectangle(i * 60 + 1000, 500, 50, 50), Color.White);
+                        }
+                        else if (i >= 10 && i < 19)
+                        {
+                            spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 600, 600, 50, 50), Color.White);
+                        }
+                        else if (i >= 20 && i < 29)
+                        {
+                            spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 1200, 700, 50, 50), Color.White);
+                        }
+                    }
                     break;
             }
             if (paused && currentState == GameState.Game)
@@ -1087,7 +1139,7 @@ namespace Egg
         //Run this in LoadContent if you need to test drawing objects to the screen
         private void PotatoDebugging()
         {
-            testSprite = Content.Load<Texture2D>("potato");
+            collectibleEgg = Content.Load<Texture2D>("neutralEgg");
             bottomRectangle = Content.Load<Texture2D>("red");
             sideRectangle = Content.Load<Texture2D>("blue");
             topRectangle = Content.Load<Texture2D>("green");
@@ -1097,11 +1149,11 @@ namespace Egg
 
             #region CapturedChickens
 
-            AddObjectToList(new CapturedChicken(115, testSprite, new Rectangle(0, 0, 30, 30), Color.Red));
-            AddObjectToList(new CapturedChicken(111, testSprite, new Rectangle(0, 15, 30, 30), Color.Aqua));
-            AddObjectToList(new CapturedChicken(114, testSprite, new Rectangle(0, 30, 30, 30), Color.Green));
-            AddObjectToList(new CapturedChicken(113, testSprite, new Rectangle(0, 45, 30, 30), Color.Yellow));
-            AddObjectToList(new CapturedChicken(112, testSprite, new Rectangle(0, 60, 30, 30), Color.White));
+            AddObjectToList(new CapturedChicken(115, collectibleEgg, new Rectangle(0, 0, 30, 30)));
+            AddObjectToList(new CapturedChicken(111, collectibleEgg, new Rectangle(0, 15, 30, 30)));
+            AddObjectToList(new CapturedChicken(114, collectibleEgg, new Rectangle(0, 30, 30, 30)));
+            AddObjectToList(new CapturedChicken(113, collectibleEgg, new Rectangle(0, 45, 30, 30)));
+            AddObjectToList(new CapturedChicken(112, collectibleEgg, new Rectangle(0, 60, 30, 30)));
 
             #endregion
 
