@@ -1362,18 +1362,6 @@ namespace Egg
             topRectangle = Content.Load<Texture2D>("green");
             collisionTest = Content.Load<Texture2D>("white");
 
-
-
-            #region CapturedChickens
-
-            AddObjectToList(new CapturedChicken(115, collectibleEgg, new Rectangle(0, 0, 30, 30)));
-            AddObjectToList(new CapturedChicken(111, collectibleEgg, new Rectangle(0, 15, 30, 30)));
-            AddObjectToList(new CapturedChicken(114, collectibleEgg, new Rectangle(0, 30, 30, 30)));
-            AddObjectToList(new CapturedChicken(113, collectibleEgg, new Rectangle(0, 45, 30, 30)));
-            AddObjectToList(new CapturedChicken(112, collectibleEgg, new Rectangle(0, 60, 30, 30)));
-
-            #endregion
-
             #region Checkpoints
             AddObjectToList(new Checkpoint(3, collisionTest, new Rectangle(400, 350, 75, 75)));
             AddObjectToList(new Checkpoint(3, collisionTest, new Rectangle(1500, 250, 75, 75)));
