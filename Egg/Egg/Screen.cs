@@ -276,8 +276,8 @@ namespace Egg
                         Rectangle tempRect = screenTiles[row, column].Hitbox;
                         tempRect.Height = 75;
                         tempRect.Width = 75;
-                        tempRect.X -= 75 / 2;
-                        tempRect.Y -= 75;
+                        tempRect.X += 75 / 2;
+                        tempRect.Y += 75;
 
                         Checkpoint tempCheck = new Checkpoint(0, textures[textureNumber], tempRect);
 
