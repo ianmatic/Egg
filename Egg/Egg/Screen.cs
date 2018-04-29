@@ -20,12 +20,18 @@ namespace Egg
         int screenHeight = 1080;        //same for this 
         string[,] level;
         string filePath;
+        int numOfChickens = 0;
 
         Tile[,] tileMap;
         List<Enemy> enemies = new List<Enemy>();
         public List<Enemy> Enemies
         {
             get { return enemies; }
+        }
+
+        public int ChickenCount
+        {
+            get { return numOfChickens; }
         }
 
         StreamReader interpreter;
