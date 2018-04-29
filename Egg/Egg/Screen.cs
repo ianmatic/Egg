@@ -205,13 +205,10 @@ namespace Egg
                     {
                         bool doubleChecker = false;
                         Rectangle tempRect = screenTiles[row, column].Hitbox;
-                        int tempBuffer = (64 - 40) / 2;
-                        int tempX = screenTiles[row, column].X + tempBuffer;
-                        int tempY = screenTiles[row, column].Y + tempBuffer;
-                        tempRect.X = tempX;
-                        tempRect.Y = tempY;
-                        tempRect.Width -= tempBuffer * 2;
-                        tempRect.Height -= tempBuffer * 2;
+                        tempRect.Height = 75;
+                        tempRect.Width = 75;
+                        tempRect.X += 75 / 2;
+                        tempRect.Y += 75;
 
                         Enemy tempE = new Enemy(tempRect, textures[23], 4, 1);
 
@@ -274,7 +271,7 @@ namespace Egg
                         tempRect.Height = 75;
                         tempRect.Width = 75;
                         tempRect.X += 75 / 2;
-                        tempRect.Y += 75;
+                        tempRect.Y += 60;
 
                         Checkpoint tempCheck = new Checkpoint(0, textures[textureNumber], tempRect);
 
