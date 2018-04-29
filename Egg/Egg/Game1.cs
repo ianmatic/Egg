@@ -42,6 +42,7 @@ namespace Egg
         int levelCount = 1;
         int totalLevels;
         bool hasDrawnEggsForEndScreen = false;
+        bool theEnd = false;
 
         GameState currentState;
         KeyboardState kb;
@@ -639,7 +640,15 @@ namespace Egg
                         if (kb.IsKeyDown(Keys.Enter))
                         {
                             IncrementLevel();
-                            currentState = GameState.Game;
+                            if (theEnd)
+                            {
+                                currentState = GameState.Menu;
+                            }
+                            else
+                            {
+                                currentState = GameState.Game;
+                            }
+
                         }
                         break;
                 }
@@ -806,9 +815,7 @@ namespace Egg
 
             //draw background
             spriteBatch.Draw(backGround, new Rectangle(0, 0, 1920, 1080), Color.White);
-
             //Draws sprites & text based on FSM
-          
             switch (currentState)
             {
                 case GameState.Menu:
@@ -1047,75 +1054,84 @@ namespace Egg
                     break;
 
                 case GameState.GameOver:
-                    spriteBatch.Draw(menu, new Rectangle(0, 0, 1920, 1080), Color.LightSeaGreen);
-                    spriteBatch.DrawString(titleText, "Level Complete!", new Vector2(700, 320), Color.White);
-                    spriteBatch.DrawString(menuText, "Chickens Rescued: ", new Vector2(500, 500), Color.White);
-                    spriteBatch.DrawString(menuText, "Press Enter to continue", new Vector2(640, 950), Color.White);
-
-
-                    currentLevel.TotalChickensInLevel = 30;
-
-                    //draw total eggs in level
-                    for (int i = 0; i < currentLevel.TotalChickensInLevel; i++)
+                    if (!theEnd)
                     {
+                        spriteBatch.Draw(menu, new Rectangle(0, 0, 1920, 1080), Color.LightSeaGreen);
+                        spriteBatch.DrawString(titleText, "Level Complete!", new Vector2(700, 320), Color.White);
+                        spriteBatch.DrawString(menuText, "Chickens Rescued: ", new Vector2(500, 500), Color.White);
+                        spriteBatch.DrawString(menuText, "Press Enter to continue", new Vector2(640, 950), Color.White);
 
-                        if (i < 10)
+                        //draw total eggs in level
+                        for (int i = 0; i < currentLevel.TotalChickensInLevel; i++)
                         {
-                            spriteBatch.Draw(collectibleEgg, new Rectangle(i * 60 + 1000, 500, 50, 50), Color.Gray);
+
+                            if (i < 10)
+                            {
+                                spriteBatch.Draw(collectibleEgg, new Rectangle(i * 60 + 1000, 500, 50, 50), Color.Gray);
+                            }
+                            else if (i >= 10 && i <= 19)
+                            {
+                                spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 600, 600, 50, 50), Color.Gray);
+                            }
+                            else if (i >= 20 && i <= 29)
+                            {
+                                spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 1200, 700, 50, 50), Color.Gray);
+                            }
                         }
-                        else if (i >= 10 && i <= 19)
+
+
+
+                        //draw each egg player collected
+                        for (int i = 0; i < tempcounter; i++)
                         {
-                            spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 600, 600, 50, 50), Color.Gray);
+                            if (i < 9)
+                            {
+                                spriteBatch.Draw(collectibleEgg, new Rectangle(i * 60 + 1000, 500, 50, 50), Color.White);
+                            }
+                            else if (i >= 10 && i < 19)
+                            {
+                                spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 600, 600, 50, 50), Color.White);
+                            }
+                            else if (i >= 20 && i < 29)
+                            {
+                                spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 1200, 700, 50, 50), Color.White);
+                            }
                         }
-                        else if (i >= 20 && i <= 29)
+
+                        //draw new egg every 10 frames
+                        if (eggCounter % 10 == 0 && !hasDrawnEggsForEndScreen)
                         {
-                            spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 1200, 700, 50, 50), Color.Gray);
+
+                            if (tempcounter < 9)
+                            {
+                                spriteBatch.Draw(collectibleEgg, new Rectangle(tempcounter * 60 + 1000, 500, 50, 50), Color.White);
+                            }
+                            else if (tempcounter >= 10 && tempcounter < 19)
+                            {
+                                spriteBatch.Draw(collectibleEgg, new Rectangle((tempcounter * 60 + 1000) - 600, 600, 50, 50), Color.White);
+                            }
+                            else if (tempcounter >= 20 && tempcounter < 29)
+                            {
+                                spriteBatch.Draw(collectibleEgg, new Rectangle((tempcounter * 60 + 1000) - 1200, 700, 50, 50), Color.White);
+                            }
+                            tempcounter++;
                         }
+
+                        if (tempcounter >= player.CollectedChickens.Count)
+                        {
+                            hasDrawnEggsForEndScreen = true;
+                        }
+                        eggCounter++;
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(menu, new Rectangle(0, 0, 1920, 1080), Color.LightSeaGreen);
+                        spriteBatch.DrawString(titleText, "Game Complete!", new Vector2(720, 320), Color.White);
+                        spriteBatch.Draw(collectibleEgg, new Rectangle(750, 450, 350, 350), Color.White);
+                        spriteBatch.DrawString(menuText, "Press Enter to return to the menu", new Vector2(530, 950), Color.White);
                     }
 
 
-
-                    //draw each egg player collected
-                    for (int i = 0; i < tempcounter; i++)
-                    {
-                        if (i < 9)
-                        {
-                            spriteBatch.Draw(collectibleEgg, new Rectangle(i * 60 + 1000, 500, 50, 50), Color.White);
-                        }
-                        else if (i >= 10 && i < 19)
-                        {
-                            spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 600, 600, 50, 50), Color.White);
-                        }
-                        else if (i >= 20 && i < 29)
-                        {
-                            spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 1200, 700, 50, 50), Color.White);
-                        }
-                    }
-
-                    //draw new egg every 10 frames
-                    if (eggCounter % 10 == 0 && !hasDrawnEggsForEndScreen)
-                    {
-
-                        if (tempcounter < 9)
-                        {
-                            spriteBatch.Draw(collectibleEgg, new Rectangle(tempcounter * 60 + 1000, 500, 50, 50), Color.White);
-                        }
-                        else if (tempcounter >= 10 && tempcounter < 19)
-                        {
-                            spriteBatch.Draw(collectibleEgg, new Rectangle((tempcounter * 60 + 1000) - 600, 600, 50, 50), Color.White);
-                        }
-                        else if (tempcounter >= 20 && tempcounter < 29)
-                        {
-                            spriteBatch.Draw(collectibleEgg, new Rectangle((tempcounter * 60 + 1000) - 1200, 700, 50, 50), Color.White);
-                        }
-                        tempcounter++;
-                    }
-
-                    if (tempcounter >= player.CollectedChickens.Count)
-                    {
-                        hasDrawnEggsForEndScreen = true;
-                    }
-                    eggCounter++;
 
                     
 
@@ -1374,14 +1390,6 @@ namespace Egg
             AddObjectToList(enemy2);
             AddObjectToList(enemy3);
             player = new Player(5, collisionTest, new Rectangle(450, 350, 75, 75), Color.White);
-            player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
-            player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
-            player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
-            player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
-            player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
-            player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
-            player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
-            player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
 
             //default movement
             player.BindableKb.Add("left", Keys.A);
@@ -1626,13 +1634,14 @@ namespace Egg
             if (levelCount >= totalLevels)
             {
                 //Put end screen here
-
+                theEnd = true;
                 //Move this code to when the Next button is pressed
                 levelCount = 1;
                 //Reset saved chicken count
                 currentLevel = new Level(1);
                 return;
             }
+            theEnd = false;
 
             //Increments level and sets up next level
             levelCount++;
