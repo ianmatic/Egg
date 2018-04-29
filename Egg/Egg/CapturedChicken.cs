@@ -12,8 +12,15 @@ namespace Egg
     class CapturedChicken : GameObject
     {
         Color color;
+        Guid guid = Guid.NewGuid();
         Random rn = new Random();
         Color[] Colors = new Color[] { Color.Red, Color.Orange, Color.Yellow, Color.Green, Color.Blue, Color.Indigo, Color.Purple };
+
+
+        public Color Color
+        {
+            get { return color; }
+        }
 
         public CapturedChicken(int drawLevel, Texture2D defaultSprite, Rectangle hitbox)
         {

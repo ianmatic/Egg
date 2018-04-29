@@ -26,6 +26,7 @@ namespace Egg
         public int TotalChickensInLevel
         {
             get { return totalChickensInLevel; }
+            set { totalChickensInLevel = value; }
         }
 
         int currentTempArrayC;
