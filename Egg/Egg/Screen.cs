@@ -20,12 +20,18 @@ namespace Egg
         int screenHeight = 1080;        //same for this 
         string[,] level;
         string filePath;
+        int numOfChickens = 0;
 
         Tile[,] tileMap;
         List<Enemy> enemies = new List<Enemy>();
         public List<Enemy> Enemies
         {
             get { return enemies; }
+        }
+
+        public int ChickenCount
+        {
+            get { return numOfChickens; }
         }
 
         StreamReader interpreter;
@@ -188,20 +194,38 @@ namespace Egg
                     }
 
                     //if it's the enemy tile, stretch it out
-                    if (textureNumber == 22)
+                    if (textureNumber == 23)
                     {
-                        int tempX = screenTiles[row, column].X;
-                        int tempY = screenTiles[row, column].Y;
+                        bool doubleChecker = false;
                         Rectangle tempRect = screenTiles[row, column].Hitbox;
-                        Enemy tempE = new Enemy(tempRect, textures[22], 4, 1);
-                        enemies.Add(tempE);
+                        int tempBuffer = (64 - 40) / 2;
+                        int tempX = screenTiles[row, column].X + tempBuffer;
+                        int tempY = screenTiles[row, column].Y + tempBuffer;
+                        tempRect.X = tempX;
+                        tempRect.Y = tempY;
+                        tempRect.Width -= tempBuffer * 2;
+                        tempRect.Height -= tempBuffer * 2;
+
+                        Enemy tempE = new Enemy(tempRect, textures[23], 4, 1);
+
+                        foreach (Enemy e in enemies)
+                        {
+                            if (e.X == tempE.X)
+                            {
+                                doubleChecker = true;
+                            }
+                        }
+
+                        if (!doubleChecker)
+                            enemies.Add(tempE);
 
                         //levelMap[row, column] = null;
                         //screenTiles[row, column] = null;
+                        screenTiles[row, column].DefaultSprite = null;
                     }
 
                     //if it's an empty tile, set it to null in the 2d array
-                    if (textureNumber == 0)
+                    if (textureNumber == 0 || textureNumber == 23)
                     {
                         levelMap[row, column] = null;
                     }
@@ -331,10 +355,12 @@ namespace Egg
                     return 19;
                 case "n3":
                     return 20;
-                case "n2":
-                    return 21;
                 case "n4":
+                    return 21;
+                case "n2":
                     return 22;
+                case "e1":
+                    return 23;
 
                 default:    //failsafe case
                     return 0;

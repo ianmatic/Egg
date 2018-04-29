@@ -336,7 +336,7 @@ namespace Egg
         //Shouldn't check its collision against other enemies unless we decide enemies bounce off of each other instead of pass through
         public override void CheckColliderAgainstEnemy(Enemy e)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
     }

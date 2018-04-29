@@ -74,7 +74,7 @@ namespace Egg
 
         Player player;
 
-        //animation fields
+        #region animation fields
         public Texture2D spriteSheet;
         int currentFrame = 1;
         double fps = 60.0;
@@ -84,11 +84,25 @@ namespace Egg
         Dictionary<int, Texture2D> walkFrameDictionaryLeft;
         Dictionary<int, Texture2D> rollFrameDictionary;
         Dictionary<int, Texture2D> rollFrameDictionaryLeft;
+        Dictionary<int, Texture2D> flutterFrameDictionaryLeft;
+        Dictionary<int, Texture2D> flutterFrameDictionary;
+        Dictionary<int, Texture2D> shellOffFlutterFrameDictionaryLeft;
+        Dictionary<int, Texture2D> shellOffFlutterFrameDictionary;
+        Dictionary<int, Texture2D> walkNoShellDictionary;
+        Dictionary<int, Texture2D> walkNoShellDictionaryLeft;
+        Dictionary<int, Texture2D> rollNoShellDictionary;
+        Dictionary<int, Texture2D> rollNoShellDictionaryLeft;
+        Dictionary<int, Texture2D> hitStunFullShellDictionary;
+        Dictionary<int, Texture2D> hitStunFullShellDictionaryLeft;
+        Dictionary<int, Texture2D> hitStunShellDictionary;
+        Dictionary<int, Texture2D> hitStunShellDictionaryLeft;
+        Dictionary<int, Texture2D> hitStunNoShellDictionary;
+        Dictionary<int, Texture2D> hitStunNoShellDictionaryLeft;
         GameTime gameTime = new GameTime();
-
+        #endregion
         //enemy texture
         Texture2D jellyBoi;
-        //frames of animation
+        #region frames of animation
         Texture2D walkCycle1;
         Texture2D walkCycle2;
         Texture2D walkCycle3;
@@ -105,6 +119,46 @@ namespace Egg
         Texture2D rollCycleLeft2;
         Texture2D rollCycleLeft3;
         Texture2D rollCycleLeft4;
+        Texture2D flutterCycle1;
+        Texture2D flutterCycle2;
+        Texture2D flutterCycle3;
+        Texture2D flutterCycle4;
+        Texture2D flutterCycleLeft1;
+        Texture2D flutterCycleLeft2;
+        Texture2D flutterCycleLeft3;
+        Texture2D flutterCycleLeft4;
+        Texture2D shellOffFlutter1;
+        Texture2D shellOffFlutter2;
+        Texture2D shellOffFlutter3;
+        Texture2D shellOffFlutter4;
+        Texture2D shellOffFlutterLeft1;
+        Texture2D shellOffFlutterLeft2;
+        Texture2D shellOffFlutterLeft3;
+        Texture2D shellOffFlutterLeft4;
+        Texture2D walkNoShell1;
+        Texture2D walkNoShell2;
+        Texture2D walkNoShell3;
+        Texture2D walkNoShell4;
+        Texture2D walkNoShellLeft1;
+        Texture2D walkNoShellLeft2;
+        Texture2D walkNoShellLeft3;
+        Texture2D walkNoShellLeft4;
+        Texture2D rollNoShell1;
+        Texture2D rollNoShell2;
+        Texture2D rollNoShell3;
+        Texture2D rollNoShell4;
+        Texture2D rollNoShellLeft1;
+        Texture2D rollNoShellLeft2;
+        Texture2D rollNoShellLeft3;
+        Texture2D rollNoShellLeft4;
+        Texture2D hitStunFullShell;
+        Texture2D hitStunFullShellLeft;
+        Texture2D hitStunShell;
+        Texture2D hitStunNoShell;
+        Texture2D hitStunShellLeft;
+        Texture2D hitStunNoShellLeft;
+
+        #endregion
         //Tile Fields
         public Texture2D blankTile;
         public Texture2D LTopLeft;
@@ -132,6 +186,8 @@ namespace Egg
 
 
         int tempcounter = 0;
+
+        public Texture2D backGround;
 
         //DO NOT ADD DIRECTLY TO THIS LIST
         List<GameObject> objectList;
@@ -203,6 +259,21 @@ namespace Egg
             walkFrameDictionaryLeft = new Dictionary<int, Texture2D>();
             rollFrameDictionary = new Dictionary<int, Texture2D>();
             rollFrameDictionaryLeft = new Dictionary<int, Texture2D>();
+            flutterFrameDictionary = new Dictionary<int, Texture2D>();
+            flutterFrameDictionaryLeft = new Dictionary<int, Texture2D>();
+            shellOffFlutterFrameDictionary = new Dictionary<int, Texture2D>();
+            shellOffFlutterFrameDictionaryLeft = new Dictionary<int, Texture2D>();
+            walkNoShellDictionary = new Dictionary<int, Texture2D>();
+            walkNoShellDictionaryLeft = new Dictionary<int, Texture2D>();
+            rollNoShellDictionary = new Dictionary<int, Texture2D>();
+            rollNoShellDictionaryLeft = new Dictionary<int, Texture2D>();
+            hitStunFullShellDictionary = new Dictionary<int,Texture2D>();
+            hitStunFullShellDictionaryLeft = new Dictionary<int,Texture2D>();
+            hitStunShellDictionary = new Dictionary<int,Texture2D>();
+            hitStunShellDictionaryLeft = new Dictionary<int,Texture2D>();
+            hitStunNoShellDictionary = new Dictionary<int,Texture2D>();
+            hitStunNoShellDictionaryLeft = new Dictionary<int,Texture2D>() ;
+
             walkCycle1 = Content.Load<Texture2D>("walkCycle 1");
             walkCycle2 = Content.Load<Texture2D>("walkCycle2");
             walkCycle3 = Content.Load<Texture2D>("walkCycle3");
@@ -219,6 +290,46 @@ namespace Egg
             rollCycleLeft2 = Content.Load<Texture2D>("rollCycleLeft2");
             rollCycleLeft3 = Content.Load<Texture2D>("rollCycleLeft3");
             rollCycleLeft4 = Content.Load<Texture2D>("rollCycleLeft4");
+            flutterCycle1 = Content.Load<Texture2D>("chickenFly1");
+            flutterCycle2 = Content.Load<Texture2D>("chickenFly2");
+            flutterCycle3 = Content.Load<Texture2D>("chickenFly3");
+            flutterCycle4 = Content.Load<Texture2D>("chickenFly4");
+            flutterCycleLeft1 = Content.Load<Texture2D>("chickenFlyL1");
+            flutterCycleLeft2 = Content.Load<Texture2D>("chickenFlyL2");
+            flutterCycleLeft3 = Content.Load<Texture2D>("chickenFlyL3");
+            flutterCycleLeft4 = Content.Load<Texture2D>("chickenFlyL4");
+            shellOffFlutter1 = Content.Load<Texture2D>("flySO1");
+            shellOffFlutter2 = Content.Load<Texture2D>("flySO2");
+            shellOffFlutter3 = Content.Load<Texture2D>("flySO3");
+            shellOffFlutter4 = Content.Load<Texture2D>("flySO4");
+            shellOffFlutterLeft1 = Content.Load<Texture2D>("flySOLeft1");
+            shellOffFlutterLeft2 = Content.Load<Texture2D>("flySOLeft2");
+            shellOffFlutterLeft3 = Content.Load<Texture2D>("flySOLeft3");
+            shellOffFlutterLeft4 = Content.Load<Texture2D>("flySOLeft4");
+            walkNoShell1 = Content.Load<Texture2D>("walkNoShell1");
+            walkNoShell2 = Content.Load<Texture2D>("walkNoShell2");
+            walkNoShell3 = Content.Load<Texture2D>("walkNoShell3");
+            walkNoShell4 = Content.Load<Texture2D>("walkNoShell4");
+            walkNoShellLeft1 = Content.Load<Texture2D>("walkNoShellL1");
+            walkNoShellLeft2 = Content.Load<Texture2D>("walkNoShellL2");
+            walkNoShellLeft3 = Content.Load<Texture2D>("walkNoShellL3");
+            walkNoShellLeft4 = Content.Load<Texture2D>("walkNoShellL4");
+            rollNoShell1 = Content.Load<Texture2D>("rollingNoShell");
+            rollNoShell2 = Content.Load<Texture2D>("rollSO2");
+            rollNoShell3 = Content.Load<Texture2D>("rollSO3");
+            rollNoShell4 = Content.Load<Texture2D>("rollSO4");
+            rollNoShellLeft1 = Content.Load<Texture2D>("rollSOL1");
+            rollNoShellLeft2 = Content.Load<Texture2D>("rollSOL2");
+            rollNoShellLeft3 = Content.Load<Texture2D>("rollSOL3");
+            rollNoShellLeft4 = Content.Load<Texture2D>("rollSOL4");
+            hitStunFullShell = Content.Load<Texture2D>("takeDamageFullShell");
+            hitStunFullShellLeft = Content.Load<Texture2D>("takeDamageFullShellLeft");
+            hitStunShell = Content.Load<Texture2D>("takeDamageShell");
+            hitStunShellLeft = Content.Load<Texture2D>("takeDamageShellLeft");
+            hitStunNoShell = Content.Load<Texture2D>("takeDamageNoShell");
+            hitStunNoShellLeft = Content.Load<Texture2D>("takeDamageNoShellLeft");
+
+
             walkFrameDictionary.Add(1, walkCycle1);
             walkFrameDictionary.Add(2, walkCycle2);
             walkFrameDictionary.Add(3, walkCycle3);
@@ -235,10 +346,45 @@ namespace Egg
             rollFrameDictionaryLeft.Add(2, rollCycleLeft2);
             rollFrameDictionaryLeft.Add(3, rollCycleLeft3);
             rollFrameDictionaryLeft.Add(4, rollCycleLeft4);
+            flutterFrameDictionary.Add(1, flutterCycle1);
+            flutterFrameDictionary.Add(2, flutterCycle2);
+            flutterFrameDictionary.Add(3, flutterCycle3);
+            flutterFrameDictionary.Add(4, flutterCycle4);
+            flutterFrameDictionaryLeft.Add(1, flutterCycleLeft1);
+            flutterFrameDictionaryLeft.Add(2, flutterCycleLeft2);
+            flutterFrameDictionaryLeft.Add(3, flutterCycleLeft3);
+            flutterFrameDictionaryLeft.Add(4, flutterCycleLeft4);
+            shellOffFlutterFrameDictionary.Add(1, shellOffFlutter1);
+            shellOffFlutterFrameDictionary.Add(2, shellOffFlutter2);
+            shellOffFlutterFrameDictionary.Add(3, shellOffFlutter3);
+            shellOffFlutterFrameDictionary.Add(4, shellOffFlutter4);
+            shellOffFlutterFrameDictionaryLeft.Add(1, shellOffFlutterLeft1);
+            shellOffFlutterFrameDictionaryLeft.Add(2, shellOffFlutterLeft2);
+            shellOffFlutterFrameDictionaryLeft.Add(3, shellOffFlutterLeft3);
+            shellOffFlutterFrameDictionaryLeft.Add(4, shellOffFlutterLeft4);
+            walkNoShellDictionary.Add(1, walkNoShell1);
+            walkNoShellDictionary.Add(2, walkNoShell2);
+            walkNoShellDictionary.Add(3, walkNoShell3);
+            walkNoShellDictionary.Add(4, walkNoShell4);
+            walkNoShellDictionaryLeft.Add(1, walkNoShellLeft1);
+            walkNoShellDictionaryLeft.Add(2, walkNoShellLeft2);
+            walkNoShellDictionaryLeft.Add(3, walkNoShellLeft3);
+            walkNoShellDictionaryLeft.Add(4, walkNoShellLeft4);
+            rollNoShellDictionary.Add(1, rollNoShell1);
+            rollNoShellDictionary.Add(2, rollNoShell2);
+            rollNoShellDictionary.Add(3, rollNoShell3);
+            rollNoShellDictionary.Add(4, rollNoShell4);
+            rollNoShellDictionaryLeft.Add(1, rollNoShellLeft1);
+            rollNoShellDictionaryLeft.Add(2, rollNoShellLeft2);
+            rollNoShellDictionaryLeft.Add(3, rollNoShellLeft3);
+            rollNoShellDictionaryLeft.Add(4, rollNoShellLeft4);
+            hitStunFullShellDictionary.Add(1, hitStunFullShell);
+            hitStunFullShellDictionaryLeft.Add(1, hitStunFullShellLeft);
+            hitStunShellDictionary.Add(1, hitStunShell);
+            hitStunShellDictionaryLeft.Add(1, hitStunShellLeft);
+            hitStunNoShellDictionary.Add(1, hitStunNoShell);
+            hitStunNoShellDictionaryLeft.Add(1, hitStunNoShellLeft);
             #endregion
-
-
-
 
 
             #region loading Tiles
@@ -268,7 +414,7 @@ namespace Egg
             nRightBot = Content.Load<Texture2D>(@"tiles\nRightBot");
             nRightTop = Content.Load<Texture2D>(@"tiles\nRightTop");
 
-            enemy1 = Content.Load<Texture2D>(@"jellyboi");
+            enemy1 = Content.Load<Texture2D>(@"e1");
 
 
             tileList.Add(blankTile);
@@ -297,9 +443,14 @@ namespace Egg
             tileList.Add(nLeftBot);
             tileList.Add(nRightBot);
             tileList.Add(nRightTop);
+
+            tileList.Add(enemy1);
             #endregion
 
-            currentLevel = new Level(1);
+            backGround = Content.Load<Texture2D>("bg");
+
+
+            currentLevel = new Level(2);
 
             currentLevel.CurrentScreen.UpdateTiles(tileList);
         }
@@ -650,7 +801,11 @@ namespace Egg
             spriteBatch.Begin(SpriteSortMode.Immediate);
             GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
+            //draw background
+            spriteBatch.Draw(backGround, new Rectangle(0, 0, 1920, 1080), Color.White);
+
             //Draws sprites & text based on FSM
+          
             switch (currentState)
             {
                 case GameState.Menu:
@@ -804,65 +959,73 @@ namespace Egg
                         {
                             Player p = (Player)g;
 
-                            if (p.PlayerState == PlayerState.IdleLeft)
-                            {
-                                DrawIdle(true);
+                                if (p.PlayerState == PlayerState.IdleLeft)
+                                {
+                                    DrawIdle(true);
+                                }
+                                else if (p.PlayerState == PlayerState.IdleRight)
+                                {
+                                    DrawIdle(false);
+                                }
+                                else if (p.PlayerState == PlayerState.WalkLeft)
+                                {
+                                     DrawWalking(true);
+                                }
+                                else if (p.PlayerState == PlayerState.WalkRight)
+                                {
+                                     DrawWalking(false);
+                                }
+                                else if (p.PlayerState == PlayerState.JumpLeft)
+                                {
+                                    DrawIdle(true);
+                                }
+                                else if (p.PlayerState == PlayerState.JumpRight)
+                                {
+                                    DrawIdle(false);
+                                }
+                                else if (p.PlayerState == PlayerState.Fall)
+                                {
+                                    DrawFalling();
+                                }
+                                else if( p.PlayerState == PlayerState.RollLeft)
+                                {
+                                    DrawRoll(true);
+                                }
+                                else if (p.PlayerState == PlayerState.RollRight)
+                                {
+                                    DrawRoll(false);
+                                }
+                                else if (p.PlayerState == PlayerState.HitStunLeft)
+                                {
+                                    DrawHitStun(true);
+                                }
+                                else if (p.PlayerState == PlayerState.HitStunRight)
+                                {
+                                    DrawHitStun(false);
+                                }
+                                else if(p.PlayerState == PlayerState.DownDash)
+                                {
+                                    DrawDownDash();
+                                }
+                                else if(p.PlayerState == PlayerState.BounceLeft)
+                                {
+                                    DrawRoll(true);
+                                }
+                                else if (p.PlayerState == PlayerState.BounceRight)
+                                {
+                                    DrawRoll(false);
+                                }
+                                else if(p.PlayerState == PlayerState.FloatLeft)
+                                {
+                                    DrawFlutter(true);
+                                }
+                                else if(p.PlayerState == PlayerState.FloatRight)
+                                {
+                                    DrawFlutter(false);
+                                }
                             }
-                            else if (p.PlayerState == PlayerState.IdleRight)
-                            {
-                                DrawIdle(false);
-                            }
-                            else if (p.PlayerState == PlayerState.WalkLeft)
-                            {
-                                DrawWalking(true);
-                            }
-                            else if (p.PlayerState == PlayerState.WalkRight)
-                            {
-                                DrawWalking(false);
-                            }
-                            else if (p.PlayerState == PlayerState.JumpLeft)
-                            {
-                                DrawIdle(true);
-                            }
-                            else if (p.PlayerState == PlayerState.JumpRight)
-                            {
-                                DrawIdle(false);
-                            }
-                            else if (p.PlayerState == PlayerState.Fall)
-                            {
-                                DrawFalling();
-                            }
-                            else if (p.PlayerState == PlayerState.RollLeft)
-                            {
-                                DrawRoll(true);
-                            }
-                            else if (p.PlayerState == PlayerState.RollRight)
-                            {
-                                DrawRoll(false);
-                            }
-                            else if (p.PlayerState == PlayerState.HitStunLeft)
-                            {
-                                DrawIdle(true);
-                            }
-                            else if (p.PlayerState == PlayerState.HitStunRight)
-                            {
-                                DrawIdle(false);
-                            }
-                            else if (p.PlayerState == PlayerState.DownDash)
-                            {
-                                DrawDownDash();
-                            }
-                            else if (p.PlayerState == PlayerState.BounceLeft)
-                            {
-                                DrawRoll(true);
-                            }
-                            else if (p.PlayerState == PlayerState.BounceRight)
-                            {
-                                DrawRoll(false);
-                            }
-                        }
-
-
+                            
+                        
                     }
                     if (player.IsDebugging) //debugging text for player
                     {
@@ -1295,11 +1458,25 @@ namespace Egg
         {
             if (isFlipped == false)
             {
+                if(player.Hitpoints > 2)
+                { 
                 player.DefaultSprite = walkFrameDictionary[currentFrame];
+                }
+                else
+                {
+                    player.DefaultSprite = walkNoShellDictionary[currentFrame];
+                }
             }
             else
             {
-                player.DefaultSprite = walkFrameDictionaryLeft[currentFrame];
+                if (player.Hitpoints > 2)
+                {
+                    player.DefaultSprite = walkFrameDictionaryLeft[currentFrame];
+                }
+                else
+                {
+                    player.DefaultSprite = walkNoShellDictionaryLeft[currentFrame];
+                }
             }
         }
         public void DrawIdle(bool isFlipped) //this is for test will edit when we have actual animation assets
@@ -1307,11 +1484,25 @@ namespace Egg
 
             if (isFlipped == false)
             {
-                player.DefaultSprite = walkFrameDictionary[1];
+                if (player.Hitpoints > 2)
+                {
+                    player.DefaultSprite = walkFrameDictionary[1];
+                }
+                else
+                {
+                    player.DefaultSprite = walkNoShellDictionary[1];
+                }
             }
             else
             {
-                player.DefaultSprite = walkFrameDictionaryLeft[1];
+                if (player.Hitpoints > 2)
+                {
+                    player.DefaultSprite = walkFrameDictionaryLeft[1];
+                }
+                else
+                {
+                    player.DefaultSprite = walkNoShellDictionaryLeft[1];
+                }
             }
         }
 
@@ -1322,14 +1513,28 @@ namespace Egg
                 player.PreviousPlayerState == PlayerState.JumpLeft ||
                 player.PreviousPlayerState == PlayerState.HitStunLeft)
             {
-                player.DefaultSprite = walkFrameDictionaryLeft[1];
+                if (player.Hitpoints > 2)
+                {
+                    player.DefaultSprite = walkFrameDictionaryLeft[1];
+                }
+                else
+                {
+                    player.DefaultSprite = walkNoShellDictionaryLeft[1];
+                }
             }
             else if (player.PreviousPlayerState == PlayerState.WalkRight ||
                 player.PreviousPlayerState == PlayerState.RollRight ||
                 player.PreviousPlayerState == PlayerState.JumpRight ||
                 player.PreviousPlayerState == PlayerState.HitStunRight)
             {
-                player.DefaultSprite = walkFrameDictionary[1];
+                if (player.Hitpoints > 2)
+                {
+                    player.DefaultSprite = walkFrameDictionary[1];
+                }
+                else
+                {
+                    player.DefaultSprite = walkNoShellDictionary[1];
+                }
             }
         }
 
@@ -1337,21 +1542,92 @@ namespace Egg
         {
             if (isFlipped == true)
             {
-                player.DefaultSprite = rollFrameDictionaryLeft[currentFrame];
+                if (player.Hitpoints > 2)
+                {
+                    player.DefaultSprite = rollFrameDictionaryLeft[currentFrame];
+                }
+                else
+                {
+                    player.DefaultSprite = rollNoShellDictionaryLeft[currentFrame];
+                }
             }
             else
             {
-                player.DefaultSprite = rollFrameDictionary[currentFrame];
+                if (player.Hitpoints > 2)
+                {
+                    player.DefaultSprite = rollFrameDictionary[currentFrame];
+                }
+                else
+                {
+                    player.DefaultSprite = rollNoShellDictionary[currentFrame];
+                }
             }
         }
 
         public void DrawFlutter(bool isFlipped)
         {
+            if(isFlipped == true)
+            {
+                if (player.Hitpoints > 2)
+                {
+                    player.DefaultSprite = flutterFrameDictionaryLeft[currentFrame];
 
+                }
+                else
+                {
+                    player.DefaultSprite = shellOffFlutterFrameDictionaryLeft[currentFrame];
+                }
+            }
+            else
+            {
+                if (player.Hitpoints > 2)
+                {
+                    player.DefaultSprite = flutterFrameDictionary[currentFrame];
+                }
+                else
+                {
+                    player.DefaultSprite = shellOffFlutterFrameDictionary[currentFrame];
+                }
+
+            }
         }
         public void DrawDownDash()
         {
             player.DefaultSprite = rollFrameDictionary[1];
+        }
+
+        public void DrawHitStun(bool isFlipped)
+        {
+            if(isFlipped == false)
+            {
+                if(player.Hitpoints == 4 || player.Hitpoints ==5)
+                {
+                    player.DefaultSprite = hitStunFullShellDictionary[1];
+                }
+                else if(player.Hitpoints == 3)
+                {
+                    player.DefaultSprite = hitStunShellDictionary[1];
+                }
+                else
+                {
+                    player.DefaultSprite = hitStunNoShellDictionary[1];
+                }
+            }
+            else
+            {
+                if (player.Hitpoints == 4 || player.Hitpoints == 5)
+                {
+                    player.DefaultSprite = hitStunFullShellDictionaryLeft[1];
+                }
+                else if (player.Hitpoints == 3)
+                {
+                    player.DefaultSprite = hitStunShellDictionaryLeft[1];
+                }
+                else
+                {
+                    player.DefaultSprite = hitStunNoShellDictionaryLeft[1];
+                }
+            }
         }
 
         void IncrementLevel()
