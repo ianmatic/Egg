@@ -20,7 +20,7 @@ namespace Egg
         int screenHeight = 1080;        //same for this 
         string[,] level;
         string filePath;
-        int numOfChickens = 0;
+        int numOfChickens;
 
         Tile[,] tileMap;
         List<Enemy> enemies = new List<Enemy>();
@@ -70,7 +70,7 @@ namespace Egg
             tileTypeDict.Add("nc", Tile.TileType.NoCollision);
             tileTypeDict.Add("00", Tile.TileType.NoCollision);
             #endregion
-
+            numOfChickens = 4;
         }
 
         /// <summary>
