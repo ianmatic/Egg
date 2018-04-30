@@ -39,7 +39,7 @@ namespace Egg
 
         Level currentLevel;
         int eggCounter = 0;
-        int levelCount = 2;
+        int levelCount = 0;
         int totalLevels;
         bool hasDrawnEggsForEndScreen = false;
         bool theEnd = false;
@@ -459,7 +459,7 @@ namespace Egg
             backGround = Content.Load<Texture2D>("bg");
 
 
-            currentLevel = new Level(2);
+            currentLevel = new Level(1);
 
             currentLevel.CurrentScreen.UpdateTiles(tileList);
 
@@ -1033,6 +1033,24 @@ namespace Egg
                     }
                     #endregion
 
+                    int row = 0;
+                    int column = 0;
+                    for (int tempRow = 0; tempRow < currentLevel.ScreenArray.GetLength(0); tempRow++)
+                    {
+                        for (int tempColumn = 0; tempColumn < currentLevel.ScreenArray.GetLength(1); tempColumn++)
+                        {
+                            if (currentLevel.ScreenArray[tempRow, tempColumn] == currentLevel.CurrentScreen)
+                            {
+                                row = tempRow;
+                                column = tempColumn;
+                            }
+                        }
+                    }
+
+                    string debugRoomText = "" + row + column;
+                    spriteBatch.DrawString(menuText, debugRoomText, new Vector2(500, 150), Color.White);
+
+
                     if (player.IsDebugging) //debugging text for player
                     {
                         spriteBatch.DrawString(menuText, "Horizontal Velocity: " + player.HorizontalVelocity, new Vector2(100, 25), Color.Cyan);
@@ -1125,6 +1143,8 @@ namespace Egg
                         spriteBatch.DrawString(titleText, "Game Complete!", new Vector2(720, 320), Color.White);
                         spriteBatch.Draw(collectibleEgg, new Rectangle(750, 450, 350, 350), Color.White);
                         spriteBatch.DrawString(menuText, "Press Enter to return to the menu", new Vector2(530, 950), Color.White);
+                        
+                        
                     }
 
 
