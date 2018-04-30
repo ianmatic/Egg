@@ -52,7 +52,7 @@ namespace Egg
         private double rollDelay;
         private double hitStunDelay;    
 
-        private Rectangle lastCheckpoint;
+        private Checkpoint lastCheckpoint;
         
         //for collision
         private Rectangle bottomChecker;
@@ -138,7 +138,7 @@ namespace Egg
             get { return bounceLockout; }
         }
 
-        public Rectangle LastCheckpoint
+        public Checkpoint LastCheckpoint
         {
             get { return lastCheckpoint; }
             set { this.lastCheckpoint = value; }
@@ -174,8 +174,7 @@ namespace Egg
             this.drawLevel = drawLevel;
             this.defaultSprite = defaultSprite;
             this.hitbox = hitbox;
-            this.color = color;
-            this.lastCheckpoint = hitbox;
+            this.color = color;            
 
             isActive = true;
             hitpoints = 5;
@@ -836,7 +835,7 @@ namespace Egg
                     {
                         playerState = PlayerState.WalkRight;
                     }
-                    else if (SingleKeyPress(bindableKb["jump"]) && !isRolling)
+                    else if (SingleKeyPress(bindableKb["jump"]) && !isRolling && bottomIntersects)
                     {
                         playerState = PlayerState.JumpLeft;
                     }
@@ -855,7 +854,7 @@ namespace Egg
                     {
                         playerState = PlayerState.Fall;
                     }
-                    if (SingleKeyPress(bindableKb["jump"]) && !isRolling)
+                    if (SingleKeyPress(bindableKb["jump"]) && !isRolling && bottomIntersects)
                     {
                         playerState = PlayerState.JumpRight;
                     }

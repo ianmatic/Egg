@@ -73,9 +73,8 @@ namespace Egg
             //entities
             ToShortTiles.Add("player",      "p1");
             ToShortTiles.Add("e1",          "e1");
-            ToShortTiles.Add("e2",          "e1");
-            ToShortTiles.Add("e3",          "e1");
-            ToShortTiles.Add("e4",          "e1");
+            ToShortTiles.Add("egg",         "e2");
+            ToShortTiles.Add("flag",        "e3");
 
             
             //set up inverse dictionary here if it's every needed
@@ -594,8 +593,8 @@ namespace Egg
             string[,] entities = new string[,]
             {
                 {"player",  "e1" },
-                {"e2",      "e3" },
-                {"e3",      "e4" }   
+                {"egg",     "flag" }
+     
             };
 
             #region Adding 3x3 Tile Sets
@@ -646,12 +645,17 @@ namespace Egg
                     boxTiles.Controls.Add(tempTile);
                 }
             }
-            #endregion  
+            #endregion
 
-            #region Adding 2x3 Tile Sets
+
+
+
+
+            #region Adding 2x2 Tile Sets
+            //populates with entity stuff
             for (int column = 0; column < 2; column++)
             {
-                for (int row = 0; row < 3; row++)
+                for (int row = 0; row < 2; row++)
                 {
                     ImageBox tempTile = new ImageBox();
                     tempTile.Height = tileHeight;
@@ -671,9 +675,7 @@ namespace Egg
                     boxTiles.Controls.Add(tempTile);
                 }
             }
-            #endregion
 
-            #region Adding 2x2 Tile Sets
             //loop that populates boxTiles container with third set of clickable tiles
             for (int column = 0; column < 2; column++)
             {

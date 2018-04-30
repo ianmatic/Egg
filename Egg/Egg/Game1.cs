@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 
 namespace Egg
 {
@@ -37,7 +38,11 @@ namespace Egg
         Texture2D collisionTest;
 
         Level currentLevel;
-        int levelCount = 1;
+        int eggCounter = 0;
+        int levelCount = 0;
+        int totalLevels;
+        bool hasDrawnEggsForEndScreen = false;
+        bool theEnd = false;
 
         GameState currentState;
         KeyboardState kb;
@@ -45,7 +50,7 @@ namespace Egg
         Enemy enemy;
         Enemy enemy2;
         Enemy enemy3;
-       
+
 
         bool paused = false;
         bool fullscreen = false;
@@ -181,7 +186,12 @@ namespace Egg
         public Texture2D nRightBot;
         public Texture2D nRightTop;
         public Texture2D enemy1;
-        
+        public Texture2D flag;
+        public Texture2D egg;
+
+        int tempcounter = 0;
+
+        public Texture2D backGround;
 
         //DO NOT ADD DIRECTLY TO THIS LIST
         List<GameObject> objectList;
@@ -221,8 +231,8 @@ namespace Egg
             sortHolder = new Stack<GameObject>();
             tileList = new List<Texture2D>();
             currentState = GameState.Menu;
-            
-            
+
+
             base.Initialize();
         }
 
@@ -234,7 +244,7 @@ namespace Egg
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            menuText= Content.Load<SpriteFont>("menutext");
+            menuText = Content.Load<SpriteFont>("menutext");
             titleText = Content.Load<SpriteFont>("titletext");
             optionsText = Content.Load<SpriteFont>("optionsText");
             menu = Content.Load<Texture2D>("menuTexture");
@@ -380,9 +390,7 @@ namespace Egg
             hitStunNoShellDictionaryLeft.Add(1, hitStunNoShellLeft);
             #endregion
 
-
-
-
+            totalLevels = Directory.GetDirectories(@"..\..\..\..\Resources\Levels").Length;
 
             #region loading Tiles
             blankTile = Content.Load<Texture2D>(@"clearTile");
@@ -411,7 +419,9 @@ namespace Egg
             nRightBot = Content.Load<Texture2D>(@"tiles\nRightBot");
             nRightTop = Content.Load<Texture2D>(@"tiles\nRightTop");
 
-            enemy1 = Content.Load<Texture2D>(@"jellyboi");
+            enemy1 = Content.Load<Texture2D>(@"e1");
+            flag = Content.Load<Texture2D>(@"flag");
+            egg = Content.Load<Texture2D>(@"egg");
 
 
             tileList.Add(blankTile);
@@ -440,11 +450,19 @@ namespace Egg
             tileList.Add(nLeftBot);
             tileList.Add(nRightBot);
             tileList.Add(nRightTop);
+
+            tileList.Add(enemy1);
+            tileList.Add(egg);
+            tileList.Add(flag);
             #endregion
+
+            backGround = Content.Load<Texture2D>("bg");
+
 
             currentLevel = new Level(1);
 
             currentLevel.CurrentScreen.UpdateTiles(tileList);
+
         }
 
         /// <summary>
@@ -463,7 +481,7 @@ namespace Egg
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -624,8 +642,20 @@ namespace Egg
                         //Transition to level end not yet implemented
                         break;
 
-                    //Not yet implemented due to being a polish feature
                     case GameState.GameOver:
+                        if (kb.IsKeyDown(Keys.Enter))
+                        {
+                            IncrementLevel();
+                            if (theEnd)
+                            {
+                                currentState = GameState.Menu;
+                            }
+                            else
+                            {
+                                currentState = GameState.Game;
+                            }
+
+                        }
                         break;
                 }
 
@@ -687,7 +717,7 @@ namespace Egg
                     rebindingPause = false;
 
                     keys = Keyboard.GetState().GetPressedKeys();
-                    if (keys.Length > 0 &&  keys[0] != Keys.Tab)
+                    if (keys.Length > 0 && keys[0] != Keys.Tab)
                     {
                         player.BindableKb["right"] = keys[0];
                         rebindingRight = false;
@@ -704,7 +734,7 @@ namespace Egg
                     rebindingPause = false;
 
                     keys = Keyboard.GetState().GetPressedKeys();
-                    if (keys.Length > 0 &&  keys[0] != Keys.Tab)
+                    if (keys.Length > 0 && keys[0] != Keys.Tab)
                     {
                         player.BindableKb["roll"] = keys[0];
                         rebindingRoll = false;
@@ -721,7 +751,7 @@ namespace Egg
                     rebindingPause = false;
 
                     keys = Keyboard.GetState().GetPressedKeys();
-                    if (keys.Length > 0 &&  keys[0] != Keys.Tab)
+                    if (keys.Length > 0 && keys[0] != Keys.Tab)
                     {
                         player.BindableKb["jump"] = keys[0];
                         rebindingJump = false;
@@ -738,7 +768,7 @@ namespace Egg
                     rebindingPause = false;
 
                     keys = Keyboard.GetState().GetPressedKeys();
-                    if (keys.Length > 0 &&  keys[0] != Keys.Tab)
+                    if (keys.Length > 0 && keys[0] != Keys.Tab)
                     {
                         player.BindableKb["downDash"] = keys[0];
                         rebindingDown = false;
@@ -780,7 +810,7 @@ namespace Egg
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
 
-           //update the animation
+            //update the animation
             UpdateAnimation(gameTime);
 
 
@@ -789,8 +819,9 @@ namespace Egg
             spriteBatch.Begin(SpriteSortMode.Immediate);
             GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
+            //draw background
+            spriteBatch.Draw(backGround, new Rectangle(0, 0, 1920, 1080), Color.White);
             //Draws sprites & text based on FSM
-           
             switch (currentState)
             {
                 case GameState.Menu:
@@ -933,85 +964,93 @@ namespace Egg
                     //levelName.CurrentScreen.DrawTilesFromMap
                     //entitiesScreen.DrawTilesFromMap(spriteBatch, "does having a dumb thing here break stuff?", tileList);
                     //Draws potatos to test DrawLevel
+                    #region Draw Player
+                    player.Draw(spriteBatch);
 
-                    foreach (GameObject g in objectList)
+                    if (player.PlayerState == PlayerState.IdleLeft)
                     {
-
-                        g.Draw(spriteBatch);
-                        
-
-                            if (g is Player)
-                            {
-                                Player p = (Player)g;
-
-                                if (p.PlayerState == PlayerState.IdleLeft)
-                                {
-                                    DrawIdle(true);
-                                }
-                                else if (p.PlayerState == PlayerState.IdleRight)
-                                {
-                                    DrawIdle(false);
-                                }
-                                else if (p.PlayerState == PlayerState.WalkLeft)
-                                {
-                                     DrawWalking(true);
-                                }
-                                else if (p.PlayerState == PlayerState.WalkRight)
-                                {
-                                     DrawWalking(false);
-                                }
-                                else if (p.PlayerState == PlayerState.JumpLeft)
-                                {
-                                    DrawIdle(true);
-                                }
-                                else if (p.PlayerState == PlayerState.JumpRight)
-                                {
-                                    DrawIdle(false);
-                                }
-                                else if (p.PlayerState == PlayerState.Fall)
-                                {
-                                    DrawFalling();
-                                }
-                                else if( p.PlayerState == PlayerState.RollLeft)
-                                {
-                                    DrawRoll(true);
-                                }
-                                else if (p.PlayerState == PlayerState.RollRight)
-                                {
-                                    DrawRoll(false);
-                                }
-                                else if (p.PlayerState == PlayerState.HitStunLeft)
-                                {
-                                    DrawHitStun(true);
-                                }
-                                else if (p.PlayerState == PlayerState.HitStunRight)
-                                {
-                                    DrawHitStun(false);
-                                }
-                                else if(p.PlayerState == PlayerState.DownDash)
-                                {
-                                    DrawDownDash();
-                                }
-                                else if(p.PlayerState == PlayerState.BounceLeft)
-                                {
-                                    DrawRoll(true);
-                                }
-                                else if (p.PlayerState == PlayerState.BounceRight)
-                                {
-                                    DrawRoll(false);
-                                }
-                                else if(p.PlayerState == PlayerState.FloatLeft)
-                                {
-                                    DrawFlutter(true);
-                                }
-                                else if(p.PlayerState == PlayerState.FloatRight)
-                                {
-                                    DrawFlutter(false);
-                                }
-                            }
-                            
-                        
+                        DrawIdle(true);
                     }
+                    else if (player.PlayerState == PlayerState.IdleRight)
+                    {
+                        DrawIdle(false);
+                    }
+                    else if (player.PlayerState == PlayerState.WalkLeft)
+                    {
+                        DrawWalking(true);
+                    }
+                    else if (player.PlayerState == PlayerState.WalkRight)
+                    {
+                        DrawWalking(false);
+                    }
+                    else if (player.PlayerState == PlayerState.JumpLeft)
+                    {
+                        DrawIdle(true);
+                    }
+                    else if (player.PlayerState == PlayerState.JumpRight)
+                    {
+                        DrawIdle(false);
+                    }
+                    else if (player.PlayerState == PlayerState.Fall)
+                    {
+                        DrawFalling();
+                    }
+                    else if (player.PlayerState == PlayerState.RollLeft)
+                    {
+                        DrawRoll(true);
+                    }
+                    else if (player.PlayerState == PlayerState.RollRight)
+                    {
+                        DrawRoll(false);
+                    }
+                    else if (player.PlayerState == PlayerState.HitStunLeft)
+                    {
+                        DrawHitStun(true);
+                    }
+                    else if (player.PlayerState == PlayerState.HitStunRight)
+                    {
+                        DrawHitStun(false);
+                    }
+                    else if (player.PlayerState == PlayerState.DownDash)
+                    {
+                        DrawDownDash();
+                    }
+                    else if (player.PlayerState == PlayerState.BounceLeft)
+                    {
+                        DrawRoll(true);
+                    }
+                    else if (player.PlayerState == PlayerState.BounceRight)
+                    {
+                        DrawRoll(false);
+                    }
+                    else if (player.PlayerState == PlayerState.FloatLeft)
+                    {
+                        DrawFlutter(true);
+                    }
+                    else if (player.PlayerState == PlayerState.FloatRight)
+                    {
+                        DrawFlutter(false);
+                    }
+                    #endregion
+
+                    int row = 0;
+                    int column = 0;
+                    for (int tempRow = 0; tempRow < currentLevel.ScreenArray.GetLength(0); tempRow++)
+                    {
+                        for (int tempColumn = 0; tempColumn < currentLevel.ScreenArray.GetLength(1); tempColumn++)
+                        {
+                            if (currentLevel.ScreenArray[tempRow, tempColumn] == currentLevel.CurrentScreen)
+                            {
+                                row = tempRow;
+                                column = tempColumn;
+                            }
+                        }
+                    }
+
+                    string debugRoomText = "" + row + column;
+                    spriteBatch.DrawString(menuText, debugRoomText, new Vector2(500, 150), Color.White);
+
+
                     if (player.IsDebugging) //debugging text for player
                     {
                         spriteBatch.DrawString(menuText, "Horizontal Velocity: " + player.HorizontalVelocity, new Vector2(100, 25), Color.Cyan);
@@ -1024,64 +1063,94 @@ namespace Egg
                     {
                         //Draw collectibles
                         spriteBatch.Draw(collectibleEgg, new Rectangle(135, 55, 40, 40), Color.White);
-                        spriteBatch.DrawString(menuText, player.CollectedChickens.ToString(), new Vector2(200, 60), Color.Orange);
+                        spriteBatch.DrawString(menuText, player.CollectedChickens.Count.ToString(), new Vector2(200, 60), Color.Orange);
                     }
                     break;
 
                 case GameState.GameOver:
-                    spriteBatch.Draw(menu, new Rectangle(0, 0, 1920, 1080), Color.LightSeaGreen);
-                    spriteBatch.DrawString(titleText, "Level Complete!", new Vector2(700, 320), Color.White);
-                    spriteBatch.DrawString(menuText, "Chickens Rescued: ", new Vector2(500, 500), Color.White);
-
-
-                    player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
-                    player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
-                    player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
-                    player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
-                    player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
-                    player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
-                    player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
-                    player.CollectedChickens.Add(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
-
-                    //temporary
-                    /*
-                    for (int i = 0; i < 30; i++)
+                    if (!theEnd)
                     {
-                        currentLevel.AddChicken(new CapturedChicken(15, collectibleEgg, new Rectangle(50, 50, 50, 50)));
-                    }
-                    */
-                    for (int i = 0; i < currentLevel.TotalChickensInLevel; i++)
-                    {
+                        spriteBatch.Draw(menu, new Rectangle(0, 0, 1920, 1080), Color.LightSeaGreen);
+                        spriteBatch.DrawString(titleText, "Level Complete!", new Vector2(700, 320), Color.White);
+                        spriteBatch.DrawString(menuText, "Chickens Rescued: ", new Vector2(500, 500), Color.White);
+                        spriteBatch.DrawString(menuText, "Press Enter to continue", new Vector2(640, 950), Color.White);
 
-                        if (i < 9)
+                        //draw total eggs in level
+                        for (int i = 0; i < currentLevel.TotalChickensInLevel; i++)
                         {
-                            spriteBatch.Draw(collectibleEgg, new Rectangle(i * 60 + 1000, 500, 50, 50), Color.Gray);
+
+                            if (i < 10)
+                            {
+                                spriteBatch.Draw(collectibleEgg, new Rectangle(i * 60 + 1000, 500, 50, 50), Color.Gray);
+                            }
+                            else if (i >= 10 && i <= 19)
+                            {
+                                spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 600, 600, 50, 50), Color.Gray);
+                            }
+                            else if (i >= 20 && i <= 29)
+                            {
+                                spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 1200, 700, 50, 50), Color.Gray);
+                            }
                         }
-                        else if (i >= 10 && i < 19)
+
+
+
+                        //draw each egg player collected
+                        for (int i = 0; i < tempcounter; i++)
                         {
-                            spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 600, 600, 50, 50), Color.Gray);
+                            if (i < 9)
+                            {
+                                spriteBatch.Draw(collectibleEgg, new Rectangle(i * 60 + 1000, 500, 50, 50), Color.White);
+                            }
+                            else if (i >= 10 && i < 19)
+                            {
+                                spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 600, 600, 50, 50), Color.White);
+                            }
+                            else if (i >= 20 && i < 29)
+                            {
+                                spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 1200, 700, 50, 50), Color.White);
+                            }
                         }
-                        else if (i >= 20 && i < 29)
+
+                        //draw new egg every 10 frames
+                        if (eggCounter % 10 == 0 && !hasDrawnEggsForEndScreen)
                         {
-                            spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 1200, 700, 50, 50), Color.Gray);
+
+                            if (tempcounter < 9)
+                            {
+                                spriteBatch.Draw(collectibleEgg, new Rectangle(tempcounter * 60 + 1000, 500, 50, 50), Color.White);
+                            }
+                            else if (tempcounter >= 10 && tempcounter < 19)
+                            {
+                                spriteBatch.Draw(collectibleEgg, new Rectangle((tempcounter * 60 + 1000) - 600, 600, 50, 50), Color.White);
+                            }
+                            else if (tempcounter >= 20 && tempcounter < 29)
+                            {
+                                spriteBatch.Draw(collectibleEgg, new Rectangle((tempcounter * 60 + 1000) - 1200, 700, 50, 50), Color.White);
+                            }
+                            tempcounter++;
                         }
+
+                        if (tempcounter >= player.CollectedChickens.Count)
+                        {
+                            hasDrawnEggsForEndScreen = true;
+                        }
+                        eggCounter++;
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(menu, new Rectangle(0, 0, 1920, 1080), Color.LightSeaGreen);
+                        spriteBatch.DrawString(titleText, "Game Complete!", new Vector2(720, 320), Color.White);
+                        spriteBatch.Draw(collectibleEgg, new Rectangle(750, 450, 350, 350), Color.White);
+                        spriteBatch.DrawString(menuText, "Press Enter to return to the menu", new Vector2(530, 950), Color.White);
+                        
+                        
                     }
 
-                    for (int i = 0; i < player.CollectedChickens.Count; i++)
-                    {
-                        if (i < 9)
-                        {
-                            spriteBatch.Draw(collectibleEgg, new Rectangle(i * 60 + 1000, 500, 50, 50), Color.White);
-                        }
-                        else if (i >= 10 && i < 19)
-                        {
-                            spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 600, 600, 50, 50), Color.White);
-                        }
-                        else if (i >= 20 && i < 29)
-                        {
-                            spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 1200, 700, 50, 50), Color.White);
-                        }
-                    }
+
+
+                    
+
                     break;
             }
             if (paused && currentState == GameState.Game)
@@ -1097,7 +1166,7 @@ namespace Egg
                     spriteBatch.DrawString(menuText, "Press Tab for Options", new Vector2(700, 500), Color.White);
                 }
 
-            }          
+            }
             spriteBatch.End();
 
             base.Draw(gameTime);
@@ -1114,7 +1183,7 @@ namespace Egg
             {
                 return false;
             }
-            
+
         }
         public bool LeftMouseSinglePress(ButtonState n)
         {
@@ -1132,132 +1201,175 @@ namespace Egg
         private void GameUpdateLoop()
         {
             Tile[,] tileSet = currentLevel.CurrentScreen.UpdateTiles(tileList);
-                      
-            foreach (GameObject n in objectList)
+
+            #region CheckPlayer           
+            //Add extra buffer to dimensions? Different way of doing this?
+            Rectangle screenSize = new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
+
+            if (!screenSize.Contains(player.Hitbox))
+            {
+                #region ChangeScreens
+                if (player.Hitbox.X < 0)
+                {
+                    switch (currentLevel.ChangeScreen("left"))
+                    {
+                        case 1:
+                            Rectangle temp = player.Hitbox;
+                            temp.X = GraphicsDevice.Viewport.Width;
+                            player.Hitbox = temp;
+                            break;
+
+                        case 0:
+                            if (player.LastCheckpoint == null)
+                            {
+                                currentLevel.CurrentScreen = currentLevel.StartScreen;
+                                Rectangle r = player.Hitbox;
+                                r.X = GraphicsDevice.Viewport.Width / 2;
+                                r.Y = GraphicsDevice.Viewport.Height / 2;
+                                player.Hitbox = r;
+                            }
+                            else
+                            {
+                                currentLevel.CurrentScreen = player.LastCheckpoint.OriginScreen;
+                                player.Hitbox = player.LastCheckpoint.Hitbox;
+                            }                        
+                            break;
+
+                        case -1:
+                            IncrementLevel();
+                            break;
+                    }
+
+                }
+                else if (player.Hitbox.X > GraphicsDevice.Viewport.Width)
+                {
+                    switch (currentLevel.ChangeScreen("right"))
+                    {
+                        case 1:
+                            Rectangle temp = player.Hitbox;
+                            temp.X = 0;
+                            player.Hitbox = temp;
+                            break;
+
+                        case 0:
+                            if (player.LastCheckpoint == null)
+                            {
+                                currentLevel.CurrentScreen = currentLevel.StartScreen;
+                                Rectangle r = player.Hitbox;
+                                r.X = GraphicsDevice.Viewport.Width / 2;
+                                r.Y = GraphicsDevice.Viewport.Height / 2;
+                                player.Hitbox = r;
+                            }
+                            else
+                            {
+                                currentLevel.CurrentScreen = player.LastCheckpoint.OriginScreen;
+                                player.Hitbox = player.LastCheckpoint.Hitbox;
+                            }
+                            break;
+
+                        case -1:
+                            IncrementLevel();
+                            break;
+                    }
+                }
+
+                if (player.Hitbox.Y < 0)
+                {
+                    switch (currentLevel.ChangeScreen("up"))
+                    {
+                        case 1:
+                            Rectangle temp = player.Hitbox;
+                            temp.Y = GraphicsDevice.Viewport.Height;
+                            player.Hitbox = temp;
+                            break;
+
+                        case 0:
+                            if (player.LastCheckpoint == null)
+                            {
+                                currentLevel.CurrentScreen = currentLevel.StartScreen;
+                                Rectangle r = player.Hitbox;
+                                r.X = GraphicsDevice.Viewport.Width / 2;
+                                r.Y = GraphicsDevice.Viewport.Height / 2;
+                                player.Hitbox = r;
+                            }
+                            else
+                            {
+                                currentLevel.CurrentScreen = player.LastCheckpoint.OriginScreen;
+                                player.Hitbox = player.LastCheckpoint.Hitbox;
+                            }
+                            break;
+
+                        case -1:
+                            IncrementLevel();
+                            break;
+                    }
+                }
+                else if (player.Hitbox.Y > GraphicsDevice.Viewport.Height)
+                {
+                    switch (currentLevel.ChangeScreen("down"))
+                    {
+                        case 1:
+                            Rectangle temp = player.Hitbox;
+                            temp.Y = 0;
+                            player.Hitbox = temp;
+                            break;
+
+                        case 0:
+                            if (player.LastCheckpoint == null)
+                            {
+                                currentLevel.CurrentScreen = currentLevel.StartScreen;
+                                Rectangle r = player.Hitbox;
+                                r.X = GraphicsDevice.Viewport.Width / 2;
+                                r.Y = GraphicsDevice.Viewport.Height / 2;
+                                player.Hitbox = r;
+                            }
+                            else
+                            {
+                                currentLevel.CurrentScreen = player.LastCheckpoint.OriginScreen;
+                                player.Hitbox = player.LastCheckpoint.Hitbox;
+                            }
+                            break;
+
+                        case -1:
+                            IncrementLevel();
+                            break;
+                    }
+                }
+                #endregion
+            }
+
+            player.FiniteState();
+
+
+            //This should work on any enemy (i.e. enemy list of a screen), fix this later!
+            foreach (Enemy e in currentLevel.CurrentScreen.Enemies)
+            {
+                if (!player.InBounceLockout)
+                {
+                    player.CheckColliderAgainstEnemy(e);
+                }
+
+                e.FiniteState();
+                e.UpdateEnemyData();
+                e.CheckColliderAgainstPlayer(this.player);
+            }
+
+            #endregion
+
+            foreach (GameObject n in currentLevel.CurrentScreen.GameObjs)
             {               
-                    if (n is Player)
-                    {
-                        Player p = (Player)n;                       
-                        //Add extra buffer to dimensions? Different way of doing this?
-                        Rectangle screenSize = new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
-
-                        if (!screenSize.Contains(p.Hitbox))
-                        {
-                            if (p.Hitbox.X < 0)
-                            {
-                                switch (currentLevel.ChangeScreen("left"))
-                                {
-                                    case 1:
-                                        Rectangle temp = p.Hitbox;
-                                        temp.X = GraphicsDevice.Viewport.Width;
-                                        p.Hitbox = temp;
-                                        break;
-
-                                    case 0:
-                                        p.Hitbox = p.LastCheckpoint;
-                                        break;
-
-                                    case -1:
-                                        IncrementLevel();
-                                        break;
-                                }
-                            
-                            }
-                            else if (p.Hitbox.X > GraphicsDevice.Viewport.Width)
-                            {
-                                switch (currentLevel.ChangeScreen("right"))
-                                {
-                                    case 1:
-                                        Rectangle temp = p.Hitbox;
-                                        temp.X = 0;
-                                        p.Hitbox = temp;
-                                        break;
-
-                                    case 0:
-                                        p.Hitbox = p.LastCheckpoint;
-                                        break;
-
-                                    case -1:
-                                        IncrementLevel();
-                                        break;
-                                }                            
-                            }
-
-                            if (p.Hitbox.Y < 0)
-                            {
-                                switch (currentLevel.ChangeScreen("up"))
-                                {
-                                    case 1:
-                                        Rectangle temp = p.Hitbox;
-                                        temp.Y = GraphicsDevice.Viewport.Height;
-                                        p.Hitbox = temp;
-                                        break;
-
-                                    case 0:
-                                        p.Hitbox = p.LastCheckpoint;
-                                        break;
-
-                                    case -1:
-                                        IncrementLevel();
-                                        break;
-                                }                           
-                            }
-                            else if (p.Hitbox.Y > GraphicsDevice.Viewport.Height)
-                            {
-                                switch (currentLevel.ChangeScreen("down"))
-                                {
-                                    case 1:
-                                        Rectangle temp = p.Hitbox;
-                                        temp.Y = 0;
-                                        p.Hitbox = temp;
-                                        break;
-
-                                    case 0:
-                                        p.Hitbox = p.LastCheckpoint;
-                                        break;
-
-                                    case -1:
-                                        IncrementLevel();
-                                        break;
-                                }                          
-                            }
-                        }
-
-                        p.FiniteState();
-
-
-                        //This should work on any enemy (i.e. enemy list of a screen), fix this later!
-                        foreach (Enemy e in currentLevel.CurrentScreen.Enemies)
-                        {
-                            if (!p.InBounceLockout)
-                            {
-                                p.CheckColliderAgainstEnemy(e);
-                            }
-
-                            e.FiniteState();
-                            e.UpdateEnemyData();
-                            e.CheckColliderAgainstPlayer(player);
-                        }
-                        
-                    }
-                    
-                    else
-                    {
-                        n.CheckColliderAgainstPlayer(player);
-                        foreach (Enemy e in currentLevel.CurrentScreen.Enemies)
-                        {
-                            n.CheckColliderAgainstEnemy(e);
-                        }
-
-                    }
-
+                n.CheckColliderAgainstPlayer(this.player);
+                foreach (Enemy e in currentLevel.CurrentScreen.Enemies)
+                {
+                    n.CheckColliderAgainstEnemy(e);
+                }               
             } // end foreach
 
             foreach (Tile t in tileSet)
             {
                 if (t.DefaultSprite != null)
                 {
-                    t.CheckColliderAgainstPlayer(player);
+                    t.CheckColliderAgainstPlayer(this.player);
 
                     foreach (Enemy e in enemyList)
                     {
@@ -1267,7 +1379,7 @@ namespace Egg
             }
         }
 
-            
+
 
         #region Sorting Logic
         //Adds object g to the list of game objects, sorted by draw level. DO NOT directly add to objectList, or the sorting will be off!
@@ -1324,32 +1436,22 @@ namespace Egg
             sideRectangle = Content.Load<Texture2D>("blue");
             topRectangle = Content.Load<Texture2D>("green");
             collisionTest = Content.Load<Texture2D>("white");
-            
 
-
-            #region CapturedChickens
-
-            AddObjectToList(new CapturedChicken(115, collectibleEgg, new Rectangle(0, 0, 30, 30)));
-            AddObjectToList(new CapturedChicken(111, collectibleEgg, new Rectangle(0, 15, 30, 30)));
-            AddObjectToList(new CapturedChicken(114, collectibleEgg, new Rectangle(0, 30, 30, 30)));
-            AddObjectToList(new CapturedChicken(113, collectibleEgg, new Rectangle(0, 45, 30, 30)));
-            AddObjectToList(new CapturedChicken(112, collectibleEgg, new Rectangle(0, 60, 30, 30)));
-
-            #endregion
-
+            /*
             #region Checkpoints
             AddObjectToList(new Checkpoint(3, collisionTest, new Rectangle(400, 350, 75, 75)));
             AddObjectToList(new Checkpoint(3, collisionTest, new Rectangle(1500, 250, 75, 75)));
             #endregion
+            */
 
             enemy = new Enemy(new Rectangle(890, 500, 75, 75), jellyBoi, 16, 60);
             enemy2 = new Enemy(new Rectangle(225, 250, 75, 75), jellyBoi, 4, 60);
-            enemy3 = new Enemy(new Rectangle(500, 250, 75, 75), jellyBoi, 4, 60, 5, 2 , 100);
+            enemy3 = new Enemy(new Rectangle(500, 250, 75, 75), jellyBoi, 4, 60, 5, 2, 100);
             AddObjectToList(enemy);
             AddObjectToList(enemy2);
             AddObjectToList(enemy3);
-            player = new Player(5, collisionTest , new Rectangle(450, 350, 75, 75), Color.White);
-            
+            player = new Player(5, collisionTest, new Rectangle(450, 350, 75, 75), Color.White);
+
             //default movement
             player.BindableKb.Add("left", Keys.A);
             player.BindableKb.Add("right", Keys.D);
@@ -1366,20 +1468,20 @@ namespace Egg
         }
         private void UpdateAnimation(GameTime time)
         {
-            
-            secondsPerFrame = 1.0f / fps; 
+
+            secondsPerFrame = 1.0f / fps;
             timeCounter += time.ElapsedGameTime.TotalSeconds;
 
-            if (timeCounter >=  3*secondsPerFrame) //if 3 frames have passed
+            if (timeCounter >= 3 * secondsPerFrame) //if 3 frames have passed
             {
-                 currentFrame++; //move to next frame 
-                 if (currentFrame >= 4) currentFrame = 1; //if it reaches the end of the spritesheet, go back to the beginning
+                currentFrame++; //move to next frame 
+                if (currentFrame >= 4) currentFrame = 1; //if it reaches the end of the spritesheet, go back to the beginning
 
 
-                timeCounter -= 3*secondsPerFrame; //reduce timeCounter so it can restart process
+                timeCounter -= 3 * secondsPerFrame; //reduce timeCounter so it can restart process
             }
-            
-            
+
+
         }
         public void DebugKeyboardInputs()
         {
@@ -1393,7 +1495,7 @@ namespace Egg
             if (SingleKeyPress(Keys.F8))
             {
                 enemy.DebugCollision = !enemy.DebugCollision;
-             
+
             }
 
             if (SingleKeyPress(Keys.F9) || player.Hitpoints <= 0)
@@ -1407,12 +1509,12 @@ namespace Egg
 
 
             }
-           
+
 
             //Add more inputs here
         }
 
-        public void DrawWalking(bool isFlipped ) //this is for test will edit when we have actual animation assets
+        public void DrawWalking(bool isFlipped) //this is for test will edit when we have actual animation assets
         {
             if (isFlipped == false)
             {
@@ -1437,7 +1539,7 @@ namespace Egg
                 }
             }
         }
-        public void DrawIdle(bool isFlipped ) //this is for test will edit when we have actual animation assets
+        public void DrawIdle(bool isFlipped) //this is for test will edit when we have actual animation assets
         {
 
             if (isFlipped == false)
@@ -1466,9 +1568,9 @@ namespace Egg
 
         public void DrawFalling()
         {
-            if(player.PreviousPlayerState == PlayerState.WalkLeft ||
-                player.PreviousPlayerState == PlayerState.RollLeft||
-                player.PreviousPlayerState == PlayerState.JumpLeft||
+            if (player.PreviousPlayerState == PlayerState.WalkLeft ||
+                player.PreviousPlayerState == PlayerState.RollLeft ||
+                player.PreviousPlayerState == PlayerState.JumpLeft ||
                 player.PreviousPlayerState == PlayerState.HitStunLeft)
             {
                 if (player.Hitpoints > 2)
@@ -1498,7 +1600,7 @@ namespace Egg
 
         public void DrawRoll(bool isFlipped)
         {
-            if(isFlipped == true)
+            if (isFlipped == true)
             {
                 if (player.Hitpoints > 2)
                 {
@@ -1590,6 +1692,18 @@ namespace Egg
 
         void IncrementLevel()
         {
+            if (levelCount >= totalLevels)
+            {
+                //Put end screen here
+                theEnd = true;
+                //Move this code to when the Next button is pressed
+                levelCount = 1;
+                //Reset saved chicken count
+                currentLevel = new Level(1);
+                return;
+            }
+            theEnd = false;
+
             //Increments level and sets up next level
             levelCount++;
             currentLevel = new Level(levelCount);

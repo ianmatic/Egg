@@ -12,8 +12,16 @@ namespace Egg
     class CapturedChicken : GameObject
     {
         Color color;
+        Guid guid = Guid.NewGuid();
         Random rn = new Random();
         Color[] Colors = new Color[] { Color.Red, Color.Orange, Color.Yellow, Color.Green, Color.Blue, Color.Indigo, Color.Purple };
+
+        Screen originScreen;
+
+        public Color Color
+        {
+            get { return color; }
+        }
 
         public CapturedChicken(int drawLevel, Texture2D defaultSprite, Rectangle hitbox)
         {
@@ -21,7 +29,7 @@ namespace Egg
             this.defaultSprite = defaultSprite;
             this.hitbox = hitbox;
             this.color = RandomColor();
-            this.isActive = true;
+            this.isActive = true;            
         }
 
         //Unknown what will be done with this
@@ -33,7 +41,7 @@ namespace Egg
         //Checks if player has collected chicken
         public override void CheckColliderAgainstPlayer(Player p)
         {
-            if (hitbox.Intersects(p.Hitbox))
+            if (hitbox.Intersects(p.Hitbox) && isActive)
             {
                 //Run some method on P to update saved chickens
                 p.UpdateChickenList(this);
@@ -42,7 +50,11 @@ namespace Egg
         }
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(defaultSprite, hitbox, this.color);
+            if (isActive)
+            {
+                sb.Draw(defaultSprite, hitbox, this.color);
+            }
+            
         }
         //Enemies pass through chickens
         public override void CheckColliderAgainstEnemy(Enemy e)

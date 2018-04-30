@@ -20,12 +20,25 @@ namespace Egg
         int screenHeight = 1080;        //same for this 
         string[,] level;
         string filePath;
+        int numOfChickens = 0;
 
         Tile[,] tileMap;
         List<Enemy> enemies = new List<Enemy>();
+        List<GameObject> gameObjs = new List<GameObject>();
+
+        public List<GameObject> GameObjs
+        {
+            get { return gameObjs; }
+        }
+
         public List<Enemy> Enemies
         {
             get { return enemies; }
+        }
+
+        public int ChickenCount
+        {
+            get { return numOfChickens; }
         }
 
         StreamReader interpreter;
@@ -56,8 +69,8 @@ namespace Egg
             tileTypeDict.Add("mv", Tile.TileType.Moving);
             tileTypeDict.Add("nc", Tile.TileType.NoCollision);
             tileTypeDict.Add("00", Tile.TileType.NoCollision);
-            #endregion           
-        
+            #endregion
+
         }
 
         /// <summary>
@@ -65,19 +78,13 @@ namespace Egg
         /// </summary>
         public Tile[,] UpdateTiles(List<Texture2D> textures)
         {
-            try
-            {
-                string[,] baseLevelMap = LevelInterpreter(filePath);      //turn the text file into a 2d array
-                tileMap = new Tile[VerticalTileCount, HorizontalTileCount];     //turn that 2d array into a 2d array of tiles
-                tileMap = LoadTiles(baseLevelMap, textures);                            //populate those 2d arrays with 2d textures
-                screenTiles = tileMap;
-                return tileMap;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return null;
-            }
+
+            string[,] baseLevelMap = LevelInterpreter(filePath);      //turn the text file into a 2d array
+            tileMap = new Tile[VerticalTileCount, HorizontalTileCount];     //turn that 2d array into a 2d array of tiles
+            tileMap = LoadTiles(baseLevelMap, textures);                            //populate those 2d arrays with 2d textures
+            screenTiles = tileMap;
+            return tileMap;
+
 
         }
 
@@ -88,7 +95,13 @@ namespace Egg
         /// </summary>
         public void DrawTilesFromMap(SpriteBatch sb, List<Texture2D> textures)
         {
-            DrawLevel(UpdateTiles(textures), sb); //draw everything tot he screen
+            Tile[,] temp = UpdateTiles(textures);
+
+            DrawLevel(temp, sb); //draw everything tot he screen
+            foreach (GameObject g in gameObjs)
+            {
+                g.Draw(sb);
+            }
         }
 
         /// <summary>
@@ -173,7 +186,7 @@ namespace Egg
             for (int row = 0; row < VerticalTileCount; row++)
             {
                 for (int column = 0; column < HorizontalTileCount; column++)
-                {                    
+                {
                     Texture2D tempTexture = textures[1];                    //create temp texture 
                     int textureNumber = GetTexture(levelMap[row, column]);  //get told which texture to put in place from levelMap
 
@@ -188,23 +201,107 @@ namespace Egg
                     }
 
                     //if it's the enemy tile, stretch it out
-                    if (textureNumber == 22)
+                    if (textureNumber == 23)
                     {
-                        int tempX = screenTiles[row, column].X;
-                        int tempY = screenTiles[row, column].Y;
+                        bool doubleChecker = false;
                         Rectangle tempRect = screenTiles[row, column].Hitbox;
-                        Enemy tempE = new Enemy(tempRect, textures[22], 4, 1);
-                        enemies.Add(tempE);
+                        tempRect.Height = 75;
+                        tempRect.Width = 75;
+                        tempRect.X += 75 / 2;
+                        tempRect.Y += 75;
+
+                        Enemy tempE = new Enemy(tempRect, textures[23], 4, 1);
+
+                        foreach (Enemy e in enemies)
+                        {
+                            if (e.X == tempE.X)
+                            {
+                                doubleChecker = true;
+                            }
+                        }
+
+                        if (!doubleChecker)
+                        {
+                            enemies.Add(tempE);
+                        }
 
                         //levelMap[row, column] = null;
                         //screenTiles[row, column] = null;
+                        screenTiles[row, column].DefaultSprite = null;
+                    }
+
+                    //if it's the egg tile, drop one of those in
+                    if (textureNumber == 24)
+                    {
+                        bool doubleChecker = false;
+                        Rectangle tempRect = screenTiles[row, column].Hitbox;
+                        tempRect.Height = 50;
+                        tempRect.Width = 50;
+                        tempRect.X += 60 / 2;
+                        tempRect.Y += 60;
+
+                        CapturedChicken tempChicken = new CapturedChicken(0, textures[textureNumber], tempRect);
+
+                        foreach (GameObject cc in gameObjs)
+                        {
+                            if (cc is CapturedChicken)
+                            {
+                                if (cc.X == tempChicken.X)
+                                {
+                                    doubleChecker = true;
+                                }
+                            }
+                        }
+
+                        if (!doubleChecker)
+                        {
+                            gameObjs.Add(tempChicken);
+                        }
+
+                        //levelMap[row, column] = null;
+                        //screenTiles[row, column] = null;
+                        screenTiles[row, column].DefaultSprite = null;
+                    }
+
+                    //if it's a checkpoint tile, drop one of those in
+                    if (textureNumber == 25)
+                    {
+                        bool doubleChecker = false;
+                        Rectangle tempRect = screenTiles[row, column].Hitbox;
+                        tempRect.Height = 75;
+                        tempRect.Width = 75;
+                        tempRect.X += 75 / 2;
+                        tempRect.Y += 60;
+
+                        Checkpoint tempCheck = new Checkpoint(0, textures[textureNumber], tempRect, this);
+
+                        foreach (GameObject c in gameObjs)
+                        {
+                            if (c is Checkpoint)
+                            {
+                                if (c.X == tempCheck.X)
+                                {
+                                    doubleChecker = true;
+                                }
+                            }
+                        }
+
+                        if (!doubleChecker)
+                        {
+                            gameObjs.Add(tempCheck);
+                        }
+
+                        //levelMap[row, column] = null;
+                        //screenTiles[row, column] = null;
+                        screenTiles[row, column].DefaultSprite = null;
                     }
 
                     //if it's an empty tile, set it to null in the 2d array
-                    if (textureNumber == 0)
+                    if (textureNumber == 0 || textureNumber == 23 || textureNumber == 24 || textureNumber == 25)
                     {
                         levelMap[row, column] = null;
                     }
+
                     //otherwise, set the tile's texture to it's ref in the texture list & add tags
                     else
                     {
@@ -214,7 +311,7 @@ namespace Egg
                         string tagTemp = TagTileSplit(levelMap[row, column], false);    //pulls the tag for this tile
                         screenTiles[row, column].Type = tileTypeDict[tagTemp];          //updates screenTiles with the tag
                     }
-                    
+
                 }
             }
             return screenTiles; //return screentiles so it can be added to the collision check group
@@ -233,7 +330,7 @@ namespace Egg
             for (int row = 0; row < VerticalTileCount; row++)
             {
                 for (int column = 0; column < HorizontalTileCount; column++)
-                { 
+                {
                     if (level[row, column] != null)
                     {
                         level[row, column].X = (column * tileWidth) - ((1 / 2) * tileWidth);    //determine placement then draw
@@ -267,9 +364,9 @@ namespace Egg
             if (TagOrTile == true)              //if it's true, return the first two characters (the tile)
             {
                 temp = splitUp[0].ToString() + splitUp[1].ToString();
-            }       
+            }
             else                                //otherwise, return the third and fourth characters (the tag)
-            {   
+            {
                 temp = splitUp[2].ToString() + splitUp[3].ToString();
             }
             return temp;
@@ -285,7 +382,7 @@ namespace Egg
             switch (s)
             {
                 //empty tile
-                case "00": 
+                case "00":
                     return 0;
 
                 //light tiles
@@ -331,15 +428,22 @@ namespace Egg
                     return 19;
                 case "n3":
                     return 20;
-                case "n2":
-                    return 21;
                 case "n4":
+                    return 21;
+                case "n2":
                     return 22;
+
+                case "e1":
+                    return 23;
+                case "e2":
+                    return 24;
+                case "e3":
+                    return 25;
 
                 default:    //failsafe case
                     return 0;
             }
-        }        
+        }
 
         /// <summary>
         /// Function to fully clear out items in a map

@@ -10,13 +10,21 @@ namespace Egg
 {
     class Checkpoint : GameObject
     {
-        public Checkpoint(int drawLevel, Texture2D defaultSprite, Rectangle hitbox)
+        private Screen originScreen;
+
+        public Screen OriginScreen
+        {
+            get { return originScreen; }
+        }
+
+        public Checkpoint(int drawLevel, Texture2D defaultSprite, Rectangle hitbox, Screen originScreen)
         {
             this.drawLevel = drawLevel;
             this.defaultSprite = defaultSprite;
             this.hitbox = hitbox;
             this.isActive = true;
-            this.hasGravity = false;      
+            this.hasGravity = false;
+            this.originScreen = originScreen;
         }
         public override void Draw(SpriteBatch sb)
         {
@@ -29,7 +37,7 @@ namespace Egg
         {
             if (hitbox.Intersects(p.Hitbox))
             {
-                p.LastCheckpoint = this.hitbox;
+                p.LastCheckpoint = this;
             }
         }
 
