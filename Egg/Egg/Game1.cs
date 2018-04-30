@@ -643,7 +643,7 @@ namespace Egg
                         break;
 
                     case GameState.GameOver:
-                        if (kb.IsKeyDown(Keys.Enter))
+                        if (SingleKeyPress(Keys.Enter))
                         {
                             IncrementLevel();
                             if (theEnd)
