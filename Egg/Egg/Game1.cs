@@ -653,10 +653,17 @@ namespace Egg
                             IncrementLevel();
                             if (theEnd)
                             {
+                                tempcounter = 0;
+                                eggCounter = 0;
+                                hasDrawnEggsForEndScreen = false;
+                                player.CollectedChickens.Clear();
                                 currentState = GameState.Menu;
                             }
                             else
                             {
+                                tempcounter = 0;
+                                eggCounter = 0;
+                                hasDrawnEggsForEndScreen = false;
                                 currentState = GameState.Game;
                             }
 
@@ -1058,8 +1065,13 @@ namespace Egg
                         spriteBatch.DrawString(menuText, "Player State: " + player.PlayerState, new Vector2(100, 95), Color.Cyan);
                         spriteBatch.DrawString(menuText, "Facing right?: " + player.IsFacingRight, new Vector2(100, 130), Color.Cyan);
                         spriteBatch.DrawString(menuText, "hitpoints: " + player.Hitpoints, new Vector2(100, 165), Color.Cyan);
-                    }    
-                    
+                    }
+                    else
+                    {
+                        //Draw collectibles
+                        spriteBatch.Draw(collectibleEgg, new Rectangle(135, 55, 40, 40), Color.White);
+                        spriteBatch.DrawString(menuText, player.CollectedChickens.Count.ToString(), new Vector2(200, 60), Color.Orange);
+                    }
                     break;
 
                 case GameState.GameOver:
@@ -1091,17 +1103,17 @@ namespace Egg
 
 
                         //draw each egg player collected
-                        for (int i = 0; i < player.CollectedChickens.Count; i++)
+                        for (int i = 0; i < tempcounter; i++)
                         {
-                            if (i < 9)
+                            if (i < 10)
                             {
                                 spriteBatch.Draw(collectibleEgg, new Rectangle(i * 60 + 1000, 500, 50, 50), Color.White);
                             }
-                            else if (i >= 10 && i < 19)
+                            else if (i >= 10 && i <= 19)
                             {
                                 spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 600, 600, 50, 50), Color.White);
                             }
-                            else if (i >= 20 && i < 29)
+                            else if (i >= 20 && i <= 29)
                             {
                                 spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 1200, 700, 50, 50), Color.White);
                             }
@@ -1435,6 +1447,7 @@ namespace Egg
             topRectangle = Content.Load<Texture2D>("green");
             collisionTest = Content.Load<Texture2D>("white");
 
+
             /*
             #region Checkpoints
             AddObjectToList(new Checkpoint(3, collisionTest, new Rectangle(400, 350, 75, 75)));
@@ -1449,6 +1462,7 @@ namespace Egg
             AddObjectToList(enemy2);
             AddObjectToList(enemy3);
             player = new Player(5, collisionTest, new Rectangle(450, 350, 75, 75), Color.White);
+
 
             //default movement
             player.BindableKb.Add("left", Keys.A);

@@ -70,7 +70,7 @@ namespace Egg
             tileTypeDict.Add("nc", Tile.TileType.NoCollision);
             tileTypeDict.Add("00", Tile.TileType.NoCollision);
             #endregion
-            numOfChickens = 4;
+            numOfChickens = 8;
         }
 
         /// <summary>
