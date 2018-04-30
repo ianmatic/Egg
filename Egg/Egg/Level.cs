@@ -35,6 +35,11 @@ namespace Egg
             set { totalChickensInLevel = value; }
         }
 
+        public Screen[,] ScreenArray
+        {
+            get { return screenArray; }
+        }
+
         int currentTempArrayC;
         int currentTempArrayR;
 
@@ -82,6 +87,9 @@ namespace Egg
             screenArray[indexRow, indexColumn] = new Screen(temp);
 
             startScreen = screenArray[indexRow, indexColumn];
+
+            currentTempArrayR = indexRow;
+            currentTempArrayC = indexColumn;
             //subsplit the filename, then Parse ints to get index. Then create a new screen object with the filepath and place it at the index
 
             #endregion
@@ -135,72 +143,96 @@ namespace Egg
             switch (direction)
             {
                 case "left":
-                    if (currentTempArrayC == 0)
+                    try
                     {
-                        return 0;
-                    }
-                    else if (screenArray[currentTempArrayR, currentTempArrayC - 1] == null)
-                    {
-                        if (screenArray[currentTempArrayR, currentTempArrayC] == endScreen)
+                        int[] coords = IndexOfScreen(currentScreen);
+                        Screen tempCurrentScreen = screenArray[coords[0], coords[1] - 1];
+
+                        if (tempCurrentScreen == null)
                         {
-                            return -1;
+                            if (currentScreen == endScreen)
+                            {
+                                return -1;
+                            }
+                            return 0;
                         }
+
+                        currentScreen.LevelMapClear();
+                        currentScreen = tempCurrentScreen;
+                    }
+                    catch (Exception e)
+                    {
                         return 0;
                     }
-                    currentScreen.LevelMapClear();
-                    currentScreen = screenArray[currentTempArrayR, currentTempArrayC - 1];
-                    currentTempArrayC -= 1;
                     break;
                 case "right":
-                    if (currentTempArrayC == screenArray.GetLength(1) - 1)
+                    try
                     {
-                        return 0;
-                    }
-                    else if (screenArray[currentTempArrayR, currentTempArrayC + 1] == null)
-                    {
-                        if (screenArray[currentTempArrayR, currentTempArrayC] == endScreen)
+                        int[] coords = IndexOfScreen(currentScreen);
+                        Screen tempCurrentScreen = screenArray[coords[0], coords[1] + 1];
+
+                        if (tempCurrentScreen == null)
                         {
-                            return -1;
+                            if (currentScreen == endScreen)
+                            {
+                                return -1;
+                            }
+                            return 0;
                         }
+
+                        currentScreen.LevelMapClear();
+                        currentScreen = tempCurrentScreen;
+                    }
+                    catch (Exception e)
+                    {
                         return 0;
                     }
-                    currentScreen.LevelMapClear();
-                    currentScreen = screenArray[currentTempArrayR, currentTempArrayC + 1];
-                    currentTempArrayC += 1;
                     break;
                 case "up":
-                    if (currentTempArrayR == 0)
+                    try
                     {
-                        return 0;
-                    }
-                    else if (screenArray[currentTempArrayR - 1, currentTempArrayC] == null)
-                    {
-                        if (screenArray[currentTempArrayR, currentTempArrayC] == endScreen)
+                        int[] coords = IndexOfScreen(currentScreen);
+                        Screen tempCurrentScreen = screenArray[coords[0] - 1, coords[1]];
+
+                        if (tempCurrentScreen == null)
                         {
-                            return -1;
+                            if (currentScreen == endScreen)
+                            {
+                                return -1;
+                            }
+                            return 0;
                         }
+
+                        currentScreen.LevelMapClear();
+                        currentScreen = tempCurrentScreen;
+                    }
+                    catch (Exception e)
+                    {
                         return 0;
                     }
-                    currentScreen.LevelMapClear();
-                    currentScreen = screenArray[currentTempArrayR - 1, currentTempArrayC];
-                    currentTempArrayR -= 1;
                     break;
                 case "down":
-                    if (currentTempArrayR == screenArray.GetLength(0) - 1)
+                    try
                     {
-                        return 0;
-                    }
-                    else if (screenArray[currentTempArrayR + 1, currentTempArrayC] == null)
-                    {
-                        if (screenArray[currentTempArrayR, currentTempArrayC] == endScreen)
+                        int[] coords = IndexOfScreen(currentScreen);
+                        Screen tempCurrentScreen = screenArray[coords[0] + 1, coords[1]];
+
+                        if (tempCurrentScreen == null)
                         {
-                            return -1;
+                            if (currentScreen == endScreen)
+                            {
+                                return -1;
+                            }
+                            return 0;
                         }
+
+                        currentScreen.LevelMapClear();
+                        currentScreen = tempCurrentScreen;
+                    }
+                    catch (Exception e)
+                    {
                         return 0;
                     }
-                    currentScreen.LevelMapClear();
-                    currentScreen = screenArray[currentTempArrayR + 1, currentTempArrayC];
-                    currentTempArrayR += 1;
                     break;
             }
 
@@ -216,6 +248,27 @@ namespace Egg
                     result += s.ChickenCount;
                 }             
             }
+            return result;
+        }
+
+        private int[] IndexOfScreen(Screen s)
+        {
+            int tempR = 0;
+            int tempC = 0;
+
+            for (int r = 0; r < screenArray.GetLength(0); r++)
+            {
+                for (int c = 0; c < screenArray.GetLength(1); c++)
+                {
+                    if (s == screenArray[r, c])
+                    {
+                        tempR = r;
+                        tempC = c;
+                    }
+                }
+            }
+
+            int[] result = { tempR, tempC };
             return result;
         }
 
