@@ -790,7 +790,7 @@ namespace Egg
             GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
             //Draws sprites & text based on FSM
-          
+           
             switch (currentState)
             {
                 case GameState.Menu:
