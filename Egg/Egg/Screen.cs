@@ -256,6 +256,7 @@ namespace Egg
                         if (!doubleChecker)
                         {
                             gameObjs.Add(tempChicken);
+                            numOfChickens++;
                         }
 
                         //levelMap[row, column] = null;

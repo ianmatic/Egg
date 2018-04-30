@@ -505,6 +505,7 @@ namespace Egg
                         if (SingleKeyPress(Keys.Enter) || (startRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)))
                         {
                             currentState = GameState.Game;
+                            IncrementLevel();
                         }
                         else if (SingleKeyPress(Keys.Tab) || (optionsRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)))
                         {
@@ -643,6 +644,10 @@ namespace Egg
                         break;
 
                     case GameState.GameOver:
+                        if (levelCount >= totalLevels)
+                        {
+                            theEnd = true;
+                        }
                         if (kb.IsKeyDown(Keys.Enter))
                         {
                             IncrementLevel();
@@ -1046,11 +1051,6 @@ namespace Egg
                             }
                         }
                     }
-
-                    string debugRoomText = "" + row + column;
-                    spriteBatch.DrawString(menuText, debugRoomText, new Vector2(500, 150), Color.White);
-
-
                     if (player.IsDebugging) //debugging text for player
                     {
                         spriteBatch.DrawString(menuText, "Horizontal Velocity: " + player.HorizontalVelocity, new Vector2(100, 25), Color.Cyan);
@@ -1058,13 +1058,8 @@ namespace Egg
                         spriteBatch.DrawString(menuText, "Player State: " + player.PlayerState, new Vector2(100, 95), Color.Cyan);
                         spriteBatch.DrawString(menuText, "Facing right?: " + player.IsFacingRight, new Vector2(100, 130), Color.Cyan);
                         spriteBatch.DrawString(menuText, "hitpoints: " + player.Hitpoints, new Vector2(100, 165), Color.Cyan);
-                    }
-                    else
-                    {
-                        //Draw collectibles
-                        spriteBatch.Draw(collectibleEgg, new Rectangle(135, 55, 40, 40), Color.White);
-                        spriteBatch.DrawString(menuText, player.CollectedChickens.Count.ToString(), new Vector2(200, 60), Color.Orange);
-                    }
+                    }    
+                    
                     break;
 
                 case GameState.GameOver:
@@ -1096,7 +1091,7 @@ namespace Egg
 
 
                         //draw each egg player collected
-                        for (int i = 0; i < tempcounter; i++)
+                        for (int i = 0; i < player.CollectedChickens.Count; i++)
                         {
                             if (i < 9)
                             {
@@ -1225,7 +1220,7 @@ namespace Egg
                                 currentLevel.CurrentScreen = currentLevel.StartScreen;
                                 Rectangle r = player.Hitbox;
                                 r.X = GraphicsDevice.Viewport.Width / 2;
-                                r.Y = GraphicsDevice.Viewport.Height / 2;
+                                r.Y = GraphicsDevice.Viewport.Height / 3;
                                 player.Hitbox = r;
                             }
                             else
@@ -1236,7 +1231,7 @@ namespace Egg
                             break;
 
                         case -1:
-                            IncrementLevel();
+                            currentState = GameState.GameOver;
                             break;
                     }
 
@@ -1257,7 +1252,7 @@ namespace Egg
                                 currentLevel.CurrentScreen = currentLevel.StartScreen;
                                 Rectangle r = player.Hitbox;
                                 r.X = GraphicsDevice.Viewport.Width / 2;
-                                r.Y = GraphicsDevice.Viewport.Height / 2;
+                                r.Y = GraphicsDevice.Viewport.Height / 3;
                                 player.Hitbox = r;
                             }
                             else
@@ -1268,7 +1263,7 @@ namespace Egg
                             break;
 
                         case -1:
-                            IncrementLevel();
+                            currentState = GameState.GameOver;
                             break;
                     }
                 }
@@ -1278,12 +1273,14 @@ namespace Egg
                     switch (currentLevel.ChangeScreen("up"))
                     {
                         case 1:
+                            player.ScreenUpExtraBoost();
                             Rectangle temp = player.Hitbox;
-                            temp.Y = GraphicsDevice.Viewport.Height;
+                            temp.Y = GraphicsDevice.Viewport.Height - 20;
                             player.Hitbox = temp;
                             break;
 
                         case 0:
+                            /*
                             if (player.LastCheckpoint == null)
                             {
                                 currentLevel.CurrentScreen = currentLevel.StartScreen;
@@ -1297,10 +1294,11 @@ namespace Egg
                                 currentLevel.CurrentScreen = player.LastCheckpoint.OriginScreen;
                                 player.Hitbox = player.LastCheckpoint.Hitbox;
                             }
+                            */
                             break;
 
                         case -1:
-                            IncrementLevel();
+                            currentState = GameState.GameOver;
                             break;
                     }
                 }
@@ -1320,7 +1318,7 @@ namespace Egg
                                 currentLevel.CurrentScreen = currentLevel.StartScreen;
                                 Rectangle r = player.Hitbox;
                                 r.X = GraphicsDevice.Viewport.Width / 2;
-                                r.Y = GraphicsDevice.Viewport.Height / 2;
+                                r.Y = GraphicsDevice.Viewport.Height / 3;
                                 player.Hitbox = r;
                             }
                             else
@@ -1331,7 +1329,7 @@ namespace Egg
                             break;
 
                         case -1:
-                            IncrementLevel();
+                            currentState = GameState.GameOver;
                             break;
                     }
                 }
@@ -1692,27 +1690,36 @@ namespace Egg
 
         void IncrementLevel()
         {
+
             if (levelCount >= totalLevels)
             {
                 //Put end screen here
                 theEnd = true;
                 //Move this code to when the Next button is pressed
-                levelCount = 1;
-                //Reset saved chicken count
-                currentLevel = new Level(1);
+                levelCount = 0;
+                currentState = GameState.GameOver;
                 return;
             }
-            theEnd = false;
-
+            theEnd = false;           
             //Increments level and sets up next level
             levelCount++;
             currentLevel = new Level(levelCount);
+            currentLevel.CurrentScreen = currentLevel.StartScreen;
+            player.LastCheckpoint = null;
 
-            //Resets player position to middle of screen (for now)
             Rectangle temp = player.Hitbox;
+
             temp.X = GraphicsDevice.Viewport.Width / 2;
-            temp.Y = GraphicsDevice.Viewport.Height / 2;
+            temp.Y = GraphicsDevice.Viewport.Height / 3;
+
             player.Hitbox = temp;
+
+            player.PutInFallState();
+            currentLevel.CurrentScreen = currentLevel.StartScreen;
+            currentLevel.CurrentScreen = currentLevel.StartScreen;
+            currentLevel.CurrentScreen = currentLevel.StartScreen;
+
+            
         }
     }
 }

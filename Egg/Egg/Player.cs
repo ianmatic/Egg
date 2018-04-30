@@ -65,6 +65,7 @@ namespace Egg
         private bool playerVisible = true;
         private bool bounceLockout = false;
         private bool shouldBounce = false;
+        private bool floatLockout = false;
         Tile temp; //used to make sure player checks collision against only 
                    //1 tile when necessary (as opposed to all of them each frame like usual)
 
@@ -705,7 +706,7 @@ namespace Egg
                             playerState = PlayerState.RollLeft;
                         }
                     }
-                    //Remember to implement HitStun here
+                    floatLockout = false;
                     break;
 
                 //Idle Right
@@ -736,6 +737,7 @@ namespace Egg
                             playerState = PlayerState.RollRight;
                         }
                     }
+                    floatLockout = false;
                     break;
 
                 #endregion
@@ -775,7 +777,7 @@ namespace Egg
                             playerState = PlayerState.Fall;
                         }
                     }
-                    
+                    floatLockout = false;
                     //Remember to implement HitStun here
                     break;
                 //Walk Right
@@ -811,7 +813,7 @@ namespace Egg
                             playerState = PlayerState.Fall;
                         }
                     }
-                    
+                    floatLockout = false;
                     //Remember to implement HitStun here
                     break;
                 #endregion
@@ -995,17 +997,17 @@ namespace Egg
                         //previous is less than current since going down means y increasing
                         if (!hasFloated && previousPlayerPosition.Y < playerPosition.Y)
                         {
-                            if (kb.IsKeyDown(bindableKb["left"]) && kb.IsKeyUp(bindableKb["right"]) && kb.IsKeyDown(bindableKb["jump"]))
+                            if (kb.IsKeyDown(bindableKb["left"]) && kb.IsKeyUp(bindableKb["right"]) && kb.IsKeyDown(bindableKb["jump"]) && !floatLockout)
                             {
                                 PlayerState = PlayerState.FloatLeft;
                                 hasFloated = true;
                             }
-                            else if (kb.IsKeyDown(bindableKb["right"]) && kb.IsKeyUp(bindableKb["left"]) && kb.IsKeyDown(bindableKb["jump"]))
+                            else if (kb.IsKeyDown(bindableKb["right"]) && kb.IsKeyUp(bindableKb["left"]) && kb.IsKeyDown(bindableKb["jump"]) && !floatLockout)
                             {
                                 playerState = PlayerState.FloatRight;
                                 hasFloated = true;
                             }
-                            else if (kb.IsKeyDown(bindableKb["jump"]))
+                            else if (kb.IsKeyDown(bindableKb["jump"]) && !floatLockout)
                             {
                                 if (isFacingRight)
                                 {
@@ -1334,7 +1336,15 @@ namespace Egg
             //do nothing
         }
 
+        public void ScreenUpExtraBoost()
+        {
+            floatLockout = true;
+        }
 
+        public void PutInFallState()
+        {
+            playerState = PlayerState.DownDash;
+        }
         //animation fields
       
       
