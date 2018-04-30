@@ -1149,11 +1149,11 @@ namespace Egg
                     }
                     rollInAir = false;
                     rollDelay = 30;
-                    if (kb.IsKeyDown(bindableKb["left"]))
+                    if (SingleKeyPress((bindableKb["left"])))
                     {
                         playerState = PlayerState.WalkLeft;
                     }
-                    else if (kb.IsKeyDown(bindableKb["right"]))
+                    else if (SingleKeyPress((bindableKb["right"])))
                     {
                         playerState = PlayerState.WalkRight;
                     }
