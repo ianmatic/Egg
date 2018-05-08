@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 
 namespace Egg
 {
     class Checkpoint : GameObject
     {
         private Screen originScreen;
-
+        bool startCheckpointSound = true; //used to prevent sound from stacking when player touches checkpoint
         public Screen OriginScreen
         {
             get { return originScreen; }
@@ -37,7 +38,19 @@ namespace Egg
         {
             if (hitbox.Intersects(p.Hitbox))
             {
+                //if the player touches the checkpoint for the first time, only make the sound once
+                if (startCheckpointSound)
+                {
+                    p.CheckpointSound.Play();
+                    startCheckpointSound = false;
+                }
+
                 p.LastCheckpoint = this;
+            }
+            if (!this.Equals(p.LastCheckpoint))
+            {
+                //only play the sound if this isn't the player's current checkpoint
+                this.startCheckpointSound = true;
             }
         }
 

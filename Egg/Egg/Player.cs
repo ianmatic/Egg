@@ -7,6 +7,8 @@ using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Audio;
 
 enum PlayerState
 {
@@ -94,6 +96,17 @@ namespace Egg
 
         private List<CapturedChicken> collectedChickens;
 
+        //sound
+        public static ContentManager myContent; //used to load content in non-Game1 Class
+        SoundEffect bounceSound;
+        SoundEffect coinSound;
+        SoundEffect downDashSound;
+        SoundEffect hitStunSound;
+        SoundEffect jumpSound;
+        SoundEffect rollSound;
+        SoundEffect walkSound;
+        SoundEffect checkpointSound;
+
         GameTime gameTime;
         #endregion
         //################
@@ -142,7 +155,7 @@ namespace Egg
         public Checkpoint LastCheckpoint
         {
             get { return lastCheckpoint; }
-            set { this.lastCheckpoint = value; }
+            set { lastCheckpoint = value; }
         }
         public bool InHitStun
         {
@@ -159,10 +172,13 @@ namespace Egg
             get { return collectedChickens; }
             set { collectedChickens = value; }
         }
-
         public PlayerState PreviousPlayerState
         {
             get { return previousPlayerState; }
+        }
+        public SoundEffect CheckpointSound
+        {
+            get { return checkpointSound; }
         }
         #endregion
         //################
@@ -170,13 +186,13 @@ namespace Egg
         //################
         #region CONSTRUCTOR
         //Constructor for player
-        public Player(int drawLevel, Texture2D defaultSprite, Rectangle hitbox, Color color)
+        public Player(int drawLevel, Texture2D defaultSprite, Rectangle hitbox, Color color, ContentManager content)
         {
             this.drawLevel = drawLevel;
             this.defaultSprite = defaultSprite;
             this.hitbox = hitbox;
-            this.color = color;            
-
+            this.color = color;
+            myContent = content;
             isActive = true;
             hitpoints = 5;
 
@@ -200,6 +216,16 @@ namespace Egg
             collectedChickens = new List<CapturedChicken>();
 
             bindableKb = new Dictionary<string, Keys>();
+
+            //sound
+            bounceSound = myContent.Load<SoundEffect>("bounce");
+            coinSound = myContent.Load<SoundEffect>("coin");
+            downDashSound = myContent.Load<SoundEffect>("downdash");
+            hitStunSound = myContent.Load<SoundEffect>("hitstun");
+            jumpSound = myContent.Load<SoundEffect>("jump");
+            rollSound = myContent.Load<SoundEffect>("roll");
+            walkSound = myContent.Load<SoundEffect>("walk");
+            checkpointSound = myContent.Load<SoundEffect>("checkpoint");
         }
         #endregion
         //################
@@ -299,6 +325,7 @@ namespace Egg
                     playerState != PlayerState.BounceLeft && playerState != PlayerState.BounceRight && playerState != PlayerState.HitStunLeft 
                     && playerState != PlayerState.HitStunRight)
                 {
+                    hitStunSound.Play();
                     hitpoints--;
                 }
 
@@ -691,6 +718,7 @@ namespace Egg
                     {
                         if (SingleKeyPress(bindableKb["jump"]))
                         {
+                            jumpSound.Play();
                             playerState = PlayerState.JumpLeft;
                         }
                         else if (kb.IsKeyDown(bindableKb["right"]))
@@ -703,6 +731,7 @@ namespace Egg
                         }
                         else if (SingleKeyPress(bindableKb["roll"]))
                         {
+                            rollSound.Play();
                             playerState = PlayerState.RollLeft;
                         }
                     }
@@ -722,6 +751,7 @@ namespace Egg
                     {
                         if (SingleKeyPress(bindableKb["jump"]))
                         {
+                            jumpSound.Play();
                             playerState = PlayerState.JumpRight;
                         }
                         else if (kb.IsKeyDown(bindableKb["right"]))
@@ -734,6 +764,7 @@ namespace Egg
                         }
                         else if (SingleKeyPress(bindableKb["roll"]))
                         {
+                            rollSound.Play();
                             playerState = PlayerState.RollRight;
                         }
                     }
@@ -758,6 +789,7 @@ namespace Egg
                     {
                         if (SingleKeyPress(bindableKb["jump"]))
                         {
+                            jumpSound.Play();
                             playerState = PlayerState.JumpLeft;
                         }
                         else if (kb.IsKeyUp(bindableKb["left"])) //stop moving left
@@ -770,6 +802,7 @@ namespace Egg
                         }
                         else if (SingleKeyPress(bindableKb["roll"]))
                         {
+                            rollSound.Play();
                             playerState = PlayerState.RollLeft;
                         }
                         if (!bottomIntersects) //not touching ground
@@ -794,6 +827,7 @@ namespace Egg
                     {
                         if (SingleKeyPress(bindableKb["jump"]))
                         {
+                            jumpSound.Play();
                             playerState = PlayerState.JumpRight;
                         }
                         else if (kb.IsKeyUp(bindableKb["right"])) //stop moving right
@@ -806,6 +840,7 @@ namespace Egg
                         }
                         else if (SingleKeyPress(bindableKb["roll"]))
                         {
+                            rollSound.Play();
                             playerState = PlayerState.RollRight;
                         }
                         if (!bottomIntersects) //not touching ground
@@ -839,6 +874,7 @@ namespace Egg
                     }
                     else if (SingleKeyPress(bindableKb["jump"]) && !isRolling && bottomIntersects)
                     {
+                        jumpSound.Play();
                         playerState = PlayerState.JumpLeft;
                     }
                     else if (!isRolling && bottomIntersects)
@@ -858,6 +894,7 @@ namespace Egg
                     }
                     if (SingleKeyPress(bindableKb["jump"]) && !isRolling && bottomIntersects)
                     {
+                        jumpSound.Play();
                         playerState = PlayerState.JumpRight;
                     }
                     else if (!isRolling && kb.IsKeyDown(bindableKb["left"]))
@@ -911,11 +948,13 @@ namespace Egg
                         //if the player lets go of space, player stops floating
                         if (SingleKeyPress(bindableKb["roll"]))
                         {
+                            rollSound.Play();
                             rollInAir = true;
                             playerState = PlayerState.RollLeft;
                         }
                         if (SingleKeyPress(bindableKb["downDash"]))
                         {
+                            downDashSound.Play();
                             playerState = PlayerState.DownDash;
                         }
                         if (kb.IsKeyUp(bindableKb["jump"]))
@@ -942,11 +981,13 @@ namespace Egg
                         //if the player lets go of space, player stops floating
                         if (SingleKeyPress(bindableKb["roll"]))
                         {
+                            rollSound.Play();
                             rollInAir = true;
                             playerState = PlayerState.RollRight;
                         }
                         if (SingleKeyPress(bindableKb["downDash"]))
                         {
+                            downDashSound.Play();
                             playerState = PlayerState.DownDash;
                         }
                         if (kb.IsKeyUp(bindableKb["jump"]))
@@ -980,6 +1021,7 @@ namespace Egg
                     {
                         if (SingleKeyPress(bindableKb["roll"]) && !hasRolledInAir)
                         {
+                            rollSound.Play();
                             rollInAir = true;
                             if (isFacingRight)
                             {
@@ -992,6 +1034,7 @@ namespace Egg
                         }
                         if (SingleKeyPress(bindableKb["downDash"]))
                         {
+                            downDashSound.Play();
                             playerState = PlayerState.DownDash;
                         }
                         //previous is less than current since going down means y increasing
@@ -1320,7 +1363,6 @@ namespace Egg
                 return false;
             }
         }
-        //Implement when working on enemy collision
 
 
         /// <summary>
@@ -1328,6 +1370,7 @@ namespace Egg
         /// </summary>
         public void UpdateChickenList(CapturedChicken chick)
         {
+            coinSound.Play();
             collectedChickens.Add(chick);
         }
         //not applicable
@@ -1345,7 +1388,6 @@ namespace Egg
         {
             playerState = PlayerState.DownDash;
         }
-        //animation fields
       
       
 

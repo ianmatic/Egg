@@ -41,9 +41,6 @@ namespace Egg
         bool inTimeout = false;
         bool debugCollision = false;
 
-        //Which way the enemy is facing
-        private bool faceRight;
-
         private EnemyState status;
 
         //Small hitboxes used in collision detection
@@ -72,11 +69,6 @@ namespace Egg
         public int WalkDistance
         {
             get { return this.walkDistance; }
-        }
-
-        public bool FacingRight
-        {
-            get { return this.faceRight; }
         }
 
         public EnemyState GetStatus()

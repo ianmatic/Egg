@@ -16,19 +16,16 @@ namespace Egg
         Random rn = new Random();
         Color[] Colors = new Color[] { Color.Red, Color.Orange, Color.Yellow, Color.Green, Color.Blue, Color.Indigo, Color.Purple };
 
-        Screen originScreen;
-
-        public Color Color
-        {
-            get { return color; }
-        }
-
         public CapturedChicken(int drawLevel, Texture2D defaultSprite, Rectangle hitbox)
         {
             this.drawLevel = drawLevel;
             this.defaultSprite = defaultSprite;
             this.hitbox = hitbox;
-            this.color = RandomColor();
+
+            //changed all eggs to be white for clarity
+            this.color = Color.White;
+
+            //this.color = RandomColor();
             this.isActive = true;            
         }
 

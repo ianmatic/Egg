@@ -1,6 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -51,23 +54,27 @@ namespace Egg
         Enemy enemy2;
         Enemy enemy3;
 
-
+        //menu navigation
         bool paused = false;
         bool fullscreen = false;
         MouseState ms;
         MouseState previousMs;
-        Rectangle mouseRect;
+        Rectangle mouseRect; //rects used for clicking on choices in options
         Rectangle startRect;
         Rectangle optionsRect;
         Rectangle optionsReturnRect;
         Rectangle fullscreenRect;
+        Rectangle musicRect;
+        Rectangle effectsRect;
         Rectangle leftRect;
         Rectangle rightRect;
         Rectangle jumpRect;
         Rectangle downRect;
         Rectangle rollRect;
         Rectangle pauseRect;
-        bool rebindingLeft = false;
+
+        //rebinding keyboard logic
+        bool rebindingLeft = false; //these are used to highlight the key the player is rebinding
         bool rebindingRight = false;
         bool rebindingJump = false;
         bool rebindingDown = false;
@@ -203,6 +210,25 @@ namespace Egg
         //Map Builder Tool
         Mappy Builder = new Mappy();
 
+        //sound effects and music
+        SoundEffect bounceSound;
+        SoundEffect coinSound;
+        SoundEffect deathSound;
+        SoundEffect downDashSound;
+        SoundEffect hitStunSound;
+        SoundEffect jumpSound;
+        SoundEffect menuSelectSound;
+        SoundEffect rollSound;
+        SoundEffect walkSound;
+        SoundEffect checkpointSound;
+        SoundEffect flutterSound;
+        Song menuMusic;
+        Song gameMusic;
+        bool gameSongStart = true; //bools used to ensure song only plays once (instead of every frame)
+        bool menuSongStart = true;
+
+        double soundCounter = 0;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -250,6 +276,25 @@ namespace Egg
             menu = Content.Load<Texture2D>("menuTexture");
             options = Content.Load<Texture2D>("optionsTexture");
             jellyBoi = Content.Load<Texture2D>("jellyboi");
+
+            bounceSound = Content.Load<SoundEffect>("bounce");
+            coinSound = Content.Load<SoundEffect>("coin");
+            deathSound = Content.Load<SoundEffect>("death");
+            downDashSound = Content.Load<SoundEffect>("downdash");
+            hitStunSound = Content.Load<SoundEffect>("hitstun");
+            jumpSound = Content.Load<SoundEffect>("jump");
+            menuSelectSound = Content.Load<SoundEffect>("menuselect");
+            rollSound = Content.Load<SoundEffect>("roll");
+            walkSound = Content.Load<SoundEffect>("walk");
+            flutterSound = Content.Load<SoundEffect>("flutter");
+            checkpointSound = Content.Load<SoundEffect>("checkpoint");
+            menuMusic = Content.Load<Song>("menumusic");
+            gameMusic = Content.Load<Song>("gamemusic");
+
+            //immediately play main menu music, reduce volume to 50% for balance
+            MediaPlayer.Play(menuMusic);
+            MediaPlayer.Volume = .5f;
+            MediaPlayer.IsRepeating = true; //music is repeating
 
             tileSpriteList = new List<Texture2D>();
             //Put tile loop here
@@ -496,6 +541,7 @@ namespace Egg
             {
                 if (SingleKeyPress(player.BindableKb["pause"]) && currentState != GameState.Options)
                 {
+                    menuSelectSound.Play();
                     paused = true;
                 }
                 //FSM for switching between main menu, game, and level transition screens
@@ -504,17 +550,41 @@ namespace Egg
                     case GameState.Menu:
                         if (SingleKeyPress(Keys.Enter) || (startRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)))
                         {
+                            menuSelectSound.Play();
+                            MediaPlayer.Stop(); //stop playing menu music when transitioning to game
+
                             currentState = GameState.Game;
+
+                            //need to make a temp dict to transfer keys from old player to new player
+                            Dictionary<String, Keys> tempRebindableKb = new Dictionary<string, Keys>();
+                            tempRebindableKb.Add("left", player.BindableKb["left"]);
+                            tempRebindableKb.Add("right", player.BindableKb["right"]);
+                            tempRebindableKb.Add("jump", player.BindableKb["jump"]);
+                            tempRebindableKb.Add("roll", player.BindableKb["roll"]);
+                            tempRebindableKb.Add("downDash", player.BindableKb["downDash"]);
+                            tempRebindableKb.Add("pause", player.BindableKb["pause"]);
+
+                            //new player made each game to fix animation glitch where player wouldn't regain egg shell at the end of the game
+                            player = new Player(5, collisionTest, new Rectangle(450, 350, 75, 75), Color.White, Content);
+
+                            player.BindableKb.Add("left", tempRebindableKb["left"]);
+                            player.BindableKb.Add("right", tempRebindableKb["right"]);
+                            player.BindableKb.Add("jump", tempRebindableKb["jump"]);
+                            player.BindableKb.Add("roll", tempRebindableKb["roll"]);
+                            player.BindableKb.Add("downDash", tempRebindableKb["downDash"]);
+                            player.BindableKb.Add("pause", tempRebindableKb["pause"]);
                             IncrementLevel();
                         }
                         else if (SingleKeyPress(Keys.Tab) || (optionsRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)))
                         {
+                            menuSelectSound.Play();
                             currentState = GameState.Options;
                         }
                         break;
                     case GameState.Options:
                         if (SingleKeyPress(Keys.Tab) || (optionsReturnRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)))
                         {
+                            menuSelectSound.Play();
                             rebindingLeft = false;
                             rebindingRight = false;
                             rebindingJump = false;
@@ -532,6 +602,12 @@ namespace Egg
                         }
                         if ((leftRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingLeft)
                         {
+                            //only play the sound once, instead of every frame
+                            if (leftRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
+                            {
+                                menuSelectSound.Play();
+                            }
+
                             rebindingLeft = true;
 
                             rebindingRight = false;
@@ -543,12 +619,19 @@ namespace Egg
                             keys = Keyboard.GetState().GetPressedKeys();
                             if (keys.Length > 0)
                             {
+                                menuSelectSound.Play();
                                 player.BindableKb["left"] = keys[0];
                                 rebindingLeft = false;
                             }
                         }
                         if ((rightRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingRight)
                         {
+                            //only play the sound once, instead of every frame
+                            if (rightRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
+                            {
+                                menuSelectSound.Play();
+                            }
+
                             rebindingRight = true;
 
                             rebindingLeft = false;
@@ -560,12 +643,19 @@ namespace Egg
                             keys = Keyboard.GetState().GetPressedKeys();
                             if (keys.Length > 0)
                             {
+                                menuSelectSound.Play();
                                 player.BindableKb["right"] = keys[0];
                                 rebindingRight = false;
                             }
                         }
                         if ((rollRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingRoll)
                         {
+                            //only play the sound once, instead of every frame
+                            if (rollRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
+                            {
+                                menuSelectSound.Play();
+                            }
+
                             rebindingRoll = true;
 
                             rebindingLeft = false;
@@ -577,12 +667,19 @@ namespace Egg
                             keys = Keyboard.GetState().GetPressedKeys();
                             if (keys.Length > 0)
                             {
+                                menuSelectSound.Play();
                                 player.BindableKb["roll"] = keys[0];
                                 rebindingRoll = false;
                             }
                         }
                         if ((jumpRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingJump)
                         {
+                            //only play the sound once, instead of every frame
+                            if (jumpRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
+                            {
+                                menuSelectSound.Play();
+                            }
+
                             rebindingJump = true;
 
                             rebindingLeft = false;
@@ -594,12 +691,19 @@ namespace Egg
                             keys = Keyboard.GetState().GetPressedKeys();
                             if (keys.Length > 0)
                             {
+                                menuSelectSound.Play();
                                 player.BindableKb["jump"] = keys[0];
                                 rebindingJump = false;
                             }
                         }
                         if ((downRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingDown)
                         {
+                            //only play the sound once, instead of every frame
+                            if (downRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
+                            {
+                                menuSelectSound.Play();
+                            }
+
                             rebindingDown = true;
 
                             rebindingLeft = false;
@@ -611,12 +715,18 @@ namespace Egg
                             keys = Keyboard.GetState().GetPressedKeys();
                             if (keys.Length > 0)
                             {
+                                menuSelectSound.Play();
                                 player.BindableKb["downDash"] = keys[0];
                                 rebindingDown = false;
                             }
                         }
                         if ((pauseRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingPause)
                         {
+                            //only play the sound once, instead of every frame
+                            if (pauseRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
+                            {
+                                menuSelectSound.Play();
+                            }
                             rebindingPause = true;
 
                             rebindingLeft = false;
@@ -628,28 +738,64 @@ namespace Egg
                             keys = Keyboard.GetState().GetPressedKeys();
                             if (keys.Length > 0 && keys[0] != Keys.Tab)
                             {
+                                menuSelectSound.Play();
                                 player.BindableKb["pause"] = keys[0];
                                 rebindingPause = false;
                             }
                         }
                         if (fullscreenRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
                         {
+                            menuSelectSound.Play();
                             fullscreen = !fullscreen;
                             graphics.ToggleFullScreen();
                         }
+                        if (musicRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
+                        {
+                            //toggle if music is played (muted/not muted)
+                            menuSelectSound.Play();
+                            MediaPlayer.IsMuted = !MediaPlayer.IsMuted;
+                        }
+                        if (effectsRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
+                        {
+                            menuSelectSound.Play();
+                            //toggle sound effect on/off (on is 100%, off is 0%)
+                            if (SoundEffect.MasterVolume == 1)
+                            {
+                                SoundEffect.MasterVolume = 0;
+                            }
+                            else
+                            {
+                                SoundEffect.MasterVolume = 1;
+                            }
+                        }
                         break;
                     case GameState.Game:
+                        //play the game music only once at the beginning of the actual game
+                        if (gameSongStart)
+                        {
+                            MediaPlayer.Play(gameMusic);
+                            gameSongStart = false;
+                        }
                         GameUpdateLoop();
-                        //Transition to level end not yet implemented
                         break;
 
                     case GameState.GameOver:
+                        //reset gameSongStart to ensure it plays during the next playthrough
+                        gameSongStart = true;
+
+                        if (menuSongStart)
+                        {
+                            MediaPlayer.Play(menuMusic);
+                            menuSongStart = false;
+                        }
+
                         if (levelCount >= totalLevels)
                         {
                             theEnd = true;
                         }
                         if (kb.IsKeyDown(Keys.Enter))
                         {
+                            menuSelectSound.Play();
                             IncrementLevel();
                             if (theEnd)
                             {
@@ -664,6 +810,11 @@ namespace Egg
                                 tempcounter = 0;
                                 eggCounter = 0;
                                 hasDrawnEggsForEndScreen = false;
+
+                                //stop playing menu music and ensure it plays during next playhthrough
+                                MediaPlayer.Stop();
+                                menuSongStart = true;
+
                                 currentState = GameState.Game;
                             }
 
@@ -677,14 +828,35 @@ namespace Egg
             {
                 if (currentState == GameState.Options)
                 {
+                    if (musicRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
+                    {
+                        //toggle if the music is played (muted/not muted)
+                        menuSelectSound.Play();
+                        MediaPlayer.IsMuted = !MediaPlayer.IsMuted;
+                    }
+                    if (effectsRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
+                    {
+                        //toggle if the sound effects are played (volume 0% or 100%)
+                        menuSelectSound.Play();
+                        if (SoundEffect.MasterVolume == 1)
+                        {
+                            SoundEffect.MasterVolume = 0;
+                        }
+                        else
+                        {
+                            SoundEffect.MasterVolume = 1;
+                        }
+                    }
                     if (fullscreenRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
                     {
+                        menuSelectSound.Play();
                         fullscreen = !fullscreen;
                         graphics.ToggleFullScreen();
                     }
                 }
                 if (SingleKeyPress(Keys.Tab) || (optionsReturnRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)))
                 {
+                    menuSelectSound.Play();
                     if (currentState == GameState.Game)
                     {
                         currentState = GameState.Options;
@@ -703,6 +875,12 @@ namespace Egg
                 }
                 if ((leftRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingLeft)
                 {
+                    //only play the sound when the user clicks on this box, instead of every frame
+                    if (leftRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
+                    {
+                        menuSelectSound.Play();
+                    }
+
                     rebindingLeft = true;
 
                     rebindingRight = false;
@@ -714,12 +892,19 @@ namespace Egg
                     keys = Keyboard.GetState().GetPressedKeys();
                     if (keys.Length > 0 && keys[0] != Keys.Tab)
                     {
+                        menuSelectSound.Play();
                         player.BindableKb["left"] = keys[0];
                         rebindingLeft = false;
                     }
                 }
                 if ((rightRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingRight)
                 {
+                    //only play the sound when the user clicks on this box, instead of every frame
+                    if (rightRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
+                    {
+                        menuSelectSound.Play();
+                    }
+
                     rebindingRight = true;
 
                     rebindingLeft = false;
@@ -731,12 +916,18 @@ namespace Egg
                     keys = Keyboard.GetState().GetPressedKeys();
                     if (keys.Length > 0 && keys[0] != Keys.Tab)
                     {
+                        menuSelectSound.Play();
                         player.BindableKb["right"] = keys[0];
                         rebindingRight = false;
                     }
                 }
                 if ((rollRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingRoll)
                 {
+                    //only play the sound when the user clicks on this box, instead of every frame
+                    if (rollRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
+                    {
+                        menuSelectSound.Play();
+                    }
                     rebindingRoll = true;
 
                     rebindingLeft = false;
@@ -748,12 +939,19 @@ namespace Egg
                     keys = Keyboard.GetState().GetPressedKeys();
                     if (keys.Length > 0 && keys[0] != Keys.Tab)
                     {
+                        menuSelectSound.Play();
                         player.BindableKb["roll"] = keys[0];
                         rebindingRoll = false;
                     }
                 }
                 if ((jumpRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingJump)
                 {
+                    //only play the sound when the user clicks on this box, instead of every frame
+                    if (jumpRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
+                    {
+                        menuSelectSound.Play();
+                    }
+
                     rebindingJump = true;
 
                     rebindingLeft = false;
@@ -765,12 +963,19 @@ namespace Egg
                     keys = Keyboard.GetState().GetPressedKeys();
                     if (keys.Length > 0 && keys[0] != Keys.Tab)
                     {
+                        menuSelectSound.Play();
                         player.BindableKb["jump"] = keys[0];
                         rebindingJump = false;
                     }
                 }
                 if ((downRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingDown)
                 {
+                    //only play the sound when the user clicks on this box, instead of every frame
+                    if (downRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
+                    {
+                        menuSelectSound.Play();
+                    }
+
                     rebindingDown = true;
 
                     rebindingLeft = false;
@@ -782,12 +987,19 @@ namespace Egg
                     keys = Keyboard.GetState().GetPressedKeys();
                     if (keys.Length > 0 && keys[0] != Keys.Tab)
                     {
+                        menuSelectSound.Play();
                         player.BindableKb["downDash"] = keys[0];
                         rebindingDown = false;
                     }
                 }
                 if ((pauseRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) || rebindingPause)
                 {
+                    //only play the sound when the user clicks on this box, instead of every frame
+                    if (pauseRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
+                    {
+                        menuSelectSound.Play();
+                    }
+
                     rebindingPause = true;
 
                     rebindingLeft = false;
@@ -799,12 +1011,17 @@ namespace Egg
                     keys = Keyboard.GetState().GetPressedKeys();
                     if (keys.Length > 0 && keys[0] != Keys.Tab)
                     {
+                        menuSelectSound.Play();
                         player.BindableKb["pause"] = keys[0];
                         rebindingPause = false;
                     }
                 }
                 if (SingleKeyPress(player.BindableKb["pause"]) && currentState != GameState.Options)
                 {
+                    //resume the game music when unpausing
+                    MediaPlayer.Resume();
+                    menuSelectSound.Play();
+
                     paused = false;
                 }
             }
@@ -823,7 +1040,12 @@ namespace Egg
 
 
             //update the animation
-            UpdateAnimation(gameTime);
+            //only do so when not paused to prevent walk cycle from animating while game is paused
+            if (!paused)
+            {
+                UpdateAnimation(gameTime);
+            }
+
 
 
             //modified spriteBatch begin so the images are scaled by nearest neighbor instead of getting antialiased
@@ -867,12 +1089,13 @@ namespace Egg
                     spriteBatch.Draw(options, new Rectangle(0, 0, 1920, 1080), Color.White);
                     spriteBatch.DrawString(menuText, "Options", new Vector2(850, 300), Color.White);
                     spriteBatch.DrawString(menuText, "Rebind keys ", new Vector2(450, 450), Color.White);
-                    leftRect = new Rectangle(450, 520, 170, 24);
-                    rightRect = new Rectangle(450, 550, 190, 24);
-                    rollRect = new Rectangle(450, 580, 80, 24);
-                    jumpRect = new Rectangle(450, 610, 80, 24);
-                    downRect = new Rectangle(450, 640, 170, 24);
-                    pauseRect = new Rectangle(450, 670, 100, 24);
+                    leftRect = new Rectangle(450, 520, 250, 24);
+                    rightRect = new Rectangle(450, 550, 250, 24);
+                    rollRect = new Rectangle(450, 580, 250, 24);
+                    jumpRect = new Rectangle(450, 610, 250, 24);
+                    downRect = new Rectangle(450, 640, 250, 24);
+                    pauseRect = new Rectangle(450, 670, 250, 24);
+                    //Move Left button
                     if (leftRect.Intersects(mouseRect) || rebindingLeft)
                     {
                         spriteBatch.DrawString(optionsText, "Move Left: " + player.BindableKb["left"].ToString(), new Vector2(450, 520), Color.Green);
@@ -881,6 +1104,7 @@ namespace Egg
                     {
                         spriteBatch.DrawString(optionsText, "Move Left: " + player.BindableKb["left"].ToString(), new Vector2(450, 520), Color.White);
                     }
+                    //Move Right button
                     if (rightRect.Intersects(mouseRect) || rebindingRight)
                     {
                         spriteBatch.DrawString(optionsText, "Move Right: " + player.BindableKb["right"].ToString(), new Vector2(450, 550), Color.Green);
@@ -889,6 +1113,7 @@ namespace Egg
                     {
                         spriteBatch.DrawString(optionsText, "Move Right: " + player.BindableKb["right"].ToString(), new Vector2(450, 550), Color.White);
                     }
+                    //Roll button
                     if (rollRect.Intersects(mouseRect) || rebindingRoll)
                     {
                         spriteBatch.DrawString(optionsText, "Roll: " + player.BindableKb["roll"].ToString(), new Vector2(450, 580), Color.Green);
@@ -897,6 +1122,7 @@ namespace Egg
                     {
                         spriteBatch.DrawString(optionsText, "Roll: " + player.BindableKb["roll"].ToString(), new Vector2(450, 580), Color.White);
                     }
+                    //Jump button
                     if (jumpRect.Intersects(mouseRect) || rebindingJump)
                     {
                         spriteBatch.DrawString(optionsText, "Jump: " + player.BindableKb["jump"].ToString(), new Vector2(450, 610), Color.Green);
@@ -905,6 +1131,7 @@ namespace Egg
                     {
                         spriteBatch.DrawString(optionsText, "Jump: " + player.BindableKb["jump"].ToString(), new Vector2(450, 610), Color.White);
                     }
+                    //Down-Dash button
                     if (downRect.Intersects(mouseRect) || rebindingDown)
                     {
                         spriteBatch.DrawString(optionsText, "Down-Dash: " + player.BindableKb["downDash"].ToString(), new Vector2(450, 640), Color.Green);
@@ -913,6 +1140,7 @@ namespace Egg
                     {
                         spriteBatch.DrawString(optionsText, "Down-Dash: " + player.BindableKb["downDash"].ToString(), new Vector2(450, 640), Color.White);
                     }
+                    //Pause button
                     if (pauseRect.Intersects(mouseRect) || rebindingPause)
                     {
                         spriteBatch.DrawString(optionsText, "Pause: " + player.BindableKb["pause"].ToString(), new Vector2(450, 670), Color.Green);
@@ -922,6 +1150,7 @@ namespace Egg
                         spriteBatch.DrawString(optionsText, "Pause: " + player.BindableKb["pause"].ToString(), new Vector2(450, 670), Color.White);
                     }
 
+                    //Fullscreen button
                     fullscreenRect = new Rectangle(920, 450, 555, 32);
                     if (fullscreen)
                     {
@@ -945,8 +1174,60 @@ namespace Egg
                             spriteBatch.DrawString(menuText, "Fullscreen toggle: Off", new Vector2(920, 450), Color.White);
                         }
                     }
+                    //Music button
+                    musicRect = new Rectangle(920, 510, 555, 32);
+                    if (MediaPlayer.IsMuted)
+                    {
+                        if (musicRect.Intersects(mouseRect))
+                        {
+                            spriteBatch.DrawString(menuText, "Music toggle: Off", new Vector2(920, 510), Color.Green);
+                        }
+                        else
+                        {
+                            spriteBatch.DrawString(menuText, "Music toggle: Off", new Vector2(920, 510), Color.White);
+                        }
+                    }
+                    else
+                    {
+                        if (musicRect.Intersects(mouseRect))
+                        {
+                            spriteBatch.DrawString(menuText, "Music toggle: On", new Vector2(920, 510), Color.Green);
+                        }
+                        else
+                        {
+                            spriteBatch.DrawString(menuText, "Music toggle: On", new Vector2(920, 510), Color.White);
+                        }
+                    }
+                    //Sound effects button
+                    effectsRect = new Rectangle(920, 570, 555, 32);
+                    if (SoundEffect.MasterVolume == 1)
+                    {
+                        if (effectsRect.Intersects(mouseRect))
+                        {
+                            spriteBatch.DrawString(menuText, "Sound effects toggle: On", new Vector2(920, 570), Color.Green);
+                        }
+                        else
+                        {
+                            spriteBatch.DrawString(menuText, "Sound effects toggle: On", new Vector2(920, 570), Color.White);
+                        }
+                    }
+                    else
+                    {
+                        if (effectsRect.Intersects(mouseRect))
+                        {
+                            spriteBatch.DrawString(menuText, "Sound effects toggle: Off", new Vector2(920, 570), Color.Green);
+                        }
+                        else
+                        {
+                            spriteBatch.DrawString(menuText, "Sound effects toggle: Off", new Vector2(920, 570), Color.White);
+                        }
+                    }
+
+
+
                     optionsReturnRect = new Rectangle(50, 65, 695, 32);
 
+                    //display different top left text depending on if in main menu or paused game
                     if (paused)
                     {
                         if (optionsReturnRect.Intersects(mouseRect))
@@ -1122,7 +1403,7 @@ namespace Egg
                         //draw new egg every 10 frames
                         if (eggCounter % 10 == 0 && !hasDrawnEggsForEndScreen)
                         {
-
+                            coinSound.Play();
                             if (tempcounter < 9)
                             {
                                 spriteBatch.Draw(collectibleEgg, new Rectangle(tempcounter * 60 + 1000, 500, 50, 50), Color.White);
@@ -1160,9 +1441,14 @@ namespace Egg
 
                     break;
             }
+            //pause the game
             if (paused && currentState == GameState.Game)
             {
+                //pause the music
+                MediaPlayer.Pause();
+
                 spriteBatch.DrawString(menuText, "Paused", new Vector2(870, 400), Color.White);
+
                 optionsReturnRect = new Rectangle(700, 500, 540, 32);
                 if (optionsReturnRect.Intersects(mouseRect))
                 {
@@ -1448,12 +1734,7 @@ namespace Egg
             collisionTest = Content.Load<Texture2D>("white");
 
 
-            /*
-            #region Checkpoints
-            AddObjectToList(new Checkpoint(3, collisionTest, new Rectangle(400, 350, 75, 75)));
-            AddObjectToList(new Checkpoint(3, collisionTest, new Rectangle(1500, 250, 75, 75)));
-            #endregion
-            */
+
 
             enemy = new Enemy(new Rectangle(890, 500, 75, 75), jellyBoi, 16, 60);
             enemy2 = new Enemy(new Rectangle(225, 250, 75, 75), jellyBoi, 4, 60);
@@ -1461,7 +1742,7 @@ namespace Egg
             AddObjectToList(enemy);
             AddObjectToList(enemy2);
             AddObjectToList(enemy3);
-            player = new Player(5, collisionTest, new Rectangle(450, 350, 75, 75), Color.White);
+            player = new Player(5, collisionTest, new Rectangle(450, 350, 75, 75), Color.White, Content);
 
 
             //default movement
@@ -1483,6 +1764,24 @@ namespace Egg
 
             secondsPerFrame = 1.0f / fps;
             timeCounter += time.ElapsedGameTime.TotalSeconds;
+            //soundcounter used for syncing sound with animation
+            soundCounter += time.ElapsedGameTime.TotalSeconds;
+
+            //every 10 frames the sound is played
+            if (soundCounter >= 10 * secondsPerFrame)
+            {
+                //flutter sound
+                if (player.PlayerState == PlayerState.FloatLeft || player.PlayerState == PlayerState.FloatRight)
+                {
+                    flutterSound.Play();
+                }
+                //walk sound
+                if (player.PlayerState == PlayerState.WalkLeft || player.PlayerState == PlayerState.WalkRight)
+                {
+                    walkSound.Play();
+                }
+                soundCounter -= 10 * secondsPerFrame;
+            }
 
             if (timeCounter >= 3 * secondsPerFrame) //if 3 frames have passed
             {
@@ -1498,7 +1797,7 @@ namespace Egg
         public void DebugKeyboardInputs()
         {
             //Must hold down P, O, and G at the same time to activate level editor
-            if (kb.IsKeyDown(player.BindableKb["pause"]) && kb.IsKeyDown(Keys.O) && kb.IsKeyDown(Keys.G))
+            if (kb.IsKeyDown(Keys.P) && kb.IsKeyDown(Keys.O) && kb.IsKeyDown(Keys.G))
             {
                 //Show dialog goes here.
                 Builder.ShowDialog();
@@ -1510,8 +1809,10 @@ namespace Egg
 
             }
 
+            //player dies
             if (SingleKeyPress(Keys.F9) || player.Hitpoints <= 0)
             {
+                deathSound.Play();
                 player.Hitbox = new Rectangle(player.LastCheckpoint.X, player.LastCheckpoint.Y, 75, 75);
                 player.PlayerState = PlayerState.IdleRight;
                 player.HorizontalVelocity = 0;
@@ -1523,7 +1824,6 @@ namespace Egg
             }
 
 
-            //Add more inputs here
         }
 
         public void DrawWalking(bool isFlipped) //this is for test will edit when we have actual animation assets
