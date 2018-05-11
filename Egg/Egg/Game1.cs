@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
@@ -20,6 +19,7 @@ namespace Egg
         {
             Menu,
             Options,
+            LevelSelect,
             Game,
             GameOver
         }
@@ -47,6 +47,8 @@ namespace Egg
         bool hasDrawnEggsForEndScreen = false;
         bool theEnd = false;
 
+        bool fullPlaythrough = false;
+
         GameState currentState;
         KeyboardState kb;
         KeyboardState oldKB;
@@ -56,12 +58,41 @@ namespace Egg
 
         //menu navigation
         bool paused = false;
-        bool fullscreen = false;
+        bool windowedMode = false; //Fullscreen by default
         MouseState ms;
         MouseState previousMs;
         Rectangle mouseRect; //rects used for clicking on choices in options
         Rectangle startRect;
+        Rectangle levelRect;
         Rectangle optionsRect;
+        Rectangle quitRect;
+
+        //level selection rectangles
+        Rectangle levelReturnRect;
+        Rectangle level1Rect;
+        Rectangle level2Rect;
+        Rectangle level3Rect;
+        Rectangle level4Rect;
+        Rectangle level5Rect;
+        Rectangle level6Rect;
+        Rectangle level7Rect;
+        Rectangle level8Rect;
+        Rectangle level9Rect;
+
+        //level selection textures
+        Texture2D level1Thumbnail;
+        Texture2D level2Thumbnail;
+        Texture2D level3Thumbnail;
+        Texture2D level4Thumbnail;
+        Texture2D level5Thumbnail;
+        Texture2D level6Thumbnail;
+        Texture2D level7Thumbnail;
+        Texture2D level8Thumbnail;
+        Texture2D level9Thumbnail;
+
+
+        int levelSelector = 0;
+
         Rectangle optionsReturnRect;
         Rectangle fullscreenRect;
         Rectangle musicRect;
@@ -223,7 +254,9 @@ namespace Egg
         SoundEffect checkpointSound;
         SoundEffect flutterSound;
         Song menuMusic;
-        Song gameMusic;
+        Song gameMusic; //levels 1 2 3
+        Song gameMusic2; //levels 4 5 6
+        Song gameMusic3; //levels 7 8 9
         bool gameSongStart = true; //bools used to ensure song only plays once (instead of every frame)
         bool menuSongStart = true;
 
@@ -236,6 +269,7 @@ namespace Egg
             graphics.PreferredBackBufferHeight = 1080;
             graphics.ApplyChanges();
             Content.RootDirectory = "Content";
+            graphics.ToggleFullScreen(); //fullscreen on
         }
 
         //biscui
@@ -276,6 +310,15 @@ namespace Egg
             menu = Content.Load<Texture2D>("menuTexture");
             options = Content.Load<Texture2D>("optionsTexture");
             jellyBoi = Content.Load<Texture2D>("jellyboi");
+            level1Thumbnail = Content.Load<Texture2D>("thumbnails\\level1thumbnail");
+            level2Thumbnail = Content.Load<Texture2D>("thumbnails\\level2thumbnail");
+            level3Thumbnail = Content.Load<Texture2D>("thumbnails\\level3thumbnail");
+            level4Thumbnail = Content.Load<Texture2D>("thumbnails\\level4thumbnail");
+            level5Thumbnail = Content.Load<Texture2D>("thumbnails\\level5thumbnail");
+            level6Thumbnail = Content.Load<Texture2D>("thumbnails\\level6thumbnail");
+            level7Thumbnail = Content.Load<Texture2D>("thumbnails\\level7thumbnail");
+            level8Thumbnail = Content.Load<Texture2D>("thumbnails\\level8thumbnail");
+            level9Thumbnail = Content.Load<Texture2D>("thumbnails\\level9thumbnail");
 
             bounceSound = Content.Load<SoundEffect>("bounce");
             coinSound = Content.Load<SoundEffect>("coin");
@@ -290,6 +333,8 @@ namespace Egg
             checkpointSound = Content.Load<SoundEffect>("checkpoint");
             menuMusic = Content.Load<Song>("menumusic");
             gameMusic = Content.Load<Song>("gamemusic");
+            gameMusic2 = Content.Load<Song>("gamemusic2");
+            gameMusic3 = Content.Load<Song>("gamemusic3");
 
             //immediately play main menu music, reduce volume to 50% for balance
             MediaPlayer.Play(menuMusic);
@@ -539,7 +584,7 @@ namespace Egg
             mouseRect = new Rectangle(ms.X, ms.Y, 1, 1);
             if (!paused)
             {
-                if (SingleKeyPress(player.BindableKb["pause"]) && currentState != GameState.Options)
+                if (SingleKeyPress(player.BindableKb["pause"]) && currentState == GameState.Game)
                 {
                     menuSelectSound.Play();
                     paused = true;
@@ -550,6 +595,7 @@ namespace Egg
                     case GameState.Menu:
                         if (SingleKeyPress(Keys.Enter) || (startRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)))
                         {
+                            fullPlaythrough = true;
                             menuSelectSound.Play();
                             MediaPlayer.Stop(); //stop playing menu music when transitioning to game
 
@@ -580,6 +626,101 @@ namespace Egg
                             menuSelectSound.Play();
                             currentState = GameState.Options;
                         }
+                        else if (SingleKeyPress(Keys.Space) || (levelRect.Intersects(mouseRect)) && LeftMouseSinglePress(ButtonState.Pressed))
+                        {
+                            menuSelectSound.Play();
+                            currentState = GameState.LevelSelect;
+                        }
+                        else if (SingleKeyPress(Keys.Escape) || (quitRect.Intersects(mouseRect)) && LeftMouseSinglePress(ButtonState.Pressed))
+                        {
+                            Exit();
+                        }
+                        break;
+                    case GameState.LevelSelect:
+                        if (SingleKeyPress(Keys.Space) || (levelReturnRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)))
+                        {
+                            menuSelectSound.Play();
+                            currentState = GameState.Menu;
+                        }
+                        //select levels by clicking on box or pressing corresponding number key
+                        if ((level1Rect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) 
+                            || SingleKeyPress(Keys.D1) || SingleKeyPress(Keys.NumPad1))
+                        {
+                            //true if starting from the first level, essentially a full playthrough
+                            fullPlaythrough = true;
+                            menuSelectSound.Play();
+                            levelSelector = SelectLevel(1);
+                            currentState = GameState.Game;
+                        }
+                        else if ((level2Rect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) 
+                            || SingleKeyPress(Keys.D2) || SingleKeyPress(Keys.NumPad2))
+                        {
+                            fullPlaythrough = false;
+                            menuSelectSound.Play();
+                            levelSelector = SelectLevel(2);
+                            currentState = GameState.Game;
+                        }
+                        else if ((level3Rect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) 
+                            || SingleKeyPress(Keys.D3) || SingleKeyPress(Keys.NumPad3))
+                        {
+                            fullPlaythrough = false;
+                            menuSelectSound.Play();
+                            levelSelector = SelectLevel(3);
+                            currentState = GameState.Game;
+                        }
+                        else if ((level4Rect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) 
+                            || SingleKeyPress(Keys.D4) || SingleKeyPress(Keys.NumPad4))
+                        {
+                            fullPlaythrough = false;
+                            menuSelectSound.Play();
+                            levelSelector = SelectLevel(4);
+                            currentState = GameState.Game;
+                        }
+                        else if ((level5Rect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) 
+                            || SingleKeyPress(Keys.D5) || SingleKeyPress(Keys.NumPad5))
+                        {
+                            fullPlaythrough = false;
+                            menuSelectSound.Play();
+                            levelSelector = SelectLevel(5);
+                            currentState = GameState.Game;
+                        }
+                        else if ((level6Rect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) 
+                            || SingleKeyPress(Keys.D6) || SingleKeyPress(Keys.NumPad6))
+                        {
+                            fullPlaythrough = false;
+                            menuSelectSound.Play();
+                            levelSelector = SelectLevel(6);
+                            currentState = GameState.Game;
+                        }
+                        else if ((level7Rect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) 
+                            || SingleKeyPress(Keys.D7) || SingleKeyPress(Keys.NumPad7))
+                        {
+                            fullPlaythrough = false;
+                            menuSelectSound.Play();
+                            levelSelector = SelectLevel(7);
+                            currentState = GameState.Game;
+                        }
+                        else if ((level8Rect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) 
+                            || SingleKeyPress(Keys.D8) || SingleKeyPress(Keys.NumPad8))
+                        {
+                            fullPlaythrough = false;
+                            menuSelectSound.Play();
+                            levelSelector = SelectLevel(8);
+                            currentState = GameState.Game;
+                        }
+                        else if ((level9Rect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)) 
+                            || SingleKeyPress(Keys.D9) || SingleKeyPress(Keys.NumPad9))
+                        {
+                            fullPlaythrough = false;
+                            menuSelectSound.Play();
+                            levelSelector = SelectLevel(9);
+                            currentState = GameState.Game;
+                        }
+                        else
+                        {
+                            levelSelector = 0;
+                        }
+                        levelCount = levelSelector;
                         break;
                     case GameState.Options:
                         if (SingleKeyPress(Keys.Tab) || (optionsReturnRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)))
@@ -746,7 +887,7 @@ namespace Egg
                         if (fullscreenRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
                         {
                             menuSelectSound.Play();
-                            fullscreen = !fullscreen;
+                            windowedMode = !windowedMode;
                             graphics.ToggleFullScreen();
                         }
                         if (musicRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
@@ -773,7 +914,19 @@ namespace Egg
                         //play the game music only once at the beginning of the actual game
                         if (gameSongStart)
                         {
-                            MediaPlayer.Play(gameMusic);
+                            if (currentLevel.LevelNumber <= 3)
+                            {
+                                MediaPlayer.Play(gameMusic);
+                            }
+                            else if (currentLevel.LevelNumber > 3 && currentLevel.LevelNumber <= 6)
+                            {
+                                MediaPlayer.Play(gameMusic2);
+                            }
+                            else if (currentLevel.LevelNumber > 6 && currentLevel.LevelNumber <= 9)
+                            {
+                                MediaPlayer.Play(gameMusic3);
+                            }
+
                             gameSongStart = false;
                         }
                         GameUpdateLoop();
@@ -789,20 +942,30 @@ namespace Egg
                             menuSongStart = false;
                         }
 
-                        if (levelCount >= totalLevels)
+
+                        if (levelCount >= totalLevels && fullPlaythrough)
                         {
                             theEnd = true;
                         }
-                        if (kb.IsKeyDown(Keys.Enter))
+                        else
                         {
+                            theEnd = false;
+                        }
+                        if (currentLevel.LevelNumber != 9 
+                            && (SingleKeyPress(Keys.Enter) || (optionsReturnRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))))
+                        {
+                            //reset the player stats and everything necessary for next level
                             menuSelectSound.Play();
+                            player.CollectedChickens.Clear();
+                            soundCounter = 0;
+                            player.IsRolling = false;
+                            player.Hitpoints = 5;
                             IncrementLevel();
                             if (theEnd)
                             {
                                 tempcounter = 0;
                                 eggCounter = 0;
                                 hasDrawnEggsForEndScreen = false;
-                                player.CollectedChickens.Clear();
                                 currentState = GameState.Menu;
                             }
                             else
@@ -818,6 +981,40 @@ namespace Egg
                                 currentState = GameState.Game;
                             }
 
+                        }
+                        //return to the main menu instead of going to the next level
+                        if (SingleKeyPress(Keys.Back) || (levelReturnRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)))
+                        {
+                            //reset everything necessary for selecting the next level
+                            fullPlaythrough = false;
+                            tempcounter = 0;
+                            eggCounter = 0;
+                            menuSongStart = true;
+                            hasDrawnEggsForEndScreen = false;
+                            menuSelectSound.Play();
+                            currentState = GameState.Menu;
+                            levelCount = 0;
+                            player.CollectedChickens.Clear();
+                            soundCounter = 0;
+                            player.Hitpoints = 5;
+                            player.IsRolling = false;
+                        }
+                        else if (currentLevel.LevelNumber == 10 && fullPlaythrough)
+                        {
+                            if ((SingleKeyPress(Keys.Enter) || (optionsReturnRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))))
+                            {
+                                tempcounter = 0;
+                                eggCounter = 0;
+                                menuSongStart = true;
+                                hasDrawnEggsForEndScreen = false;
+                                menuSelectSound.Play();
+                                currentState = GameState.Menu;
+                                levelCount = 0;
+                                player.CollectedChickens.Clear();
+                                soundCounter = 0;
+                                player.Hitpoints = 5;
+                                player.IsRolling = false;
+                            }
                         }
                         break;
                 }
@@ -850,8 +1047,29 @@ namespace Egg
                     if (fullscreenRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed))
                     {
                         menuSelectSound.Play();
-                        fullscreen = !fullscreen;
+                        windowedMode = !windowedMode;
                         graphics.ToggleFullScreen();
+                    }
+                }
+                //Game paused screen
+                if (currentState == GameState.Game)
+                {
+                    //player returns to the menu from the pause screen
+                    if (SingleKeyPress(Keys.Back) || (levelReturnRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)))
+                    {
+                        //reset everything necessary for next level
+                        menuSelectSound.Play();
+                        MediaPlayer.Stop();
+                        currentState = GameState.Menu;
+                        paused = false;
+                        levelCount = 0;
+                        gameSongStart = true;
+                        player.CollectedChickens.Clear();
+                        soundCounter = 0;
+                        player.Hitpoints = 5;
+                        player.IsRolling = false;
+                        MediaPlayer.Play(menuMusic);
+
                     }
                 }
                 if (SingleKeyPress(Keys.Tab) || (optionsReturnRect.Intersects(mouseRect) && LeftMouseSinglePress(ButtonState.Pressed)))
@@ -1060,35 +1278,164 @@ namespace Egg
             {
                 case GameState.Menu:
                     spriteBatch.Draw(menu, new Rectangle(0, 0, 1920, 1080), Color.White);
-                    spriteBatch.DrawString(titleText, "Egg", new Vector2(880, 320), Color.White);
-                    startRect = new Rectangle(690, 470, 515, 32);
-                    spriteBatch.DrawString(menuText, "Press Enter to Start", new Vector2(690, 470), Color.White);
+                    spriteBatch.DrawString(titleText, "Egg", new Vector2(880, 310), Color.White);
 
+                    startRect = new Rectangle(690, 450, 515, 32);
                     if (startRect.Intersects(mouseRect))
                     {
-                        spriteBatch.DrawString(menuText, "Press Enter to Start", new Vector2(690, 470), Color.Green);
+                        spriteBatch.DrawString(menuText, "Press Enter to Start", new Vector2(690, 450), Color.Green);
                     }
                     else
                     {
-                        spriteBatch.DrawString(menuText, "Press Enter to Start", new Vector2(690, 470), Color.White);
+                        spriteBatch.DrawString(menuText, "Press Enter to Start", new Vector2(690, 450), Color.White);
                     }
 
+                    levelRect = new Rectangle(595, 550, 720, 32);
+                    if (levelRect.Intersects(mouseRect))
+                    {
+                        spriteBatch.DrawString(menuText, "Press Space for Level Select", new Vector2(595, 550), Color.Green);
+                    }
+                    else
+                    {
+                        spriteBatch.DrawString(menuText, "Press Space for Level Select", new Vector2(595, 550), Color.White);
+                    }
 
-                    spriteBatch.DrawString(menuText, "- Or -", new Vector2(860, 570), Color.White);
-                    optionsRect = new Rectangle(680, 670, 545, 32);
+                    optionsRect = new Rectangle(650, 670, 545, 32);
                     if (optionsRect.Intersects(mouseRect))
                     {
-                        spriteBatch.DrawString(menuText, "Press Tab for Options", new Vector2(680, 670), Color.Green);
+                        spriteBatch.DrawString(menuText, "Press Tab for Options", new Vector2(680, 650), Color.Green);
                     }
                     else
                     {
-                        spriteBatch.DrawString(menuText, "Press Tab for Options", new Vector2(680, 670), Color.White);
+                        spriteBatch.DrawString(menuText, "Press Tab for Options", new Vector2(680, 650), Color.White);
                     }
+
+                    quitRect = new Rectangle(690, 750, 515, 32);
+                    if (quitRect.Intersects(mouseRect))
+                    {
+                        spriteBatch.DrawString(menuText, "Press Escape to Quit", new Vector2(690, 750), Color.Green);
+                    }
+                    else
+                    {
+                        spriteBatch.DrawString(menuText, "Press Escape to Quit", new Vector2(690, 750), Color.White);
+                    }
+                    break;
+                case GameState.LevelSelect:
+                    spriteBatch.Draw(menu, new Rectangle(0, 0, 1920, 1080), Color.LightCyan);
+
+                    //first row
+                    level1Rect = new Rectangle(425, 250, 240, 135);
+                    level2Rect = new Rectangle(835, 250, 240, 135);
+                    level3Rect = new Rectangle(1245, 250, 240, 135);
+
+                    //second row
+                    level4Rect = new Rectangle(425, 470, 240, 135);
+                    level5Rect = new Rectangle(835, 470, 240, 135);
+                    level6Rect = new Rectangle(1245, 470, 240, 135);
+
+                    //third row
+                    level7Rect = new Rectangle(425, 690, 240, 135);
+                    level8Rect = new Rectangle(835, 690, 240, 135);
+                    level9Rect = new Rectangle(1245, 690, 240, 135);
+
+
+                    //Level 1
+                    if (level1Rect.Intersects(mouseRect))
+                    {
+                        spriteBatch.Draw(level1Thumbnail, level1Rect, Color.YellowGreen);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(level1Thumbnail, level1Rect, Color.White);
+                    }
+                    //Level 2
+                    if (level2Rect.Intersects(mouseRect))
+                    {
+                        spriteBatch.Draw(level2Thumbnail, level2Rect, Color.YellowGreen);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(level2Thumbnail, level2Rect, Color.White);
+                    }
+                    //Level 3
+                    if (level3Rect.Intersects(mouseRect))
+                    {
+                        spriteBatch.Draw(level3Thumbnail, level3Rect, Color.YellowGreen);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(level3Thumbnail, level3Rect, Color.White);
+                    }
+                    //Level 4
+                    if (level4Rect.Intersects(mouseRect))
+                    {
+                        spriteBatch.Draw(level4Thumbnail, level4Rect, Color.YellowGreen);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(level4Thumbnail, level4Rect, Color.White);
+                    }
+                    //Level 5
+                    if (level5Rect.Intersects(mouseRect))
+                    {
+                        spriteBatch.Draw(level5Thumbnail, level5Rect, Color.YellowGreen);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(level5Thumbnail, level5Rect, Color.White);
+                    }
+                    //Level 6
+                    if (level6Rect.Intersects(mouseRect))
+                    {
+                        spriteBatch.Draw(level6Thumbnail, level6Rect, Color.YellowGreen);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(level6Thumbnail, level6Rect, Color.White);
+                    }
+                    //Level 7
+                    if (level7Rect.Intersects(mouseRect))
+                    {
+                        spriteBatch.Draw(level7Thumbnail, level7Rect, Color.YellowGreen);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(level7Thumbnail, level7Rect, Color.White);
+                    }
+                    //Level 8
+                    if (level8Rect.Intersects(mouseRect))
+                    {
+                        spriteBatch.Draw(level8Thumbnail, level8Rect, Color.YellowGreen);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(level8Thumbnail, level8Rect, Color.White);
+                    }
+                    //Level 9
+                    if (level9Rect.Intersects(mouseRect))
+                    {
+                        spriteBatch.Draw(level9Thumbnail, level9Rect, Color.YellowGreen);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(level9Thumbnail, level9Rect, Color.White);
+                    }
+
+                    levelReturnRect = new Rectangle(50, 65, 850, 32);
+                    if (levelReturnRect.Intersects(mouseRect))
+                    {
+                        spriteBatch.DrawString(menuText, "Press Space to return to the Menu", new Vector2(50, 65), Color.Green);
+                    }
+                    else
+                    {
+                        spriteBatch.DrawString(menuText, "Press Space to return to the Menu", new Vector2(50, 65), Color.White);
+                    }
+
                     break;
                 case GameState.Options:
                     spriteBatch.Draw(options, new Rectangle(0, 0, 1920, 1080), Color.White);
                     spriteBatch.DrawString(menuText, "Options", new Vector2(850, 300), Color.White);
-                    spriteBatch.DrawString(menuText, "Rebind keys ", new Vector2(450, 450), Color.White);
+                    spriteBatch.DrawString(menuText, "Rebind keys", new Vector2(450, 450), Color.White);
                     leftRect = new Rectangle(450, 520, 250, 24);
                     rightRect = new Rectangle(450, 550, 250, 24);
                     rollRect = new Rectangle(450, 580, 250, 24);
@@ -1152,18 +1499,7 @@ namespace Egg
 
                     //Fullscreen button
                     fullscreenRect = new Rectangle(920, 450, 555, 32);
-                    if (fullscreen)
-                    {
-                        if (fullscreenRect.Intersects(mouseRect))
-                        {
-                            spriteBatch.DrawString(menuText, "Fullscreen toggle: On", new Vector2(920, 450), Color.Green);
-                        }
-                        else
-                        {
-                            spriteBatch.DrawString(menuText, "Fullscreen toggle: On", new Vector2(920, 450), Color.White);
-                        }
-                    }
-                    else
+                    if (windowedMode)
                     {
                         if (fullscreenRect.Intersects(mouseRect))
                         {
@@ -1172,6 +1508,17 @@ namespace Egg
                         else
                         {
                             spriteBatch.DrawString(menuText, "Fullscreen toggle: Off", new Vector2(920, 450), Color.White);
+                        }
+                    }
+                    else
+                    {
+                        if (fullscreenRect.Intersects(mouseRect))
+                        {
+                            spriteBatch.DrawString(menuText, "Fullscreen toggle: On", new Vector2(920, 450), Color.Green);
+                        }
+                        else
+                        {
+                            spriteBatch.DrawString(menuText, "Fullscreen toggle: On", new Vector2(920, 450), Color.White);
                         }
                     }
                     //Music button
@@ -1225,29 +1572,29 @@ namespace Egg
 
 
 
-                    optionsReturnRect = new Rectangle(50, 65, 695, 32);
+                    optionsReturnRect = new Rectangle(50, 65, 800, 32);
 
                     //display different top left text depending on if in main menu or paused game
                     if (paused)
                     {
                         if (optionsReturnRect.Intersects(mouseRect))
                         {
-                            spriteBatch.DrawString(menuText, "Press Tab to return to game", new Vector2(50, 65), Color.Green);
+                            spriteBatch.DrawString(menuText, "Press Tab to return to the Game", new Vector2(50, 65), Color.Green);
                         }
                         else
                         {
-                            spriteBatch.DrawString(menuText, "Press Tab to return to game", new Vector2(50, 65), Color.White);
+                            spriteBatch.DrawString(menuText, "Press Tab to return to the Game", new Vector2(50, 65), Color.White);
                         }
                     }
                     else
                     {
                         if (optionsReturnRect.Intersects(mouseRect))
                         {
-                            spriteBatch.DrawString(menuText, "Press Tab to return to menu", new Vector2(50, 65), Color.Green);
+                            spriteBatch.DrawString(menuText, "Press Tab to return to the Menu", new Vector2(50, 65), Color.Green);
                         }
                         else
                         {
-                            spriteBatch.DrawString(menuText, "Press Tab to return to menu", new Vector2(50, 65), Color.White);
+                            spriteBatch.DrawString(menuText, "Press Tab to return to the Menu", new Vector2(50, 65), Color.White);
                         }
                     }
                     break;
@@ -1359,64 +1706,135 @@ namespace Egg
                     if (!theEnd)
                     {
                         spriteBatch.Draw(menu, new Rectangle(0, 0, 1920, 1080), Color.LightSeaGreen);
-                        spriteBatch.DrawString(titleText, "Level Complete!", new Vector2(700, 320), Color.White);
-                        spriteBatch.DrawString(menuText, "Chickens Rescued: ", new Vector2(500, 500), Color.White);
-                        spriteBatch.DrawString(menuText, "Press Enter to continue", new Vector2(640, 950), Color.White);
+                        spriteBatch.DrawString(titleText, "Level " + currentLevel.LevelNumber + " Complete!" , new Vector2(660, 320), Color.White);
+                        spriteBatch.DrawString(menuText, "Chickens Rescued: ", new Vector2(500, 450), Color.White);
 
-                        //draw total eggs in level
-                        for (int i = 0; i < currentLevel.TotalChickensInLevel; i++)
+                        optionsReturnRect = new Rectangle(640, 650, 600, 32);
+
+                        //last level, can't progress further
+                        if (currentLevel.LevelNumber != 9)
                         {
-
-                            if (i < 10)
+                            if (optionsReturnRect.Intersects(mouseRect))
                             {
-                                spriteBatch.Draw(collectibleEgg, new Rectangle(i * 60 + 1000, 500, 50, 50), Color.Gray);
+                                spriteBatch.DrawString(menuText, "Press Enter to continue", new Vector2(670, 650), Color.Yellow);
                             }
-                            else if (i >= 10 && i <= 19)
+                            else
                             {
-                                spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 600, 600, 50, 50), Color.Gray);
-                            }
-                            else if (i >= 20 && i <= 29)
-                            {
-                                spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 1200, 700, 50, 50), Color.Gray);
+                                spriteBatch.DrawString(menuText, "Press Enter to continue", new Vector2(670, 650), Color.White);
                             }
                         }
 
+                        levelReturnRect = new Rectangle(500, 750, 955, 32);
+                        if (levelReturnRect.Intersects(mouseRect))
+                        {
+                            spriteBatch.DrawString(menuText, "Press Backspace to return to the Menu", new Vector2(500, 750), Color.Yellow);
+                        }
+                        else
+                        {
+                            spriteBatch.DrawString(menuText, "Press Backspace to return to the Menu", new Vector2(500, 750), Color.White);
+                        }
 
+                        //draw total eggs in game
+                        //have to hardcode any levels that aren't purely linear, because eggs are only loaded when a screen is entered,
+                        //which doesn't always happen if the level isn't linear
+                        if (currentLevel.LevelNumber == 5)
+                        {
+                            for (int i = 0; i < 14; i++)
+                            {
 
+                                if (i < 10)
+                                {
+                                    spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000), 450, 50, 50), Color.Gray);
+                                }
+                                else if (i >= 10 && i <= 19)
+                                {
+                                    spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 600, 550, 50, 50), Color.Gray);
+                                }
+                                else if (i >= 20 && i <= 29)
+                                {
+                                    spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 1200, 650, 50, 50), Color.Gray);
+                                }
+                            }
+                        }
+                        else if (currentLevel.LevelNumber == 6)
+                        {
+                            for (int i = 0; i < 10; i++)
+                            {
+
+                                if (i < 10)
+                                {
+                                    spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000), 450, 50, 50), Color.Gray);
+                                }
+                                else if (i >= 10 && i <= 19)
+                                {
+                                    spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 600, 550, 50, 50), Color.Gray);
+                                }
+                                else if (i >= 20 && i <= 29)
+                                {
+                                    spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 1200, 650, 50, 50), Color.Gray);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < currentLevel.TotalChickensInLevel; i++)
+                            {
+
+                                if (i < 10)
+                                {
+                                    spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000), 450, 50, 50), Color.Gray);
+                                }
+                                else if (i >= 10 && i <= 19)
+                                {
+                                    spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 600, 550, 50, 50), Color.Gray);
+                                }
+                                else if (i >= 20 && i <= 29)
+                                {
+                                    spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 1200, 650, 50, 50), Color.Gray);
+                                }
+                            }
+                        }
                         //draw each egg player collected
                         for (int i = 0; i < tempcounter; i++)
                         {
-                            if (i < 10)
+                            if (player.CollectedChickens.Count > 0)
                             {
-                                spriteBatch.Draw(collectibleEgg, new Rectangle(i * 60 + 1000, 500, 50, 50), Color.White);
+                                if (i < 10)
+                                {
+                                    spriteBatch.Draw(collectibleEgg, new Rectangle(i * 60 + 1000, 450, 50, 50), Color.White);
+                                }
+                                else if (i >= 10 && i <= 19)
+                                {
+                                    spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 600, 550, 50, 50), Color.White);
+                                }
+                                else if (i >= 20 && i <= 29)
+                                {
+                                    spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 1200, 650, 50, 50), Color.White);
+                                }
                             }
-                            else if (i >= 10 && i <= 19)
-                            {
-                                spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 600, 600, 50, 50), Color.White);
-                            }
-                            else if (i >= 20 && i <= 29)
-                            {
-                                spriteBatch.Draw(collectibleEgg, new Rectangle((i * 60 + 1000) - 1200, 700, 50, 50), Color.White);
-                            }
+
                         }
 
                         //draw new egg every 10 frames
                         if (eggCounter % 10 == 0 && !hasDrawnEggsForEndScreen)
                         {
-                            coinSound.Play();
-                            if (tempcounter < 9)
+                            if (player.CollectedChickens.Count > 0)
                             {
-                                spriteBatch.Draw(collectibleEgg, new Rectangle(tempcounter * 60 + 1000, 500, 50, 50), Color.White);
+                                coinSound.Play();
+                                if (tempcounter < 9)
+                                {
+                                    spriteBatch.Draw(collectibleEgg, new Rectangle(tempcounter * 60 + 1000, 450, 50, 50), Color.White);
+                                }
+                                else if (tempcounter >= 10 && tempcounter < 19)
+                                {
+                                    spriteBatch.Draw(collectibleEgg, new Rectangle((tempcounter * 60 + 1000) - 600, 550, 50, 50), Color.White);
+                                }
+                                else if (tempcounter >= 20 && tempcounter < 29)
+                                {
+                                    spriteBatch.Draw(collectibleEgg, new Rectangle((tempcounter * 60 + 1000) - 1200, 650, 50, 50), Color.White);
+                                }
+                                tempcounter++;
                             }
-                            else if (tempcounter >= 10 && tempcounter < 19)
-                            {
-                                spriteBatch.Draw(collectibleEgg, new Rectangle((tempcounter * 60 + 1000) - 600, 600, 50, 50), Color.White);
-                            }
-                            else if (tempcounter >= 20 && tempcounter < 29)
-                            {
-                                spriteBatch.Draw(collectibleEgg, new Rectangle((tempcounter * 60 + 1000) - 1200, 700, 50, 50), Color.White);
-                            }
-                            tempcounter++;
                         }
 
                         if (tempcounter >= player.CollectedChickens.Count)
@@ -1430,9 +1848,16 @@ namespace Egg
                         spriteBatch.Draw(menu, new Rectangle(0, 0, 1920, 1080), Color.LightSeaGreen);
                         spriteBatch.DrawString(titleText, "Game Complete!", new Vector2(720, 320), Color.White);
                         spriteBatch.Draw(collectibleEgg, new Rectangle(750, 450, 350, 350), Color.White);
-                        spriteBatch.DrawString(menuText, "Press Enter to return to the menu", new Vector2(530, 950), Color.White);
-                        
-                        
+                        levelReturnRect = new Rectangle(530, 950, 955, 32);
+                        if (levelReturnRect.Intersects(mouseRect))
+                        {
+                            spriteBatch.DrawString(menuText, "Press Backspace to return to the Menu", new Vector2(525, 950), Color.Yellow);
+                        }
+                        else
+                        {
+                            spriteBatch.DrawString(menuText, "Press Backspace to return to the Menu", new Vector2(525, 950), Color.White);
+                        }
+
                     }
 
 
@@ -1457,6 +1882,17 @@ namespace Egg
                 else
                 {
                     spriteBatch.DrawString(menuText, "Press Tab for Options", new Vector2(700, 500), Color.White);
+                }
+
+
+                levelReturnRect = new Rectangle(500, 600, 955, 32);
+                if (levelReturnRect.Intersects(mouseRect))
+                {
+                    spriteBatch.DrawString(menuText, "Press Backspace to return to the Menu", new Vector2(500, 600), Color.Green);
+                }
+                else
+                {
+                    spriteBatch.DrawString(menuText, "Press Backspace to return to the Menu", new Vector2(500, 600), Color.White);
                 }
 
             }
@@ -1502,7 +1938,7 @@ namespace Egg
             if (!screenSize.Contains(player.Hitbox))
             {
                 #region ChangeScreens
-                if (player.Hitbox.X < 0)
+                if (player.Hitbox.X < 5)
                 {
                     switch (currentLevel.ChangeScreen("left"))
                     {
@@ -1513,6 +1949,7 @@ namespace Egg
                             break;
 
                         case 0:
+                            KillPlayer();
                             if (player.LastCheckpoint == null)
                             {
                                 currentLevel.CurrentScreen = currentLevel.StartScreen;
@@ -1534,7 +1971,7 @@ namespace Egg
                     }
 
                 }
-                else if (player.Hitbox.X > GraphicsDevice.Viewport.Width)
+                else if (player.Hitbox.X > GraphicsDevice.Viewport.Width - 5)
                 {
                     switch (currentLevel.ChangeScreen("right"))
                     {
@@ -1545,6 +1982,7 @@ namespace Egg
                             break;
 
                         case 0:
+                            KillPlayer();
                             if (player.LastCheckpoint == null)
                             {
                                 currentLevel.CurrentScreen = currentLevel.StartScreen;
@@ -1571,6 +2009,9 @@ namespace Egg
                     switch (currentLevel.ChangeScreen("up"))
                     {
                         case 1:
+                            //set going up to true for one frame while player transitons up a screen
+                            //so that the player can float effectively
+                            player.GoingUp = true;
                             player.ScreenUpExtraBoost();
                             Rectangle temp = player.Hitbox;
                             temp.Y = GraphicsDevice.Viewport.Height - 20;
@@ -1578,21 +2019,7 @@ namespace Egg
                             break;
 
                         case 0:
-                            /*
-                            if (player.LastCheckpoint == null)
-                            {
-                                currentLevel.CurrentScreen = currentLevel.StartScreen;
-                                Rectangle r = player.Hitbox;
-                                r.X = GraphicsDevice.Viewport.Width / 2;
-                                r.Y = GraphicsDevice.Viewport.Height / 2;
-                                player.Hitbox = r;
-                            }
-                            else
-                            {
-                                currentLevel.CurrentScreen = player.LastCheckpoint.OriginScreen;
-                                player.Hitbox = player.LastCheckpoint.Hitbox;
-                            }
-                            */
+                            //do nothing so that the player can jump above the level
                             break;
 
                         case -1:
@@ -1611,8 +2038,9 @@ namespace Egg
                             break;
 
                         case 0:
+                            KillPlayer();
                             if (player.LastCheckpoint == null)
-                            {
+                             {
                                 currentLevel.CurrentScreen = currentLevel.StartScreen;
                                 Rectangle r = player.Hitbox;
                                 r.X = GraphicsDevice.Viewport.Width / 2;
@@ -1621,6 +2049,7 @@ namespace Egg
                             }
                             else
                             {
+                                //player falls off screen (and shouldn't transition)
                                 currentLevel.CurrentScreen = player.LastCheckpoint.OriginScreen;
                                 player.Hitbox = player.LastCheckpoint.Hitbox;
                             }
@@ -1632,6 +2061,11 @@ namespace Egg
                     }
                 }
                 #endregion
+            }
+            else
+            {
+                //set to false if not transitioning up
+                player.GoingUp = false;
             }
 
             player.FiniteState();
@@ -1768,7 +2202,7 @@ namespace Egg
             soundCounter += time.ElapsedGameTime.TotalSeconds;
 
             //every 10 frames the sound is played
-            if (soundCounter >= 10 * secondsPerFrame)
+            if (soundCounter >= 10 * secondsPerFrame && currentState == GameState.Game)
             {
                 //flutter sound
                 if (player.PlayerState == PlayerState.FloatLeft || player.PlayerState == PlayerState.FloatRight)
@@ -1812,15 +2246,21 @@ namespace Egg
             //player dies
             if (SingleKeyPress(Keys.F9) || player.Hitpoints <= 0)
             {
-                deathSound.Play();
-                player.Hitbox = new Rectangle(player.LastCheckpoint.X, player.LastCheckpoint.Y, 75, 75);
-                player.PlayerState = PlayerState.IdleRight;
-                player.HorizontalVelocity = 0;
-                player.VerticalVelocity = 0;
-                player.Hitpoints = 5;
-                player.InHitStun = false;
+                if (player.LastCheckpoint == null)
+                {
+                    currentLevel.CurrentScreen = currentLevel.StartScreen;
+                    Rectangle r = player.Hitbox;
+                    r.X = GraphicsDevice.Viewport.Width / 2;
+                    r.Y = GraphicsDevice.Viewport.Height / 3;
+                    player.Hitbox = r;
+                }
+                else
+                {
+                    currentLevel.CurrentScreen = player.LastCheckpoint.OriginScreen;
+                    player.Hitbox = new Rectangle(player.LastCheckpoint.X, player.LastCheckpoint.Y, 75, 75);
+                }
 
-
+                KillPlayer();
             }
 
 
@@ -2008,7 +2448,15 @@ namespace Egg
             if (levelCount >= totalLevels)
             {
                 //Put end screen here
-                theEnd = true;
+                if (fullPlaythrough)
+                {
+                    theEnd = true;
+                }
+                else
+                {
+                    theEnd = false;
+                }
+
                 //Move this code to when the Next button is pressed
                 levelCount = 0;
                 currentState = GameState.GameOver;
@@ -2034,6 +2482,38 @@ namespace Egg
             currentLevel.CurrentScreen = currentLevel.StartScreen;
 
             
+        }
+        int SelectLevel(int selection)
+        {
+            currentLevel = new Level(selection);
+            currentLevel.CurrentScreen = currentLevel.StartScreen;
+            player.LastCheckpoint = null;
+
+            Rectangle temp = player.Hitbox;
+
+            temp.X = GraphicsDevice.Viewport.Width / 2;
+            temp.Y = GraphicsDevice.Viewport.Height / 3;
+
+            player.Hitbox = temp;
+
+            player.PutInFallState();
+            currentLevel.CurrentScreen = currentLevel.StartScreen;
+            currentLevel.CurrentScreen = currentLevel.StartScreen;
+            currentLevel.CurrentScreen = currentLevel.StartScreen;
+
+            return selection;
+        }
+        /// <summary>
+        /// simple method that kills the player and sets them up for their next life
+        /// </summary>
+        void KillPlayer()
+        {
+            deathSound.Play();
+            player.PlayerState = PlayerState.Fall;
+            player.HorizontalVelocity = 0;
+            player.VerticalVelocity = 0;
+            player.Hitpoints = 5;
+            player.InHitStun = false;
         }
     }
 }

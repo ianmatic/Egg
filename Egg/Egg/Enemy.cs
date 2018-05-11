@@ -200,7 +200,7 @@ namespace Egg
             }
             else if (isActive && status == EnemyState.Hitstun)
             {
-                sb.Draw(defaultSprite, hitbox, Color.Red);
+                sb.Draw(defaultSprite, hitbox, Color.Gray);
             }
         }
 

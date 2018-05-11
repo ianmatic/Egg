@@ -88,6 +88,7 @@ namespace Egg
         private bool hasFloated;
         private Vector2 previousPlayerPosition; //positions used to check if the player is going up or down
         private Vector2 playerPosition;
+        private bool goingUp; //used to allow player to float correctly when transitioning up a screen
 
         private Color color;
 
@@ -179,6 +180,16 @@ namespace Egg
         public SoundEffect CheckpointSound
         {
             get { return checkpointSound; }
+        }
+        public bool GoingUp
+        {
+            get { return goingUp; }
+            set { goingUp = value; }
+        }
+        public bool IsRolling
+        {
+            get { return isRolling; }
+            set { isRolling = value; }
         }
         #endregion
         //################
@@ -461,7 +472,7 @@ namespace Egg
                                 playerState = PlayerState.RollLeft;
                             }
                             //Walk Left
-                            else if (kb.IsKeyDown(bindableKb["left"]) && !kb.IsKeyDown(bindableKb["right"]))
+                            else if (kb.IsKeyDown(bindableKb["left"]) && !kb.IsKeyDown(bindableKb["right"]) && !isRolling)
                             {
                                 playerState = PlayerState.WalkLeft;
                             }
@@ -471,7 +482,7 @@ namespace Egg
                                 playerState = PlayerState.RollRight;
                             }
                             //Walk Right
-                            else if (kb.IsKeyDown(bindableKb["right"]))
+                            else if (kb.IsKeyDown(bindableKb["right"]) && !isRolling)
                             {
                                 playerState = PlayerState.WalkRight;
                             }
@@ -1036,6 +1047,17 @@ namespace Egg
                         {
                             downDashSound.Play();
                             playerState = PlayerState.DownDash;
+                        }
+                        //prevent float from very first frame when player transitions up
+                        //this is necessary as the previousPlayer.Y is a lower value than the new player.Y
+                        //because player.Y is now 1080 pixels lower because of the transition
+                        if (goingUp) 
+                        {
+                            floatLockout = true;
+                        }
+                        else //after this frame, return to normal since previousposition has adjusted properly
+                        {
+                            floatLockout = false;
                         }
                         //previous is less than current since going down means y increasing
                         if (!hasFloated && previousPlayerPosition.Y < playerPosition.Y)
