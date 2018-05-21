@@ -71,7 +71,7 @@ namespace Egg
             tileTypeDict.Add("nc", Tile.TileType.NoCollision);
             tileTypeDict.Add("00", Tile.TileType.NoCollision);
             #endregion
-            numOfChickens = 8;
+            numOfChickens = 0;
         }
 
         /// <summary>
@@ -208,8 +208,8 @@ namespace Egg
                         Rectangle tempRect = screenTiles[row, column].Hitbox;
                         tempRect.Height = 75;
                         tempRect.Width = 75;
-                        tempRect.X += 75 / 2;
-                        tempRect.Y += 75;
+                        tempRect.X = 120 * column + 75 / 2;
+                        tempRect.Y = 120 * row + 75;
 
                         Enemy tempE = new Enemy(tempRect, textures[23], 4, 1);
 
@@ -238,8 +238,8 @@ namespace Egg
                         Rectangle tempRect = screenTiles[row, column].Hitbox;
                         tempRect.Height = 50;
                         tempRect.Width = 50;
-                        tempRect.X += 60 / 2;
-                        tempRect.Y += 60;
+                        tempRect.X = 120 * column + 30;
+                        tempRect.Y = 120 * row + 60;
 
                         CapturedChicken tempChicken = new CapturedChicken(0, textures[textureNumber], tempRect);
 
@@ -272,8 +272,8 @@ namespace Egg
                         Rectangle tempRect = screenTiles[row, column].Hitbox;
                         tempRect.Height = 75;
                         tempRect.Width = 75;
-                        tempRect.X += 75 / 2;
-                        tempRect.Y += 60;
+                        tempRect.X = 120 * column + 75/2;
+                        tempRect.Y = 120 * row + 60;
 
                         Checkpoint tempCheck = new Checkpoint(0, textures[textureNumber], tempRect, this);
 

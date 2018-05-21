@@ -18,6 +18,12 @@ namespace Egg
         Screen endScreen;
 
         int totalChickensInLevel;
+        int levelNumber; //used to select individual levels from level select menu
+
+        public int LevelNumber
+        {
+            get { return levelNumber; }
+        }
 
         public Screen CurrentScreen
         {
@@ -55,14 +61,14 @@ namespace Egg
             mapFileLocations.Add("collisionTest", @"..\..\..\..\Resources\levelExports\collisionTestMap");
             //.Add("key", @"..\..\..\..\Resources\levelExports\(exported file in levelExports)
             #endregion
-
-            screenArray = new Screen[5, 5];
+            //if you get crashing due to "out of bounds" when making big levels, make this array bigger (it's the amount of screens per level)
+            screenArray = new Screen[6, 6];
 
             FillScreenArray(levelNum);
 
             currentScreen = startScreen;
+            levelNumber = levelNum; //get the level# from the actual text file via constructor parameter
            
-            totalChickensInLevel = ChickensInLevel();
         }
 
         private void FillScreenArray(int level)
@@ -152,6 +158,7 @@ namespace Egg
                         {
                             if (currentScreen == endScreen)
                             {
+                                totalChickensInLevel = ChickensInLevel(); //get the total chickens at the very end
                                 return -1;
                             }
                             return 0;
@@ -175,6 +182,7 @@ namespace Egg
                         {
                             if (currentScreen == endScreen)
                             {
+                                totalChickensInLevel = ChickensInLevel(); //get the total chickens at the very end
                                 return -1;
                             }
                             return 0;
@@ -185,6 +193,11 @@ namespace Egg
                     }
                     catch (Exception e)
                     {
+                        if (currentScreen == endScreen)
+                        {
+                            totalChickensInLevel = ChickensInLevel(); //get the total chickens at the very end
+                            return -1;
+                        }
                         return 0;
                     }
                     break;
@@ -198,6 +211,7 @@ namespace Egg
                         {
                             if (currentScreen == endScreen)
                             {
+                                totalChickensInLevel = ChickensInLevel(); //get the total chickens at the very end
                                 return -1;
                             }
                             return 0;
@@ -208,6 +222,11 @@ namespace Egg
                     }
                     catch (Exception e)
                     {
+                        if (currentScreen == endScreen)
+                        {
+                            totalChickensInLevel = ChickensInLevel(); //get the total chickens at the very end
+                            return -1;
+                        }
                         return 0;
                     }
                     break;
@@ -221,6 +240,7 @@ namespace Egg
                         {
                             if (currentScreen == endScreen)
                             {
+                                totalChickensInLevel = ChickensInLevel(); //get the total chickens at the very end
                                 return -1;
                             }
                             return 0;
