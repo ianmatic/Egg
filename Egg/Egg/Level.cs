@@ -53,6 +53,12 @@ namespace Egg
         {
             #region Map Location Dictionary element adding
             //Add in an external trigger in tiles to send players to different maps.
+            mapFileLocations.Add("mapDemo", @"..\..\..\..\Resources\levelExports\platformDemo");
+            mapFileLocations.Add("demo2", @"..\..\..\..\Resources\levelExports\demo2");
+            mapFileLocations.Add("demo3", @"..\..\..\..\Resources\levelExports\demo3");
+            mapFileLocations.Add("demo4", @"..\..\..\..\Resources\levelExports\demo4");
+            mapFileLocations.Add("variableSizeDemo", @"..\..\..\..\Resources\levelExports\nineByFifteen");
+            mapFileLocations.Add("collisionTest", @"..\..\..\..\Resources\levelExports\collisionTestMap");
             //.Add("key", @"..\..\..\..\Resources\levelExports\(exported file in levelExports)
             #endregion
             //if you get crashing due to "out of bounds" when making big levels, make this array bigger (it's the amount of screens per level)
@@ -67,7 +73,7 @@ namespace Egg
 
         private void FillScreenArray(int level)
         {
-            string filePath = @"Content\Levels\level" + level;
+            string filePath = @"..\..\..\..\Resources\Levels\level" + level;
 
             #region Start Folder
             string startFolderPath = filePath + @"\startScreen";

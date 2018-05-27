@@ -92,10 +92,6 @@ namespace Egg
 
         private Color color;
 
-        //Controller support
-
-        GamePadState gamepad = GamePad.GetState(PlayerIndex.One);
-
         //for rebinding keys
         private Dictionary<string, Keys> bindableKb;
 
@@ -194,11 +190,6 @@ namespace Egg
         {
             get { return isRolling; }
             set { isRolling = value; }
-        }
-        public GamePadState Gamepad
-        {
-            get { return gamepad; }
-            set { gamepad = value; }
         }
         #endregion
         //################
@@ -1419,6 +1410,7 @@ namespace Egg
         {
             playerState = PlayerState.DownDash;
         }
+      
       
 
         
