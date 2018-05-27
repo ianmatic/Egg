@@ -112,6 +112,7 @@ namespace Egg
         bool rebindingRoll = false;
         bool rebindingPause = false;
         Keys[] keys;
+        GamePadState gamePadState;
 
         Player player;
 
@@ -239,7 +240,7 @@ namespace Egg
 
 
         //Map Builder Tool
-        Mappy Builder = new Mappy();
+        //Mappy Builder = new Mappy();
 
         //sound effects and music
         SoundEffect bounceSound;
@@ -480,7 +481,7 @@ namespace Egg
             hitStunNoShellDictionaryLeft.Add(1, hitStunNoShellLeft);
             #endregion
 
-            totalLevels = Directory.GetDirectories(@"..\..\..\..\Resources\Levels").Length;
+            totalLevels = Directory.GetDirectories(@"Content\Levels").Length;
 
             #region loading Tiles
             blankTile = Content.Load<Texture2D>(@"clearTile");
@@ -574,6 +575,13 @@ namespace Egg
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            gamePadState = GamePad.GetState(PlayerIndex.One);
+
+            if (gamePadState.IsConnected)
+            {
+                player.Gamepad = GamePad.GetState(PlayerIndex.One);
+            }
 
             oldKB = kb;
             kb = Keyboard.GetState();
@@ -2231,11 +2239,11 @@ namespace Egg
         public void DebugKeyboardInputs()
         {
             //Must hold down P, O, and G at the same time to activate level editor
-            if (kb.IsKeyDown(Keys.P) && kb.IsKeyDown(Keys.O) && kb.IsKeyDown(Keys.G))
+            /*if (kb.IsKeyDown(Keys.P) && kb.IsKeyDown(Keys.O) && kb.IsKeyDown(Keys.G))
             {
                 //Show dialog goes here.
                 Builder.ShowDialog();
-            }
+            }*/
 
             if (SingleKeyPress(Keys.F8))
             {
